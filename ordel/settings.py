@@ -37,6 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'order',
+    'payment',
+    'products',
+    'admin_dashboard',
+    'client_app',
+    'delivery_app',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +82,7 @@ WSGI_APPLICATION = 'ordel.wsgi.application'
 DATABASES = {
     'default': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-	'NAME': 'Ordel',
+	'NAME': 'ordel',
 	'USER': 'postgres',
 	'PASSWORD': 'raahim123',
 	'HOST': 'localhost',
