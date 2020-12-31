@@ -122,15 +122,15 @@ AUTHENTICATION_BACKENDS = [
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-	'NAME': 'Ordel',
-	'USER': 'postgres',
-	'PASSWORD': 'raahim123',
-	'HOST': 'localhost',
-	'PORT': '',
-
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ordel',
+        'USER': 'postgres',
+        'PASSWORD': 'raahim123',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 

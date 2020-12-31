@@ -41,7 +41,7 @@ urlpatterns = [
 
     # Apps URLs
     path('client_app/', include("client_app.urls")),
-    path('delivery_app/', include("delivery_app.urls")),
+    path('delivery_person/', include("delivery_app.urls")),
     path('order/', include("order.urls")),
     path('payment/', include("payment.urls")),
     path('products/', include("products.urls")),

@@ -1,3 +1,11 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+
+class AdminUserAdmin(admin.ModelAdmin):
+    list_display = ('id', 'first_name', 'last_name', 'username', 'email', 'phone_number',
+                    'gender', 'date_created')
+    list_display_links = ('first_name', 'last_name', 'username', 'email')
+
+
+admin.site.register(AdminUser, AdminUserAdmin)
