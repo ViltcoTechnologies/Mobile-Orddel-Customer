@@ -126,7 +126,7 @@ AUTHENTICATION_BACKENDS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ordel',
+        'NAME': 'Ordel',
         'USER': 'postgres',
         'PASSWORD': 'raahim123',
         'HOST': 'localhost',
@@ -194,8 +194,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = os.path.join(BASE_DIR, 'static/')
-STATIC_ROOT = STATIC_URL
 
 # Email configuration
 EMAIL_ACTIVE_FIELD = 'is_active'
@@ -217,3 +215,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'
 # EMAIL_HOST_USER = 'leadarc123@gmail.com'
 # EMAIL_HOST_PASSWORD = '9WiPy98qhUPBvFL'
+
+
+
+STATIC_URL = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = STATIC_URL
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
