@@ -27,9 +27,8 @@ class AddToCart(models.Model):
     quantity = models.IntegerField(default=0, null=True, blank=True)
     total_amount = models.FloatField(default=0.0)
 
-    def  __str__(self):
+    def __str__(self):
         return str(self.id)
-
 
 
 class OrderDetail(models.Model):
@@ -51,10 +50,9 @@ class OrderDetail(models.Model):
         return self.order_title
 
 
-
-
-
-
-
-
-
+class ConsolidatedPurchase(models.Model):
+    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    quantity = models.IntegerField()
+    cost_per_unit = models.IntegerField()
+    purchased_from = models.CharField(max_length=300)

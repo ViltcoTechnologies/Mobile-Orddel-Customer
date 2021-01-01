@@ -11,14 +11,6 @@ class DeliveryPersonAdmin(admin.ModelAdmin):
 admin.site.register(DeliveryPerson, DeliveryPersonAdmin)
 
 
-class ConsolidatedPurchaseAdmin(admin.ModelAdmin):
-    list_display = ('id', 'delivery_person', 'product', 'quantity', 'cost_per_unit', 'purchased_from')
-    list_display_links = ('delivery_person', 'product')
-
-
-admin.site.register(ConsolidatedPurchase, ConsolidatedPurchaseAdmin)
-
-
 class VehicleRegistrationAdmin(admin.ModelAdmin):
     list_display = ('id', 'delivery_person', 'vehicle_name', 'company_name', 'model', 'registration_no',
                     'year_registered')
