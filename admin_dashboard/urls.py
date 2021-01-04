@@ -5,8 +5,8 @@ from .views import *
 app_name = 'admin_dashboard'
 
 urlpatterns = [
-    path('admin_dashboard/', AdminDashboard.as_view()),
-    path('update/', ),
-    path('delete/', ),
-    path('list/', )
+    path('create/', AdminDashboardApiView.as_view()),
+    # path('update/', ),
+    # path('delete/', ),
+    # path('list/', )
 ]

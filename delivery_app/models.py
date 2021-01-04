@@ -22,10 +22,10 @@ class DeliveryPerson(models.Model):
     address = models.CharField(max_length=200)
     current_location = models.CharField(max_length=100)
     no_of_orders = models.IntegerField(default=0)
-    buying_capacity = models.IntegerField(blank=True, null=True)
-    total_amount_shopped = models.IntegerField(blank=True, null=True)
+    buying_capacity = models.IntegerField(default=0, blank=True, null=True)
+    total_amount_shopped = models.IntegerField(default=0, blank=True, null=True)
     gender = models.CharField(max_length=300, choices=gender_choices)
-    image = models.ImageField(upload_to="clients/photos/%Y/%m/%d/", null=True, blank=True)
+    image = models.ImageField(upload_to=f"delivery_person/photos/{user}", null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):

@@ -9,6 +9,7 @@ class AddToCartAdmin(admin.ModelAdmin):
 
 admin.site.register(AddToCart, AddToCartAdmin)
 
+
 class OrderDetailAdmin(admin.ModelAdmin):
     list_display = ('id', 'order_detail', 'purchase_order_no', 'order_title', 'delivery_person', 'order_created_datetime',
                     'order_delivery_datetime', 'shipment_address', 'delivery_notes', 'comment', 'distance', 'total_units_ordered',
@@ -19,7 +20,6 @@ class OrderDetailAdmin(admin.ModelAdmin):
 
 
 admin.site.register(OrderDetail, OrderDetailAdmin)
-
 
 
 class ConsolidatedPurchaseAdmin(admin.ModelAdmin):

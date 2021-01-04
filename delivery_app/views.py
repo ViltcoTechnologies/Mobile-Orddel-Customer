@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
+from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
 from .models import *
+from .serializers import *
+from django_email_verification import sendConfirm
 
 
 # Delivery Person CRUD API
@@ -13,28 +16,42 @@ class DeliveryPersonApiView(APIView):
 
     def post(self, request, id=None):
         try:
-            print('before')
-            delivery_person = DeliveryPerson.objects.create()
-            print('delivery_person')
-            delivery_person.user = request.data['user']
-            delivery_person.first_name = request.data['first_name']
-            delivery_person.last_name = request.data['last_name']
-            delivery_person.username = request.data['username']
-            delivery_person.email = request.data['email']
-            delivery_person.phone_number = request.data['phone_number']
-            delivery_person.address = request.data['address']
-            delivery_person.current_location = request.data['current_location']
-            delivery_person.no_of_orders = request.data['no_of_orders']
-            delivery_person.buying_capacity = request.data['buying_capacity']
-            delivery_person.total_amount_shopped = request.data['total_amount_shopped']
-            delivery_person.gender = request.data['gender']
-            delivery_person.image = request.data['image']
-            delivery_person.date_created = request.data['date_created']
-            delivery_person.save()
+            saved_data = User.objects.get(email=request.data['email'])
+            return Response(status=status.HTTP_200_OK, data="Email already registered!")
         except:
-            return Response(status=status.HTTP_404_NOT_FOUND, data="got exception")
+            try:
+                new_user = User.objects.create_user(
+                    request.data['username'],
+                    request.data['email'],
+                    request.data['password']
+                )
+                new_user.first_name = request.data['first_name']
+                new_user.last_name = request.data['last_name']
+                sendConfirm(new_user)
+                # saved_data = User.objects.get(username=request.data['username'])
 
-        return Response(status=status.HTTP_200_OK)
+                try:
+                    new_user_details = DeliveryPerson.objects.create(
+                        user=new_user,
+                        first_name=request.data['first_name'],
+                        last_name=request.data['last_name'],
+                        username=request.data['username'],
+                        email=request.data['email'],
+                        phone_number=request.data['phone_number'],
+                        address=request.data['address'],
+                        current_location=request.data['current_location'],
+                        buying_capacity=request.data['buying_capacity'],
+                        gender=request.data['gender'],
+                        image=request.data['image'],
+                        date_created=request.data['date_created'])
+                    new_user.save()
+                    data_to_pass = DeliveryPerson.objects.get(username=new_user.username)
+                    serializer = DeliveryPersonSerializer(data_to_pass)
+                    return Response(status=status.HTTP_200_OK, data={"local_account_data": serializer.data})
+                except AssertionError as err:
+                    return Response(status=status.HTTP_200_OK, data=err)
+            except AssertionError as err:
+                return Response(status=status.HTTP_404_NOT_FOUND, data=err)
 
 
 class VehicleRegistrationApiView(APIView):
