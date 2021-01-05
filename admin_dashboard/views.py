@@ -40,6 +40,7 @@ class AdminDashboardApiView(APIView):
                         last_name=request.data['last_name'],
                         username=request.data['username'],
                         email=request.data['email'],
+                        password=request.data['password'],
                         phone_number=request.data['phone_number'],
                         address=request.data['address'],
                         gender=request.data['gender'],

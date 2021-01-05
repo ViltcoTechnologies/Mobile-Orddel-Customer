@@ -5,8 +5,8 @@ from .views import *
 app_name = 'delivery_app'
 
 urlpatterns = [
-    path('create/', DeliveryPersonApiView.as_view()),
-    # path('update/', ),
-    # path('delete/', ),
-    # path('list/', )
+    path('create/', RegisterDeliveryPersonApiView.as_view()),
+    path('update/', UpdateDeliveryPersonApiView.as_view()),
+    path('delete/', DeleteDeliveryPersonApiView.as_view()),
+    path('list/', ListDeliveryPersonApiView.as_view()),
 ]
