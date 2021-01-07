@@ -9,22 +9,21 @@ gender_choices = (
     ('female', 'Female'),
     ('other', 'Other')
 
-
     )
 
-business_choices = (
-    ('shop', 'Shop'),
-    ('restaurant', 'Restaurant'),
-    ('catering', 'Catering')
-
-
-    )
-
-business_type_choices = (
-    ('online', 'Online'),
-    ('physical', 'Physical')
-
-    )
+# business_choices = (
+#     ('shop', 'Shop'),
+#     ('restaurant', 'Restaurant'),
+#     ('catering', 'Catering')
+#
+#
+#     )
+#
+# business_type_choices = (
+#     ('online', 'Online'),
+#     ('physical', 'Physical')
+#
+#     )
 
 
 # Client registered
@@ -51,8 +50,8 @@ class Client(models.Model):
 class BusinessDetail(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=200, null=True, blank=True)
-    nature = models.CharField(max_length=100, choices = business_choices, null=True, blank=True)
-    type = models.CharField(max_length=100, choices = business_type_choices, null=True, blank=True)
+    nature = models.CharField(max_length=100, null=True, blank=True)
+    type = models.CharField(max_length=100, null=True, blank=True)
     logo = models.ImageField(upload_to=f"business/logo/{name}/", null=True)
     date_created = models.DateTimeField(auto_now=True)
 
