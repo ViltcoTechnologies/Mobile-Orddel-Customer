@@ -33,15 +33,21 @@ class DeliveryPerson(models.Model):
 
 
 # Vehicle registration model
-class VehicleRegistration(models.Model):
+class Vehicle(models.Model):
     delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True)
-    vehicle_name = models.CharField(max_length=100)
-    company_name = models.CharField(max_length=100)
+    make = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
+    color = models.CharField(max_length=100)
+    year = models.CharField(max_length=100)
     registration_no = models.CharField(max_length=100)
-    year_registered = models.DateField(auto_now=True)
+    license_image_front = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
+    license_image_back = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
+    copy_image_front = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
+    copy_image_back = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
+    license_no = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
+    date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.id)
 
 

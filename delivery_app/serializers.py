@@ -9,7 +9,7 @@ class DeliveryPersonSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class VehicleRegistrationSerializer(serializers.ModelSerializer):
+class VehicleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VehicleRegistration
+        model = Vehicle
         fields = "__all__"

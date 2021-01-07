@@ -11,10 +11,10 @@ class DeliveryPersonAdmin(admin.ModelAdmin):
 admin.site.register(DeliveryPerson, DeliveryPersonAdmin)
 
 
-class VehicleRegistrationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'delivery_person', 'vehicle_name', 'company_name', 'model', 'registration_no',
-                    'year_registered')
-    list_display_links = ('delivery_person', 'vehicle_name', 'company_name')
+class VehicleAdmin(admin.ModelAdmin):
+    list_display = ('id', 'delivery_person', 'make', 'model', 'color', 'year', 'registration_no',
+                    'date_created')
+    list_display_links = ('delivery_person', 'make')
 
 
-admin.site.register(VehicleRegistration, VehicleRegistrationAdmin)
+admin.site.register(Vehicle, VehicleAdmin)

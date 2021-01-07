@@ -5,8 +5,20 @@ from .views import *
 app_name = 'delivery_app'
 
 urlpatterns = [
-    path('create/', RegisterDeliveryPersonApiView.as_view()),
-    path('update/', UpdateDeliveryPersonApiView.as_view()),
-    path('delete/', DeleteDeliveryPersonApiView.as_view()),
-    path('list/', ListDeliveryPersonApiView.as_view()),
+    # Delivery Person API Routes
+    path('delivery_person_registration/', RegisterDeliveryPersonApiView.as_view()),
+    path('delivery_person_list/', ListDeliveryPersonApiView.as_view()),
+    path('delivery_person_list/<id>/', ListDeliveryPersonApiView.as_view()),
+    path('update_delivery_person/', UpdateDeliveryPersonApiView.as_view()),
+    path('delete_delivery_person/<id>/', DeleteDeliveryPersonApiView.as_view()),
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # Vehicle API Routes
+    path('vehicle_registration/', RegisterVehicleApiView.as_view()),
+    path('vehicle_list/', ListVehicleApiView.as_view()),
+    path('vehicle_list/<id>/', ListVehicleApiView.as_view()),
+    path('vehicle_list/delivery_person/<id>/', ListDeliveryPersonVehicleApiView.as_view()),
+    path('update_vehicle/', UpdateVehicleApiView.as_view()),
+    path('delete_vehicle/<id>/', DeleteVehicleApiView.as_view()),
 ]

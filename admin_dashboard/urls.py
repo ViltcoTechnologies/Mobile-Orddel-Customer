@@ -5,8 +5,9 @@ from .views import *
 app_name = 'admin_dashboard'
 
 urlpatterns = [
-    path('create/', AdminDashboardApiView.as_view()),
-    # path('update/', ),
-    # path('delete/', ),
-    # path('list/', )
+    path('delivery_person_registration/', RegisterAdminUserApiView.as_view()),
+    path('delivery_person_list/', ListAdminUserApiView.as_view()),
+    path('delivery_person_list/<id>/', ListAdminUserApiView.as_view()),
+    path('update_delivery_person/', UpdateAdminUserApiView.as_view()),
+    path('delete_delivery_person/<id>/', DeleteAdminUserApiView.as_view()),
 ]

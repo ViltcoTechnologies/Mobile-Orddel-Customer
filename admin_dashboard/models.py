@@ -20,7 +20,7 @@ class AdminUser(models.Model):
     address = models.CharField(max_length=200)
     gender = models.CharField(max_length=300, choices=gender_choices)
     image = models.ImageField(upload_to=f"delivery_person/photos/{user}", null=True, blank=True)
-    date_created = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return str(self.username)
