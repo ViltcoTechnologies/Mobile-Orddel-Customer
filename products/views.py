@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
 from .models import *
+from client_app.models import *
 from .serializers import *
 from django_email_verification import sendConfirm
 
@@ -62,17 +63,24 @@ class UpdateCategoryApiView(APIView):
         return Response(status=status.HTTP_200_OK)
 
     def put(self, request, id=None):
+        category_id = request.data['id']
         category_name = request.data['name']
         try:
-            saved_data = Category.objects.filter(name=category_name)
-            saved_data.update(
-                description=request.data['description']
-            )
-            serializer = CategorySerializer(saved_data, many=True)
-            return Response(status=status.HTTP_200_OK,
-                            data={'updated_category': serializer.data})
+            saved_data = Category.objects.get(name=category_name)
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data=f"'{category_name}' already exists")
         except:
-            return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
+            try:
+                saved_data = Category.objects.filter(id=category_id)
+                saved_data.update(
+                    name=category_name,
+                    description=request.data['description']
+                )
+                serializer = CategorySerializer(saved_data, many=True)
+                return Response(status=status.HTTP_200_OK,
+                                data={'updated_category': serializer.data})
+            except:
+                return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
 
 
 # Category Delete API
@@ -83,14 +91,17 @@ class DeleteCategoryApiView(APIView):
 
     def delete(self, request, id=None):
         if id:
-            # try:
-            saved_data = DeliveryPerson.objects.get(id=id)
-            User.objects.get(id=saved_data.user.id).delete()
-            return Response(status=status.HTTP_200_OK, data={'Record deleted against email': saved_data.username})
-            # except:
-            #     return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
+            try:
+                saved_data = Category.objects.get(id=id)
+                category_name = saved_data.name
+                saved_data.delete()
+                return Response(status=status.HTTP_200_OK,
+                                data=f"category name with '{category_name}' deleted")
+            except:
+                return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"Error Msg": "ID missing from URL"})
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"Error Msg": "ID missing from URL"})
 
 
 # ------------------------------------------------------------------------------------------------------------------------
@@ -103,30 +114,31 @@ class CreateProductApiView(APIView):
         return Response(status=status.HTTP_200_OK)
 
     def post(self, request):
+        product_name = request.data['name']
         try:
-            saved_data = Vehicle.objects.get(registration_no=request.data['registration_no'])
-            return Response(status=status.HTTP_200_OK, data="Vehicle already registered!")
+            print(product_name)
+            saved_data = Product.objects.get(name=product_name)
+            print(saved_data)
+            return Response(status=status.HTTP_200_OK,
+                            data="Vehicle already registered!")
         except:
             try:
-                delivery_person = DeliveryPerson.objects.get(id=request.data['delivery_person'])
+                category = Category.objects.get(id=request.data['category'])
                 try:
-                    new_vehicle_details = Vehicle.objects.create(
-                        delivery_person=delivery_person,
-                        make=request.data['make'],
-                        model=request.data['model'],
-                        color=request.data['color'],
-                        year=request.data['year'],
-                        registration_no=request.data['registration_no'],
-                        license_image_front=request.data['license_image_front'],
-                        license_image_back=request.data['license_image_back'],
-                        copy_image_front=request.data['copy_image_front'],
-                        copy_image_back=request.data['copy_image_back'],
-                        license_no=request.data['license_no'],
-                        date_created=request.data['date_created']
+                    new_product_details = Product.objects.create(
+                        category=category,
+                        sku=request.data['sku'],
+                        name=request.data['name'],
+                        description=request.data['description'],
+                        short_description=request.data['short_description'],
+                        image=request.data['image'],
+                        unit=request.data['unit'],
+                        avg_price=request.data['avg_price'],
+                        currency=request.data['currency']
                     )
-                    new_vehicle_details.save()
-                    serializer = VehicleSerializer(new_vehicle_details)
-                    return Response(status=status.HTTP_200_OK, data={"vehicle_registered": serializer.data})
+                    new_product_details.save()
+                    serializer = ProductSerializer(new_product_details)
+                    return Response(status=status.HTTP_200_OK, data={"product_created": serializer.data})
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data="There was a error creating record!")
             except:
@@ -139,18 +151,22 @@ class ListProductApiView(APIView):
     def get(self, request, id=None):
         if id:
             try:
-                vehicle = Vehicle.objects.get(id=id)
-                serializer = VehicleSerializer(vehicle)
-                return Response(status=status.HTTP_200_OK, data={id: serializer.data})
+                product = Product.objects.get(id=id)
+                serializer = ProductSerializer(product)
+                return Response(status=status.HTTP_200_OK,
+                                data={id: serializer.data})
             except:
-                return Response(status=status.HTTP_404_NOT_FOUND, data={"No Vehicle with ID!": id})
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data={"No Product with ID!": id})
         else:
             try:
-                vehicle = Vehicle.objects.all()
-                serializer = VehicleSerializer(vehicle, many=True)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                product = Product.objects.all()
+                serializer = ProductSerializer(product, many=True)
+                return Response(serializer.data,
+                                status=status.HTTP_200_OK)
             except:
-                return Response(status=status.HTTP_404_NOT_FOUND, data="Database is empty!")
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data="Database is empty!")
 
 
 # Product List based on Category ID
@@ -159,13 +175,13 @@ class ListCategoryProductApiView(APIView):
     def get(self, request, id=None):
         if id:
             try:
-                vehicle = Vehicle.objects.filter(delivery_person__id=id)
-                serializer = VehicleSerializer(vehicle, many=True)
+                product = Product.objects.filter(category__id=id)
+                serializer = ProductSerializer(product, many=True)
                 return Response(status=status.HTTP_200_OK,
                                 data={"user_vehicles": serializer.data})
             except:
                 return Response(status=status.HTTP_404_NOT_FOUND,
-                                data="No User Vehicle in Database!")
+                                data="No Product in Database!")
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"Error Msg": "ID missing from URL"})
@@ -178,21 +194,20 @@ class UpdateProductApiView(APIView):
         return Response(status=status.HTTP_200_OK)
 
     def put(self, request, id=None):
+        product_id = request.data['id']
         try:
-            saved_vehicle_data = Vehicle.objects.filter(registration_no=request.data['registration_no'])
+            saved_product_data = Product.objects.filter(id=product_id)
             try:
-                saved_vehicle_data.update(
-                    make=request.data['make'],
-                    model=request.data['model'],
-                    color=request.data['color'],
-                    year=request.data['year'],
-                    license_image_front=request.data['license_image_front'],
-                    license_image_back=request.data['license_image_back'],
-                    copy_image_front=request.data['copy_image_front'],
-                    copy_image_back=request.data['copy_image_back'],
-                    license_no=request.data['license_no']
+                saved_product_data.update(
+                    name=request.data['name'],
+                    description=request.data['description'],
+                    short_description=request.data['short_description'],
+                    image=request.data['image'],
+                    unit=request.data['unit'],
+                    avg_price=request.data['avg_price'],
+                    currency=request.data['currency']
                 )
-                serializer = VehicleSerializer(saved_vehicle_data, many=True)
+                serializer = ProductSerializer(saved_product_data, many=True)
                 return Response(status=status.HTTP_200_OK,
                                 data={'changes_updated': serializer.data})
             except:
@@ -200,7 +215,7 @@ class UpdateProductApiView(APIView):
                                 data='There was a error updating the data!')
         except:
             return Response(status=status.HTTP_404_NOT_FOUND,
-                            data=f"No record found against {request.data['registration_no']}")
+                            data=f"No record found against {product_id}")
 
 
 # Product Delete API
@@ -212,11 +227,11 @@ class DeleteProductApiView(APIView):
     def delete(self, request, id=None):
         if id:
             try:
-                saved_data = Vehicle.objects.get(id=id)
-                registration_no = saved_data.registration_no
+                saved_data = Product.objects.get(id=id)
+                name = saved_data.name
                 saved_data.delete()
                 return Response(status=status.HTTP_200_OK,
-                                data={'Record deleted against Vehicle Registration Number': registration_no})
+                                data=f"product with name '{name}' deleted")
             except:
                 return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
         else:
@@ -234,34 +249,28 @@ class CreateReviewApiView(APIView):
         return Response(status=status.HTTP_200_OK)
 
     def post(self, request):
+        client_id = request.data['client']
+        product_id = request.data['product']
         try:
-            saved_data = Vehicle.objects.get(registration_no=request.data['registration_no'])
-            return Response(status=status.HTTP_200_OK, data="Vehicle already registered!")
-        except:
+            client = Client.objects.get(id=client_id)
+            product = Product.objects.get(id=product_id)
             try:
-                delivery_person = DeliveryPerson.objects.get(id=request.data['delivery_person'])
-                try:
-                    new_vehicle_details = Vehicle.objects.create(
-                        delivery_person=delivery_person,
-                        make=request.data['make'],
-                        model=request.data['model'],
-                        color=request.data['color'],
-                        year=request.data['year'],
-                        registration_no=request.data['registration_no'],
-                        license_image_front=request.data['license_image_front'],
-                        license_image_back=request.data['license_image_back'],
-                        copy_image_front=request.data['copy_image_front'],
-                        copy_image_back=request.data['copy_image_back'],
-                        license_no=request.data['license_no'],
-                        date_created=request.data['date_created']
-                    )
-                    new_vehicle_details.save()
-                    serializer = VehicleSerializer(new_vehicle_details)
-                    return Response(status=status.HTTP_200_OK, data={"vehicle_registered": serializer.data})
-                except:
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data="There was a error creating record!")
+                new_review_details = Review.objects.create(
+                    client=client,
+                    product=product,
+                    rating=request.data['rating'],
+                    comment=request.data['comment'],
+                )
+                new_review_details.save()
+                serializer = ReviewSerializer(new_review_details)
+                return Response(status=status.HTTP_200_OK,
+                                data={"review_created": serializer.data})
             except:
-                return Response(status=status.HTTP_404_NOT_FOUND, data="Vehicle Already Registered!")
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data="There was a error creating record!")
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND,
+                            data="Client or Product ID missing in body!")
 
 
 # Review List API
@@ -270,18 +279,21 @@ class ListReviewApiView(APIView):
     def get(self, request, id=None):
         if id:
             try:
-                vehicle = Vehicle.objects.get(id=id)
-                serializer = VehicleSerializer(vehicle)
-                return Response(status=status.HTTP_200_OK, data={id: serializer.data})
+                review = Review.objects.get(id=id)
+                serializer = ReviewSerializer(review)
+                return Response(status=status.HTTP_200_OK,
+                                data={id: serializer.data})
             except:
-                return Response(status=status.HTTP_404_NOT_FOUND, data={"No Vehicle with ID!": id})
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data={"No Review with ID!": id})
         else:
             try:
-                vehicle = Vehicle.objects.all()
-                serializer = VehicleSerializer(vehicle, many=True)
+                review = Review.objects.all()
+                serializer = ReviewSerializer(review, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except:
-                return Response(status=status.HTTP_404_NOT_FOUND, data="Database is empty!")
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data="Database is empty!")
 
 
 # Review List based on Product ID
@@ -289,14 +301,16 @@ class ListProductReviewApiView(APIView):
 
     def get(self, request, id=None):
         if id:
+            product_id = id
+            print(product_id)
             try:
-                vehicle = Vehicle.objects.filter(delivery_person__id=id)
-                serializer = VehicleSerializer(vehicle, many=True)
+                review = Review.objects.filter(product__id=product_id)
+                serializer = ReviewSerializer(review, many=True)
                 return Response(status=status.HTTP_200_OK,
-                                data={"user_vehicles": serializer.data})
+                                data={"product_reviews": serializer.data})
             except:
                 return Response(status=status.HTTP_404_NOT_FOUND,
-                                data="No User Vehicle in Database!")
+                                data="No Product Review in Database!")
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"Error Msg": "ID missing from URL"})
@@ -309,21 +323,21 @@ class UpdateReviewApiView(APIView):
         return Response(status=status.HTTP_200_OK)
 
     def put(self, request, id=None):
+        client_id = request.data['client']
+        product_id = request.data['product']
+        review_id = request.data['id']
         try:
-            saved_vehicle_data = Vehicle.objects.filter(registration_no=request.data['registration_no'])
+            saved_client_data = Client.objects.get(id=client_id)
+            saved_product_data = Product.objects.get(id=product_id)
+            saved_review_data = Review.objects.filter(id=review_id)
             try:
-                saved_vehicle_data.update(
-                    make=request.data['make'],
-                    model=request.data['model'],
-                    color=request.data['color'],
-                    year=request.data['year'],
-                    license_image_front=request.data['license_image_front'],
-                    license_image_back=request.data['license_image_back'],
-                    copy_image_front=request.data['copy_image_front'],
-                    copy_image_back=request.data['copy_image_back'],
-                    license_no=request.data['license_no']
+                saved_review_data.update(
+                    client=saved_client_data,
+                    product=saved_product_data,
+                    rating=request.data['rating'],
+                    comment=request.data['comment']
                 )
-                serializer = VehicleSerializer(saved_vehicle_data, many=True)
+                serializer = ReviewSerializer(saved_review_data, many=True)
                 return Response(status=status.HTTP_200_OK,
                                 data={'changes_updated': serializer.data})
             except:
@@ -331,7 +345,7 @@ class UpdateReviewApiView(APIView):
                                 data='There was a error updating the data!')
         except:
             return Response(status=status.HTTP_404_NOT_FOUND,
-                            data=f"No record found against {request.data['registration_no']}")
+                            data=f"No record found against '{registration_no}'")
 
 
 # Review Delete API
@@ -343,11 +357,10 @@ class DeleteReviewApiView(APIView):
     def delete(self, request, id=None):
         if id:
             try:
-                saved_data = Vehicle.objects.get(id=id)
-                registration_no = saved_data.registration_no
+                saved_data = Review.objects.get(id=id)
                 saved_data.delete()
                 return Response(status=status.HTTP_200_OK,
-                                data={'Record deleted against Vehicle Registration Number': registration_no})
+                                data={'Record deleted against Review ID': id})
             except:
                 return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
         else:

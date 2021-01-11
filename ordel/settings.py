@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'django_seed',
     'axes',
     'reset_migrations',  # https://pypi.org/project/django-reset-migrations/
+    'imagekit',
 ]
 
 MIDDLEWARE = [

@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
 from .models import *
+from order.models import *
+from payment.models import *
+from client_app.models import *
 from .serializers import *
 from django_email_verification import sendConfirm
 
@@ -117,3 +120,27 @@ class DeleteAdminUserApiView(APIView):
             #     return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"Error Msg": "ID missing from URL"})
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+class AdminDashboardApiView(APIView):
+
+    def get(self, request):
+
+        # Get orders
+        # order_data = OrderDetail.objects.all()
+
+        # Get invoices
+        invoice_data = Invoice.objects.all().count()
+        print(invoice_data)
+
+        # Get clients
+        client_data = Client.objects.all().count()
+        total_client_income = Client.objects.all().aggregate(average_price=Avg('total_amount_shopped'))
+
+        # Get delivery_persons
+        delivery_person_data = DeliveryPerson.objects.all().count()
+        print(delivery_person_data)
+

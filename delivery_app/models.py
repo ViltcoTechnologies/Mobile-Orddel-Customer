@@ -34,7 +34,7 @@ class DeliveryPerson(models.Model):
 
 # Vehicle registration model
 class Vehicle(models.Model):
-    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True)
+    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.CASCADE, null=True)
     make = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     color = models.CharField(max_length=100)
@@ -44,7 +44,7 @@ class Vehicle(models.Model):
     license_image_back = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
     copy_image_front = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
     copy_image_back = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
-    license_no = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
+    license_no = models.CharField(max_length=100)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
