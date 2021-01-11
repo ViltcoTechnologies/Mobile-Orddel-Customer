@@ -25,10 +25,19 @@ gender_choices = (
 #
 #     )
 
+# Many clients can be registered to a single package
+class Package(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.TextField(max_length=500, null=True, blank=True)
+    price = models.CharField(max_length=200, null=True, blank=True)
+    date_created = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
 # Client registered
 class Client(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    package = models.ForeignKey(Package, on_delete=models.SET_NULL, null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     username = models.CharField(max_length=100)
@@ -76,9 +85,3 @@ class BankDetails(models.Model):
     date_created = models.DateTimeField(auto_now=True)
 
 
-# Many clients can be registered to a single package
-class Package(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.TextField(max_length=500, null=True, blank=True)
-    price = models.CharField(max_length=200, null=True, blank=True)
-    date_created = models.DateTimeField(auto_now=True)

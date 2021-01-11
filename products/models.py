@@ -13,7 +13,7 @@ unit_choices = (
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=300)
+    name = models.CharField(max_length=300, null=True, blank=True)
     description = models.TextField(max_length=50000, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
 
