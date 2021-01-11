@@ -37,7 +37,7 @@ class Client(models.Model):
     address = models.CharField(max_length=200)
     current_location = models.CharField(max_length=100)
     gender = models.CharField(max_length=300, choices=gender_choices)
-    image = models.ImageField(upload_to=f"clients/photos/{user}/")
+    image = models.ImageField(upload_to=f"clients/photos/{user}/", null=True, blank=True)
     number_of_order = models.IntegerField(default=0)
     total_amount_shopped = models.IntegerField(default=0)
     date_created = models.DateTimeField(auto_now=True)

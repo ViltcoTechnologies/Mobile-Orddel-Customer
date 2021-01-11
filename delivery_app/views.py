@@ -113,12 +113,12 @@ class DeleteDeliveryPersonApiView(APIView):
 
     def delete(self, request, id=None):
         if id:
-            # try:
-            saved_data = DeliveryPerson.objects.get(id=id)
-            User.objects.get(id=saved_data.user.id).delete()
-            return Response(status=status.HTTP_200_OK, data={'Record deleted against email': saved_data.username})
-            # except:
-            #     return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
+            try:
+                saved_data = DeliveryPerson.objects.get(id=id)
+                User.objects.get(id=saved_data.user.id).delete()
+                return Response(status=status.HTTP_200_OK, data={'Record deleted against email': saved_data.username})
+            except:
+                return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"Error Msg": "ID missing from URL"})
 
