@@ -51,3 +51,11 @@ class Vehicle(models.Model):
         return str(self.id)
 
 
+class ConsolidatedPurchase(models.Model):
+    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    quantity = models.IntegerField()
+    cost_per_unit = models.IntegerField()
+    purchased_from = models.CharField(max_length=300)
+
+
