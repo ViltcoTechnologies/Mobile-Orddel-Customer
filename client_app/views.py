@@ -316,3 +316,174 @@ class BankDetailsCreateApiView(APIView):
             return Response(status=status.HTTP_200_OK, data={"bank_details_created": data_to_pass.data})
         except Exception as e:
             return Response(status = status.HTTP_400_BAD_REQUEST, data={"Exception" : e})
+
+
+class BankDetailsUpdateApiView(APIView):
+    def put(self, request, id=None):
+        try:
+            bank_detail_id = request.data['id']
+            bank_name = request.data['bank_name']
+            branch_code = request.data['branch_code']
+            credit_card_no = request.data['credit_card_no']
+            sort_code = request.data['sort_code']
+            credit_card_expiry = request.data['credit_card_expiry']
+
+            bank_detail = BankDetails.objects.filter(id=bank_detail_id).update(
+                bank_name=bank_name,
+                branch_code=branch_code,
+                credit_card_no=credit_card_no,
+                sort_code=sort_code,
+                credit_card_expiry=credit_card_expiry
+            )
+            print("Bank Detail id :", bank_detail)
+            bd = BankDetails.objects.get(id=bank_detail_id)
+            data_to_pass = BankDetailsSerializer(bd)
+            return Response(status=status.HTTP_200_OK, data={"updated_business_details": data_to_pass.data})
+
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception": e})
+
+class ListBankDetailsApiView(APIView):
+    def get(self, request, id=None):
+            if id:
+                try:
+                    bank_detail = BankDetails.objects.get(id=id)
+                    data_to_pass = BankDetailsSerializer(bank_detail)
+
+                except Exception as e:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'Error': e})
+
+            else:
+                try:
+                    bank_details = BankDetails.objects.all()
+                    data_to_pass = BankDetailsSerializer(bank_details, many=True)
+                except Exception as e:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'Error': e})
+
+            return Response(status=status.HTTP_200_OK, data={"bank_details": data_to_pass.data})
+
+class ListClientBankDetailsApiView(APIView):
+
+    def get(self, request, id=None):
+        if id:
+            try:
+                bank_details = BankDetails.objects.filter(client__id=id)
+                data_to_pass = BankDetailsSerializer(bank_details, many=True)
+                return Response(status=status.HTTP_200_OK, data={"bank_details": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_404_NOT_FOUND, data={'Error': 'client not found'})
+
+
+class DeleteBankDetailsApiView(APIView):
+
+    def delete(self, request, id = None):
+        if id:
+            try:
+                bank_rec = BankDetails.objects.get(id = id)
+                bank_name = bank_rec.bank_name
+                bank_rec.delete()
+                return Response(status = status.HTTP_200_OK, data={"record_deleted":bank_name})
+
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"Error": "Unable to delete record"})
+
+
+class PackageCreateApiView(APIView):
+    def post(self, request):
+        try:
+            name = request.data['name']
+            package = Package.objects.get(name = name)
+            return Response(status = status.HTTP_400_BAD_REQUEST, data = {"error" : f"{name} record already exists"})
+
+        except:
+            try:
+
+                description = request.data['description']
+                price = request.data['price']
+
+
+                package_record = Package.objects.create(
+                    name=name,
+                    description=description,
+                    price=price
+
+                )
+                data_to_pass = PackageSerializer(package_record)
+                return Response(status=status.HTTP_200_OK, data={"package_created": data_to_pass.data})
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception": e})
+
+
+class PackageUpdateApiView(APIView):
+    def put(self, request):
+        try:
+            name = request.data['name']
+            package = Package.objects.get(name = name)
+            return Response(status = status.HTTP_400_BAD_REQUEST, data = {"error" : f"{package.name} record already exists"})
+        except:
+            try:
+                package_id = request.data['id']
+                name = request.data['name']
+                description = request.data['description']
+                price = request.data['price']
+
+
+                package_detail = Package.objects.filter(id=package_id).update(
+                    name=name,
+                    description=description,
+                    price=price,
+
+                )
+                print("Package ID :", package_detail)
+                bd = Package.objects.get(id=package_id)
+                data_to_pass = PackageSerializer(bd)
+                return Response(status=status.HTTP_200_OK, data={"updated_business_details": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception": e})
+
+
+class ListPackagesApiView(APIView):
+    def get(self, request, id=None):
+        if id:
+            try:
+                package = Package.objects.filter(id=id)
+                data_to_pass = PackageSerializer(package, many=True)
+                return Response(status=status.HTTP_200_OK, data={"package_details": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_404_NOT_FOUND, data={'Error': 'package not found'})
+        else:
+            try:
+                package = Package.objects.all()
+                data_to_pass = PackageSerializer(package, many=True)
+                return Response(status=status.HTTP_200_OK, data={"all_package": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_404_NOT_FOUND, data={'Error': 'package not found'})
+
+class ListClientPackagesApiView(APIView):
+    def get(self, request, id=None):
+        if id:
+            try:
+                clients_in_package = Client.objects.filter(package__id=id)
+                data_to_pass = ClientSerializer(clients_in_package, many=True)
+                return Response(status=status.HTTP_200_OK, data={"clients_in_package": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_404_NOT_FOUND, data={'Error': 'package not found'})
+
+
+class DeletePackageApiView(APIView):
+    def delete(self, request, id=None):
+        if id:
+            try:
+                package_rec = Package.objects.get(id=id)
+                package_name = package_rec.name
+                package_rec.delete()
+                return Response(status=status.HTTP_200_OK, data={"record_deleted": package_name})
+
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"Error": "Unable to delete record"})
+

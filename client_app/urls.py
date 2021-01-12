@@ -44,5 +44,23 @@ urlpatterns = [
     path('delete_shipment_add/<id>/', DeleteShipmentAddressApiView.as_view(), name='delete_shipment_add'),
 
     # CRUD of Bank Details
-    path('create_bank_details/', BankDetailsCreateApiView.as_view(), name='create_bank_details')
+    path('create_bank_details/', BankDetailsCreateApiView.as_view(), name='create_bank_details'),
+    path('update_bank_details/', BankDetailsUpdateApiView.as_view(), name='update_bank_details'),
+
+    path('list_bank_details/', ListBankDetailsApiView.as_view(), name='list_bank_details'),
+    path('list_bank_details/<id>/', ListBankDetailsApiView.as_view(), name='list_bank_details/<id>'),
+    path('list_bank_details/client/<id>/', ListClientBankDetailsApiView.as_view(),
+         name='list_bank_details/client/<id>'),
+    path('delete_bank_details/<id>/', DeleteBankDetailsApiView.as_view(), name='delete_bank_details'),
+
+    # CRUD of Packages
+    path('create_package/', PackageCreateApiView.as_view(), name='create_package'),
+    path('update_package/', PackageUpdateApiView.as_view(), name='update_package'),
+
+    path('list_packages/', ListPackagesApiView.as_view(), name='list_packages'),
+    path('list_packages/<id>/', ListPackagesApiView.as_view(), name='list_packages/<id>'),
+    path('list_clients/package/<id>/', ListClientPackagesApiView.as_view(),
+         name='list_clients/package/<id>'),
+    path('delete_package/<id>/', DeletePackageApiView.as_view(), name='delete_package'),
+
 ]
