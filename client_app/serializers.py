@@ -26,6 +26,7 @@ class BankDetailsSerializer(serializers.ModelSerializer):
         model = BankDetails
         fields = "__all__"
 
+
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package

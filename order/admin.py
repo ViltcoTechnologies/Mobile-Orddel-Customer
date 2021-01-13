@@ -2,9 +2,17 @@ from django.contrib import admin
 from .models import *
 
 
-class AddToCartAdmin(admin.ModelAdmin):
-    list_display = ('id', 'client', 'product', 'weight', 'number_of_boxes', 'quantity', 'total_amount')
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'client', 'grand_total')
     list_display_links = ('client',)
+
+
+admin.site.register(Cart, CartAdmin)
+
+
+class AddToCartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'cart', 'product', 'quantity', 'total_amount')
+    list_display_links = ('cart',)
 
 
 admin.site.register(AddToCart, AddToCartAdmin)
