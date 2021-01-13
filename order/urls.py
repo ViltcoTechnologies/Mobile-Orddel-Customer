@@ -8,7 +8,8 @@ app_name = 'order'
 urlpatterns = [
     # CRUD of Order
     # Create
-    path('add_to_cart/', AddToCartApiView.as_view(), name='create_client'),
+    path('create_cart/', CreateCartApiView.as_view(), name='create_cart'),
+    path('add_to_cart/', AddToCartApiView.as_view(), name='add_to_cart'),
     # Read
     # path('clients_list/', ListClientsApiView.as_view(), name='list_clients'),
     # path('clients_list/<id>/', ListClientsApiView.as_view(), name='list_clients'),

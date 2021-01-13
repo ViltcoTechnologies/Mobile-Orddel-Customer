@@ -19,11 +19,17 @@ order_status_choices = (
 )
 
 
-class AddToCart(models.Model):
+class Cart(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
+    grand_total = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return str(self.id)
+
+
+class AddToCart(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
-    weight = models.CharField(max_length=50, null=True, blank=True)
-    number_of_boxes = models.IntegerField(default=0, null=True, blank=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     total_amount = models.FloatField(default=0.0)
 
