@@ -26,6 +26,8 @@ gender_choices = (
 #     )
 
 # Many clients can be registered to a single package
+
+
 class Package(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(max_length=500, null=True, blank=True)
@@ -34,7 +36,10 @@ class Package(models.Model):
 
     def __str__(self):
         return self.name
+
 # Client registered
+
+
 class Client(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     package = models.ForeignKey(Package, on_delete=models.SET_NULL, null=True, blank=True)
