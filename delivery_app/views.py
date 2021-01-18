@@ -16,43 +16,80 @@ class RegisterDeliveryPersonApiView(APIView):
 
     def post(self, request, id=None):
         try:
-            saved_data = User.objects.get(email=request.data['email'])
-            return Response(status=status.HTTP_200_OK, data="Email already registered!")
-        except:
+            # optional parameters
+            buying_capacity = request.data['buying_capacity']
+            address = request.data['address']
+            gender = request.data['gender']
+            image = request.data['image']
             try:
-                new_user = User.objects.create_user(
-                    request.data['username'],
-                    request.data['email'],
-                    request.data['password']
-                )
-                new_user.first_name = request.data['first_name']
-                new_user.last_name = request.data['last_name']
-                sendConfirm(new_user)
-                # saved_data = User.objects.get(username=request.data['username'])
-
+                # required parameters
+                first_name = request.data['first_name']
+                last_name = request.data['last_name']
+                email = request.data['email']
+                username = request.data['email']
+                phone_number = request.data['phone_number']
+                password = request.data['password']
+                if first_name == ""\
+                        or last_name == ""\
+                        or email == ""\
+                        or phone_number == ""\
+                        or password == "":
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data="Ooops! following required fields can't "
+                                         "be empty: (first_name, last_name, email, "
+                                         "phone_number, password)")
                 try:
-                    new_user_details = DeliveryPerson.objects.create(
-                        user=new_user,
-                        first_name=request.data['first_name'],
-                        last_name=request.data['last_name'],
-                        username=request.data['username'],
-                        email=request.data['email'],
-                        phone_number=request.data['phone_number'],
-                        address=request.data['address'],
-                        current_location=request.data['current_location'],
-                        buying_capacity=request.data['buying_capacity'],
-                        gender=request.data['gender'],
-                        image=request.data['image'],
-                        date_created=request.data['date_created']
-                    )
-                    new_user.save()
-                    data_to_pass = DeliveryPerson.objects.get(username=new_user.username)
-                    serializer = DeliveryPersonSerializer(data_to_pass)
-                    return Response(status=status.HTTP_200_OK, data={"local_account_data": serializer.data})
-                except AssertionError as err:
-                    return Response(status=status.HTTP_200_OK, data=err)
-            except AssertionError as err:
-                return Response(status=status.HTTP_404_NOT_FOUND, data=err)
+                    saved_data = User.objects.get(email=email)
+                    return Response(status=status.HTTP_200_OK,
+                                    data="Email already registered!")
+                except:
+                    try:
+                        new_auth_user = User.objects.create_user(
+                            email,
+                            email,
+                            password
+                        )
+                        new_auth_user.first_name = first_name
+                        new_auth_user.last_name = last_name
+                        sendConfirm(new_auth_user)
+                        try:
+                            new_delivery_person = DeliveryPerson.objects.create(
+                                user=new_auth_user,
+                                first_name=first_name,
+                                last_name=last_name,
+                                username=username,
+                                email=email,
+                                buying_capacity=buying_capacity,
+                                phone_number=phone_number,
+                                address=address,
+                                gender=gender,
+                                image=image
+                            )
+                            new_delivery_person.save()
+                            serializer = DeliveryPersonSerializer(new_delivery_person)
+                            new_auth_user.save()
+                            return Response(status=status.HTTP_200_OK,
+                                            data={"delivery_person_created": serializer.data})
+                        except:
+                            return Response(status=status.HTTP_400_BAD_REQUEST,
+                                            data="Error! delivery_person was not created "
+                                                 "but auth_user was created "
+                                                 "deleting auth-user entry")
+                    except:
+                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                        data="Error entering Auth-User Data")
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data="Error! Make sure you're not missing one of the "
+                                     "following required fields: (first_name, last_name, "
+                                     "email, phone_number, password)")
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data="Error! Make sure you're not missing one "
+                                 "of the following optional fields: "
+                                 "(buying_capacity, address, gender, image) "
+                                 "Note: If you want to leave fields blank, then "
+                                 "send null or empty")
 
 
 # Delivery Person List API
@@ -63,16 +100,22 @@ class ListDeliveryPersonApiView(APIView):
             try:
                 delivery_person = DeliveryPerson.objects.get(id=id)
                 serializer = DeliveryPersonSerializer(delivery_person)
-                return Response(status=status.HTTP_200_OK, data={"admin_user": serializer.data})
+                return Response(status=status.HTTP_200_OK,
+                                data={"delivery_persons": serializer.data})
             except:
-                return Response(status=status.HTTP_200_OK, data="Database is empty!")
+                return Response(status=status.HTTP_200_OK,
+                                data=f"No record found against ID '{id}'!")
         else:
             try:
                 delivery_person = DeliveryPerson.objects.all()
                 serializer = DeliveryPersonSerializer(delivery_person, many=True)
-                return Response(status=status.HTTP_200_OK, data={"admin_users": serializer.data})
+                if not admin_user:
+                    return Response(status=status.HTTP_200_OK,
+                                    data={"Delivery Person table is empty": serializer.data})
+                return Response(status=status.HTTP_200_OK,
+                                data={"delivery_person": serializer.data})
             except:
-                return Response(status=status.HTTP_200_OK, data="Database is empty!")
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 # Delivery Person Update API
@@ -83,26 +126,60 @@ class UpdateDeliveryPersonApiView(APIView):
 
     def put(self, request, id=None):
         try:
-            saved_auth_user = User.objects.get(email=request.data['email'])
-            saved_auth_user.first_name = request.data['first_name']
-            saved_auth_user.last_name = request.data['last_name']
-
-            saved_data = DeliveryPerson.objects.filter(user_id=saved_auth_user.id)
-            saved_data.update(
-                first_name=request.data['first_name'],
-                last_name=request.data['last_name'],
-                phone_number=request.data['phone_number'],
-                address=request.data['address'],
-                current_location=request.data['current_location'],
-                buying_capacity=request.data['buying_capacity'],
-                gender=request.data['gender'],
-                image=request.data['image'],
-                date_created=request.data['date_created']
-            )
-            serializer = DeliveryPersonSerializer(saved_data, many=True)
-            return Response(status=status.HTTP_200_OK, data={'updated_delivery_person': serializer.data})
+            # optional parameters
+            buying_capacity = request.data['buying_capacity']
+            address = request.data['address']
+            gender = request.data['gender']
+            image = request.data['image']
+            phone_number = request.data['phone_number']
+            first_name = request.data['first_name']
+            last_name = request.data['last_name']
+            try:
+                # required parameters
+                email = request.data['email']
+                if email == "":
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data="Ooops! email can't be empty")
+                try:
+                    saved_delivery_person = DeliveryPerson.objects.filter(email=email)
+                    if not saved_delivery_person:
+                        return Response(status=status.HTTP_404_NOT_FOUND,
+                                        data=f"delivery_person with email: '{email}' not found")
+                    try:
+                        updated_delivery_person = saved_delivery_person.update(
+                            first_name=first_name,
+                            last_name=last_name,
+                            phone_number=phone_number,
+                            buying_capacity=buying_capacity,
+                            address=address,
+                            gender=gender,
+                            image=image
+                        )
+                        try:
+                            saved_delivery_person.user.first_name = first_name
+                            saved_delivery_person.user.last_name = last_name
+                            serializer = DeliveryPersonSerializer(updated_delivery_person, many=True)
+                            return Response(status=status.HTTP_200_OK,
+                                            data={"updated_admin_user": serializer.data})
+                        except:
+                            return Response(status=status.HTTP_400_BAD_REQUEST,
+                                            data="Error updating auth-user data")
+                    except:
+                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                        data="Error updating admin_user Data")
+                except:
+                    return Response(status=status.HTTP_404_NOT_FOUND,
+                                    data="Error finding auth user data")
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data="Oops! Make sure you're not missing a required"
+                                     "field (email) ")
         except:
-            return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data="Oops! Make sure following fields are not missing "
+                                 "(first_name, last_name, phone_number, buying_capacity "
+                                 "address, gender, image) Note: If you want to "
+                                 "leave fields blank, then send null or empty")
 
 
 # Delivery Person Delete API
@@ -116,11 +193,14 @@ class DeleteDeliveryPersonApiView(APIView):
             try:
                 saved_data = DeliveryPerson.objects.get(id=id)
                 User.objects.get(id=saved_data.user.id).delete()
-                return Response(status=status.HTTP_200_OK, data={'Record deleted against email': saved_data.username})
+                return Response(status=status.HTTP_200_OK,
+                                data={'Record deleted against email': saved_data.username})
             except:
-                return Response(status=status.HTTP_404_NOT_FOUND, data="No Record Found!")
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data="No Record Found!")
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"Error Msg": "ID missing from URL"})
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"Error Msg": "ID missing from URL"})
 
 
 # ------------------------------------------------------------------------------------------------------------------------
@@ -151,8 +231,7 @@ class RegisterVehicleApiView(APIView):
                         license_image_back=request.data['license_image_back'],
                         copy_image_front=request.data['copy_image_front'],
                         copy_image_back=request.data['copy_image_back'],
-                        license_no=request.data['license_no'],
-                        date_created=request.data['date_created']
+                        license_no=request.data['license_no']
                     )
                     new_vehicle_details.save()
                     serializer = VehicleSerializer(new_vehicle_details)
@@ -160,7 +239,7 @@ class RegisterVehicleApiView(APIView):
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data="There was a error creating record!")
             except:
-                return Response(status=status.HTTP_404_NOT_FOUND, data="Vehicle Already Registered!")
+                return Response(status=status.HTTP_404_NOT_FOUND, data="Invalid Delivery Person ID!")
 
 
 # Vehicle List API
