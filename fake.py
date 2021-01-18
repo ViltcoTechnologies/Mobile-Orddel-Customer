@@ -30,9 +30,12 @@ def populate(n):
     genders = ['male', 'female']
     # Population script loop
     for entry in range(n):
+
         # -----------------------------------------------------------------------------------------------------
+
         # Populating Client Script
         profile = fake.profile()
+        package_id = random.randint(1,3)
         first_name = fake.first_name()
         last_name = fake.last_name()
         username = profile['username']
@@ -59,9 +62,12 @@ def populate(n):
             new_auth_user.first_name = first_name
             new_auth_user.last_name = last_name
 
+            package_instance = Package.objects.get(id=package_id)
+
             # Entering record in the Client Table
             new_client = Client.objects.create(
                 user=new_auth_user,
+                package=package_instance,
                 first_name=first_name,
                 last_name=last_name,
                 username=username,

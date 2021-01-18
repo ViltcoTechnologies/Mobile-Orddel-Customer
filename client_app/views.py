@@ -25,10 +25,11 @@ class ClientRegisterApiView(APIView):
                 new_user.save()
                 sendConfirm(new_user)
                 saved_data = User.objects.get(username=request.data['username'])
-
+                package_instance = Package.objects.get(id=request.data['package_id'])
                 try:
                     new_user_details = Client.objects.create(
                         user_id=saved_data.id,
+                        package=package_instance,
                         first_name=request.data['first_name'],
                         last_name = request.data['last_name'],
                         username = request.data['username'],
@@ -462,6 +463,7 @@ class ListPackagesApiView(APIView):
 
             except Exception as e:
                 return Response(status=status.HTTP_404_NOT_FOUND, data={'Error': 'package not found'})
+
 
 class ListClientPackagesApiView(APIView):
     def get(self, request, id=None):

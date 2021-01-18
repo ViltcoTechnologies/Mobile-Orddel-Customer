@@ -9,9 +9,9 @@ class CartSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class AddToCartSerializer(serializers.ModelSerializer):
+class CartProductsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AddToCart
+        model = CartProducts
         fields = "__all__"
 
 

@@ -18,13 +18,20 @@ class CreateCartApiView(APIView):
         try:
             client = Client.objects.get(id=client_id)
             try:
-                cart = Cart.objects.create(
-                    client=client,
-                    grand_total=grand_total
-                )
-                instance = Cart.objects.get(id=cart.id)
-                serializer = CartSerializer(instance)
-                return Response(status=status.HTTP_201_CREATED, data={"cart": serializer.data})
+                try:
+                    cart = Cart.objects.get(client=client.id)
+                    print(cart)
+                    serializer = CartSerializer(cart)
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={"cart_already_present": serializer.data["client"]})
+
+                except:
+                    cart = Cart.objects.create(
+                        client=client,
+                        grand_total=grand_total
+                    )
+                    instance = Cart.objects.get(id=cart.id)
+                    serializer = CartSerializer(instance)
+                    return Response(status=status.HTTP_201_CREATED, data={"cart": serializer.data})
 
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "error in record creation"})
@@ -33,35 +40,41 @@ class CreateCartApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "Invalid data entered"})
 
 
-class AddToCartApiView(APIView):
-    def post(self, request, id = None):
-        cart_id = request.data['cart_id']
-        products = request.data['cart_products']
-        print(cart_id)
-        print(products)
-        return Response(status=status.HTTP_201_CREATED)
-        # quantity = request.data['quantity']
-        # number_of_boxes = request.data['number_of_boxes']
-        # quantity = request.data['quantity']
-        # total_amount = request.data['total_amount']
+class AddCartProductsApiView(APIView):
 
-        # try:
-        #     client = Client.objects.get(id=client_id)
-        #     product = Client.objects.get(id=product_id)
-        #     try:
-        #         cart = AddToCart.objects.create(
-        #             client=client,
-        #             product=product,
-        #             weight=weight,
-        #             number_of_boxes=number_of_boxes,
-        #             quantity=quantity,
-        #             total_amount=total_amount
-        #         )
-        #         instance = AddToCart.objects.get(id = cart.id)
-        #         serializer = AddToCartSerializer(instance)
-        #         return Response(status=status.HTTP_201_CREATED, data={"cart": serializer.data})
-        #     except:
-        #         return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "error in created record"})
-        #
-        # except:
-        #     return Response(status = status.HTTP_400_BAD_REQUEST, data={"error":"Invalid data entered"})
+    def post(self, request):
+
+        try:
+            cart_id = request.data['cart_id']
+            products = request.data['cart_products']
+            try:
+                cart = Cart.objects.get(id=cart_id)
+                for prod in products:
+                    product = Product.objects.get(id=prod['id'])
+                    price = product.avg_price
+                    add_to_cart = AddToCart.objects.create(
+                        cart=cart,
+                        product=product,
+                        quantity=prod['quantity'],
+                        total_amount=price*prod['quantity']
+                    )
+                add_to_cart = AddToCart.objects.filter(cart=cart)
+                data_list = []
+                for obj in add_to_cart:
+                    serializer = AddToCartSerializer(obj)
+                    data_list.append(serializer.data)
+                    cart.grand_total += obj.total_amount
+
+                cart.save()
+                cart = {
+                        "cart_id": cart.id,
+                        "grand_total": cart.grand_total,
+                        "client": str(cart.client.user),
+                        "cart_products": data_list
+                }
+
+                return Response(status=status.HTTP_201_CREATED, data={"cart": cart})
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": e})
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": e})

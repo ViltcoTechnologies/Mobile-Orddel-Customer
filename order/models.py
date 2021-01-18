@@ -27,7 +27,7 @@ class Cart(models.Model):
         return str(self.id)
 
 
-class AddToCart(models.Model):
+class CartProducts(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
@@ -38,7 +38,8 @@ class AddToCart(models.Model):
 
 
 class OrderDetail(models.Model):
-    order_detail = models.ForeignKey(AddToCart, on_delete=models.SET_NULL, null=True, blank=True)
+    cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True, blank=True)
+    cart_products = models.ForeignKey(CartProducts, on_delete=models.SET_NULL, null=True, blank=True)
     purchase_order_no = models.CharField(max_length=100) # Unique Purchase Order Number assigned to client on every order
     order_title = models.CharField(max_length=100, null=True, blank=True)
     delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
