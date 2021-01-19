@@ -40,7 +40,7 @@ class CreateCartApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "Invalid data entered"})
 
 
-class AddCartProductsApiView(APIView):
+class CartProductsApiView(APIView):
 
     def post(self, request):
 
@@ -52,16 +52,16 @@ class AddCartProductsApiView(APIView):
                 for prod in products:
                     product = Product.objects.get(id=prod['id'])
                     price = product.avg_price
-                    add_to_cart = AddToCart.objects.create(
+                    add_to_cart = CartProducts.objects.create(
                         cart=cart,
                         product=product,
                         quantity=prod['quantity'],
                         total_amount=price*prod['quantity']
                     )
-                add_to_cart = AddToCart.objects.filter(cart=cart)
+                add_to_cart = CartProducts.objects.filter(cart=cart)
                 data_list = []
                 for obj in add_to_cart:
-                    serializer = AddToCartSerializer(obj)
+                    serializer = CartProductsSerializer(obj)
                     data_list.append(serializer.data)
                     cart.grand_total += obj.total_amount
 
