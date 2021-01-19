@@ -1,2 +1,3 @@
 zohaib/
 venv/
+*/__pycache__/*

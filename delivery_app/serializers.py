@@ -13,3 +13,9 @@ class VehicleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
         fields = "__all__"
+
+
+class ConsolidatedPurchaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConsolidatedPurchase
+        fields = "__all__"

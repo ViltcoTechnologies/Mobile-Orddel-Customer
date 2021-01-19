@@ -17,8 +17,8 @@ class AdminUser(models.Model):
     username = models.CharField(max_length=100)
     email = models.EmailField(max_length=300)
     phone_number = models.CharField(max_length=50)
-    address = models.CharField(max_length=200)
-    gender = models.CharField(max_length=300, choices=gender_choices)
+    address = models.CharField(max_length=200, null=True, blank=True)
+    gender = models.CharField(max_length=300, choices=gender_choices, null=True, blank=True)
     image = models.ImageField(upload_to=f"delivery_person/photos/{user}", null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True, null=True, blank=True)
 

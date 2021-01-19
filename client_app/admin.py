@@ -43,5 +43,10 @@ class PackageAdmin(admin.ModelAdmin):
 admin.site.register(Package, PackageAdmin)
 
 
+class ClientPackageLogAdmin(admin.ModelAdmin):
+    list_display = ('id', 'client', 'package', 'date_activated', 'status')
+    list_display_links = ('id', 'client', 'package')
 
+
+admin.site.register(ClientPackageLogs, ClientPackageLogAdmin)
 

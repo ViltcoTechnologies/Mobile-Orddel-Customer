@@ -8,8 +8,17 @@ CURRENCY_CHOICES = [(currency, currency) for currency in list_currencies()]
 
 unit_choices = (
     ('dozen', 'Dozen'),
-    ('weight', 'Weight'),
-    ('no', 'No')
+    ('mg', 'MG'),
+    ('g', 'G'),
+    ('lb', 'Pound(lb)'),
+    ('kg', 'KG'),
+    ('mm', 'MM'),
+    ('m', 'M'),
+    ('inch', 'Inch'),
+    ('ft', 'FT'),
+    ('ml', 'ML'),
+    ('l', 'L'),
+    ('item', 'Item')
 )
 
 
@@ -42,6 +51,7 @@ class Product(models.Model):
     is_available = models.BooleanField(default=True)
     unit = models.CharField(max_length=300, choices=unit_choices)
     avg_price = models.FloatField(default=0.0)
+    discount = models.IntegerField(default=0)
     currency = models.CharField(max_length=100, choices=CURRENCY_CHOICES)
 
     def __str__(self):

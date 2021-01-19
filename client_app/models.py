@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from . import *
 
 
 # Choices menu
@@ -10,6 +11,17 @@ gender_choices = (
     ('other', 'Other')
 
     )
+
+package_activation_choices = (
+    ('inactive', 'Inactive'),
+    ('active', 'Active')
+
+)
+
+# package_type_choices = (
+#     ('client', 'Client'),
+#     ('delivery', 'Delivery')
+# )
 
 # business_choices = (
 #     ('shop', 'Shop'),
@@ -31,15 +43,15 @@ gender_choices = (
 class Package(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(max_length=500, null=True, blank=True)
+    no_of_invoices = models.IntegerField(default=10)
     price = models.CharField(max_length=200, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
+
 # Client registered
-
-
 class Client(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     package = models.ForeignKey(Package, on_delete=models.SET_NULL, null=True, blank=True)
@@ -54,10 +66,21 @@ class Client(models.Model):
     image = models.ImageField(upload_to=f"clients/photos/{user}/", null=True, blank=True)
     number_of_order = models.IntegerField(default=0)
     total_amount_shopped = models.IntegerField(default=0)
+    no_of_invoices = models.IntegerField(default=0)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.username
+
+
+class ClientPackageLogs(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    package = models.ForeignKey(Package, on_delete=models.SET_NULL, null=True, blank=True)
+    date_activated = models.DateField(auto_now=True)
+    status = models.CharField(max_length=100, choices=package_activation_choices)
+
+    def __str__(self):
+        return self.id
 
 
 # Client can have multiple businesses

@@ -19,12 +19,12 @@ class DeliveryPerson(models.Model):
     username = models.CharField(max_length=100)
     email = models.EmailField(max_length=300)
     phone_number = models.CharField(max_length=50)
-    address = models.CharField(max_length=200)
-    current_location = models.CharField(max_length=100)
-    no_of_orders = models.IntegerField(default=0)
+    address = models.CharField(max_length=200, blank=True, null=True)
+    current_location = models.CharField(max_length=100, blank=True, null=True)
+    no_of_orders = models.IntegerField(default=0, blank=True, null=True)
     buying_capacity = models.IntegerField(default=0, blank=True, null=True)
     total_amount_shopped = models.IntegerField(default=0, blank=True, null=True)
-    gender = models.CharField(max_length=300, choices=gender_choices)
+    gender = models.CharField(max_length=300, choices=gender_choices, blank=True, null=True)
     image = models.ImageField(upload_to=f"delivery_person/photos/{user}/", null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True, null=True, blank=True)
 
@@ -49,5 +49,13 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+
+class ConsolidatedPurchase(models.Model):
+    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    quantity = models.IntegerField()
+    cost_per_unit = models.IntegerField()
+    purchased_from = models.CharField(max_length=300)
 
 
