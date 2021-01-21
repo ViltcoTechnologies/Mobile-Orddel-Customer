@@ -18,7 +18,8 @@ unit_choices = (
     ('ft', 'FT'),
     ('ml', 'ML'),
     ('l', 'L'),
-    ('item', 'Item')
+    ('item', 'Item'),
+    ('box', 'Box')
 )
 
 
