@@ -202,7 +202,7 @@ class DeleteAdminUserApiView(APIView):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-
+# Home screen - Dashboard resources
 class AdminDashboardApiView(APIView):
 
     def get(self, request):
@@ -221,4 +221,3 @@ class AdminDashboardApiView(APIView):
         # Get delivery_persons
         delivery_person_data = DeliveryPerson.objects.all().count()
         print(delivery_person_data)
-

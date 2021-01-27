@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from rest_framework import status, generics, permissions
+from rest_framework_simplejwt import authentication
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.response import Response
@@ -6,6 +8,7 @@ from rest_framework import status
 from .models import *
 from .serializers import *
 from django_email_verification import sendConfirm
+from ordel.verificaton import TwilioVerification
 
 
 # Delivery Person Registration API
@@ -39,9 +42,9 @@ class RegisterDeliveryPersonApiView(APIView):
                                          "be empty: (first_name, last_name, email, "
                                          "phone_number, password)")
                 try:
-                    saved_data = User.objects.get(email=email)
-                    return Response(status=status.HTTP_200_OK,
-                                    data="Email already registered!")
+                    saved_data = DeliveryPerson.objects.get(phone_number=phone_number)
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data="Phone Number already registered!")
                 except:
                     try:
                         new_auth_user = User.objects.create_user(
@@ -68,6 +71,8 @@ class RegisterDeliveryPersonApiView(APIView):
                             new_delivery_person.save()
                             serializer = DeliveryPersonSerializer(new_delivery_person)
                             new_auth_user.save()
+                            twilio_verification = TwilioVerification(str(phone_number))
+                            twilio_verification.send_otp()
                             return Response(status=status.HTTP_200_OK,
                                             data={"delivery_person_created": serializer.data})
                         except:
@@ -77,7 +82,7 @@ class RegisterDeliveryPersonApiView(APIView):
                                                  "deleting auth-user entry")
                     except:
                         return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data="Error entering Auth-User Data")
+                                        data="Email already registered")
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data="Error! Make sure you're not missing one of the "
@@ -101,7 +106,7 @@ class ListDeliveryPersonApiView(APIView):
                 delivery_person = DeliveryPerson.objects.get(id=id)
                 serializer = DeliveryPersonSerializer(delivery_person)
                 return Response(status=status.HTTP_200_OK,
-                                data={"delivery_persons": serializer.data})
+                                data={"delivery_person": serializer.data})
             except:
                 return Response(status=status.HTTP_200_OK,
                                 data=f"No record found against ID '{id}'!")
@@ -109,7 +114,7 @@ class ListDeliveryPersonApiView(APIView):
             try:
                 delivery_person = DeliveryPerson.objects.all()
                 serializer = DeliveryPersonSerializer(delivery_person, many=True)
-                if not admin_user:
+                if not delivery_person:
                     return Response(status=status.HTTP_200_OK,
                                     data={"Delivery Person table is empty": serializer.data})
                 return Response(status=status.HTTP_200_OK,
@@ -120,6 +125,8 @@ class ListDeliveryPersonApiView(APIView):
 
 # Delivery Person Update API
 class UpdateDeliveryPersonApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    authentication_classes = (authentication.JWTAuthentication,)
 
     def get(self, request):
         return Response(status=status.HTTP_200_OK)
@@ -127,13 +134,17 @@ class UpdateDeliveryPersonApiView(APIView):
     def put(self, request, id=None):
         try:
             # optional parameters
-            buying_capacity = request.data['buying_capacity']
-            address = request.data['address']
-            gender = request.data['gender']
-            image = request.data['image']
-            phone_number = request.data['phone_number']
             first_name = request.data['first_name']
             last_name = request.data['last_name']
+            phone_number = request.data['phone_number']
+            address = request.data['address']
+            current_location = request.data['current_location']
+            no_of_orders = request.data['no_of_orders']
+            buying_capacity = request.data['buying_capacity']
+            total_amount_shopped = request.data['total_amount_shopped']
+            gender = request.data['gender']
+            image = request.data['image']
+            approval_status = request.data['approval_status']
             try:
                 # required parameters
                 email = request.data['email']
@@ -150,10 +161,14 @@ class UpdateDeliveryPersonApiView(APIView):
                             first_name=first_name,
                             last_name=last_name,
                             phone_number=phone_number,
-                            buying_capacity=buying_capacity,
                             address=address,
+                            current_location=current_location,
+                            no_of_orders=no_of_orders,
+                            buying_capacity=buying_capacity,
+                            total_amount_shopped=total_amount_shopped,
                             gender=gender,
-                            image=image
+                            image=image,
+                            approval_status=approval_status
                         )
                         try:
                             saved_delivery_person.user.first_name = first_name
@@ -179,7 +194,8 @@ class UpdateDeliveryPersonApiView(APIView):
                             data="Oops! Make sure following fields are not missing "
                                  "(first_name, last_name, phone_number, buying_capacity "
                                  "address, gender, image) Note: If you want to "
-                                 "leave fields blank, then send null or empty")
+                                 "leave fields blank, then send null or empty"
+                                 "and for approval_status send either 'True' or 'False'")
 
 
 # Delivery Person Delete API
@@ -192,7 +208,10 @@ class DeleteDeliveryPersonApiView(APIView):
         if id:
             try:
                 saved_data = DeliveryPerson.objects.get(id=id)
+                phone_number = saved_data.phone_number
                 User.objects.get(id=saved_data.user.id).delete()
+                twilio_verification = TwilioVerification(str(phone_number))
+                twilio_verification.update_status()
                 return Response(status=status.HTTP_200_OK,
                                 data={'Record deleted against email': saved_data.username})
             except:

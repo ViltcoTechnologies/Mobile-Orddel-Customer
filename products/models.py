@@ -18,12 +18,13 @@ unit_choices = (
     ('ft', 'FT'),
     ('ml', 'ML'),
     ('l', 'L'),
-    ('item', 'Item')
+    ('item', 'Item'),
+    ('box', 'Box')
 )
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=300, null=True, blank=True)
+    name = models.CharField(max_length=300)
     description = models.TextField(max_length=50000, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
 
