@@ -14,6 +14,7 @@ gender_choices = (
 # Delivery Person registration model
 class DeliveryPerson(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    package = models.ForeignKey(Package, on_delete=models.SET_NULL, null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     username = models.CharField(max_length=100)
@@ -26,7 +27,9 @@ class DeliveryPerson(models.Model):
     total_amount_shopped = models.IntegerField(default=0, blank=True, null=True)
     gender = models.CharField(max_length=300, choices=gender_choices, blank=True, null=True)
     image = models.ImageField(upload_to=f"delivery_person/photos/{user}/", null=True, blank=True)
+    no_of_invoices = models.IntegerField(default=0)
     date_created = models.DateTimeField(auto_now=True, null=True, blank=True)
+    admin_approval_status = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.username)

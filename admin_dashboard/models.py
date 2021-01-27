@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from client_app.models import Client
+from delivery_app.models import DeliveryPerson
 
 # Create your models here.
 

@@ -5,6 +5,7 @@ from client_app.models import *
 from order.models import *
 from delivery_app.models import *
 
+
 class Invoice(models.Model):
     payment_by = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.ForeignKey(OrderDetail, on_delete=models.SET_NULL, null=True, blank=True)

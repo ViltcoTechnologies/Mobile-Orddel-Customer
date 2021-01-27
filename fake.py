@@ -55,23 +55,22 @@ def populate(n):
             new_auth_user.first_name = fake.first_name()
             new_auth_user.last_name = fake.last_name()
 
-            package_instance = Package.objects.get(id=package_id)
+            # package_instance = Package.objects.get(id=package_id)
 
             # Entering record in the Client Table
             new_client = Client.objects.create(
                 user=new_auth_user,
-                package=package_instance,
                 first_name=first_name,
                 last_name=last_name,
                 username=username,
                 email=email,
-                phone_number=phone_number,
-                address=address,
-                current_location=current_location,
-                number_of_order=no_of_orders,
-                total_amount_shopped=total_amount_shopped,
-                gender=gender,
-                image=image
+                phone_number=fake.phone_number(),
+                address=profile['address'],
+                current_location=profile['current_location'],
+                number_of_order=random.randint(0, 1000),
+                total_amount_shopped=random.randint(0, 1000000),
+                gender=random.choice(genders),
+                image='https://cdn.artandlogic.com/wp-content/uploads/django.jpeg'
             )
             new_auth_user.save()
             new_client.save()
