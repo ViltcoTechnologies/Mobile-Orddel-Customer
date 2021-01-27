@@ -67,6 +67,9 @@ class Client(models.Model):
     number_of_order = models.IntegerField(default=0)
     total_amount_shopped = models.IntegerField(default=0)
     no_of_invoices = models.IntegerField(default=0)
+    email_status = models.BooleanField(default=False)
+    otp_status = models.BooleanField(default=False)
+    approval_status = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -102,9 +105,13 @@ class ShipmentAddress(models.Model):
     shipment_address = models.CharField(max_length=200)
     date_created = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.shipment_address
+
+
 # Client can have multiple bank accounts
 class BankDetails(models.Model):
-    client = models.ForeignKey(Client, on_delete = models.SET_NULL, null=True, blank=True)
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
     bank_name = models.CharField(max_length=100, null=True, blank=True)
     branch_code = models.CharField(max_length=100, null=True, blank=True)
     credit_card_no = models.CharField(max_length=150, null=True, blank=True)
@@ -112,4 +119,5 @@ class BankDetails(models.Model):
     credit_card_expiry = models.DateField(auto_now=False, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
 
-
+    def __str__(self):
+        return self.bank_name

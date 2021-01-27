@@ -82,15 +82,15 @@ class DeleteClientApiView(APIView):
 
     def delete(self,  request, id = None):
         if id:
-            # try:
-            client = Client.objects.get(id = id)
-            user = User.objects.get(id = client.user.id)
-            # print(client.user__id)
-            username = user.username
-            user.delete()
-            return Response(status=status.HTTP_200_OK, data={"Deleted record against username": username})
-            # except Exception as e:
-            #     return Response(status = status.HTTP_400_BAD_REQUEST, data={"Exception" : e})
+            try:
+                client = Client.objects.get(id = id)
+                user = User.objects.get(id = client.user.id)
+                # print(client.user__id)
+                username = user.username
+                user.delete()
+                return Response(status=status.HTTP_200_OK, data={"Deleted record against username": username})
+            except Exception as e:
+                return Response(status = status.HTTP_400_BAD_REQUEST, data={"Exception" : e})
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"Error Msg" : "ID missing from URL"})
 

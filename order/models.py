@@ -21,7 +21,8 @@ order_status_choices = (
 
 class Cart(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
-    grand_total = models.FloatField(default=0.0)
+    date_created = models.DateTimeField(auto_now=True)
+    # grand_total = models.FloatField(default=0.0)
 
     def __str__(self):
         return str(self.id)
@@ -32,6 +33,7 @@ class CartProducts(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     total_amount = models.FloatField(default=0.0)
+    date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.id)
@@ -39,12 +41,12 @@ class CartProducts(models.Model):
 
 class OrderDetail(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True, blank=True)
-    cart_products = models.ForeignKey(CartProducts, on_delete=models.SET_NULL, null=True, blank=True)
+    # cart_products = models.ManyToManyField(CartProducts)
     purchase_order_no = models.CharField(max_length=100) # Unique Purchase Order Number assigned to client on every order
     order_title = models.CharField(max_length=100, null=True, blank=True)
     delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
     order_created_datetime = models.DateTimeField(auto_now=True)
-    order_delivery_datetime= models.DateTimeField(auto_now=False)
+    order_delivery_datetime = models.DateTimeField(auto_now=False)
     shipment_address = models.ForeignKey(ShipmentAddress, on_delete=models.SET_NULL, null=True, blank=True)
     delivery_notes = models.TextField(max_length=1000, null=True, blank=True)
     comment = models.TextField(max_length=500, null=True, blank=True)

@@ -3,7 +3,7 @@ from .models import *
 
 
 class CartAdmin(admin.ModelAdmin):
-    list_display = ('id', 'client', 'grand_total')
+    list_display = ('id', 'client')
     list_display_links = ('client',)
 
 
@@ -19,7 +19,7 @@ admin.site.register(CartProducts, CartProductsAdmin)
 
 
 class OrderDetailAdmin(admin.ModelAdmin):
-    list_display = ('id', 'cart', 'cart_products', 'purchase_order_no', 'order_title', 'delivery_person', 'order_created_datetime',
+    list_display = ('id', 'cart', 'purchase_order_no', 'order_title', 'delivery_person', 'order_created_datetime',
                     'order_delivery_datetime', 'shipment_address', 'delivery_notes', 'comment', 'distance', 'total_units_ordered',
                     'status', 'payment_type'
 
