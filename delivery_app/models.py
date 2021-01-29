@@ -14,7 +14,7 @@ gender_choices = (
 # Delivery Person registration model
 class DeliveryPerson(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    package = models.ForeignKey(Package, on_delete=models.SET_NULL, null=True, blank=True)
+    # package = models.ForeignKey(Package, on_delete=models.SET_NULL, null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     username = models.CharField(max_length=100)

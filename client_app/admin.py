@@ -11,36 +11,36 @@ class ClientUserAdmin(admin.ModelAdmin):
 admin.site.register(Client, ClientUserAdmin)
 
 
-class BusinessDetailAdmin(admin.ModelAdmin):
+class ClientBusinessDetailAdmin(admin.ModelAdmin):
     list_display = ('id', 'client', 'name', 'nature', 'type', 'logo', 'date_created')
     list_display_links = ('name', 'nature', 'type')
 
 
-admin.site.register(BusinessDetail, BusinessDetailAdmin)
+admin.site.register(ClientBusinessDetail, ClientBusinessDetailAdmin)
 
 
-class ShipmentAdmin(admin.ModelAdmin):
+class ClientShipmentAdmin(admin.ModelAdmin):
     list_display = ('id', 'client', 'shipment_address', 'date_created')
     list_display_links = ('client', 'date_created')
 
 
-admin.site.register(ShipmentAddress, ShipmentAdmin)
+admin.site.register(ClientShipmentAddress, ClientShipmentAdmin)
 
 
-class BankDetailsAdmin(admin.ModelAdmin):
+class ClientBankDetailAdmin(admin.ModelAdmin):
     list_display = ('id', 'client', 'bank_name', 'branch_code', 'date_created')
     list_display_links = ('id', 'bank_name')
 
 
-admin.site.register(BankDetails, BankDetailsAdmin)
+admin.site.register(ClientBankDetail, ClientBankDetailAdmin)
 
 
-class PackageAdmin(admin.ModelAdmin):
+class ClientPackageAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'description', 'price', 'date_created')
     list_display_links = ('id', 'name')
 
 
-admin.site.register(Package, PackageAdmin)
+admin.site.register(ClientPackage, ClientPackageAdmin)
 
 
 class ClientPackageLogAdmin(admin.ModelAdmin):
@@ -48,5 +48,5 @@ class ClientPackageLogAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'client', 'package')
 
 
-admin.site.register(ClientPackageLogs, ClientPackageLogAdmin)
+admin.site.register(ClientPackageLog, ClientPackageLogAdmin)
 

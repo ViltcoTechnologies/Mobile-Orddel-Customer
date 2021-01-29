@@ -18,6 +18,12 @@ order_status_choices = (
 
 )
 
+cart_staging_choices = (
+    ('staged', 'Staged'),
+    ('unstaged', 'Unstaged')
+
+)
+
 
 class Cart(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
@@ -39,6 +45,7 @@ class CartProducts(models.Model):
         return str(self.id)
 
 
+
 class OrderDetail(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True, blank=True)
     # cart_products = models.ManyToManyField(CartProducts)
@@ -47,7 +54,7 @@ class OrderDetail(models.Model):
     delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
     order_created_datetime = models.DateTimeField(auto_now=True)
     order_delivery_datetime = models.DateTimeField(auto_now=False)
-    shipment_address = models.ForeignKey(ShipmentAddress, on_delete=models.SET_NULL, null=True, blank=True)
+    shipment_address = models.ForeignKey(ClientShipmentAddress, on_delete=models.SET_NULL, null=True, blank=True)
     delivery_notes = models.TextField(max_length=1000, null=True, blank=True)
     comment = models.TextField(max_length=500, null=True, blank=True)
     distance = models.CharField(max_length=100, null=True, blank=True)
