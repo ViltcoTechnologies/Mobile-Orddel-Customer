@@ -11,23 +11,23 @@ class ClientSerializer(serializers.ModelSerializer):
 
 class BusinessDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BusinessDetail
+        model = ClientBusinessDetail
         fields = "__all__"
 
 
 class ShipmentAddressSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ShipmentAddress
+        model = ClientShipmentAddress
         fields = "__all__"
 
 
 class BankDetailsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BankDetails
+        model = ClientBankDetail
         fields = "__all__"
 
 
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Package
+        model = ClientPackage
         fields = "__all__"

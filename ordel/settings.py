@@ -208,20 +208,24 @@ EMAIL_MAIL_HTML = EMAIL_TEMPLATE_PATH
 EMAIL_PAGE_TEMPLATE = EMAIL_SUCCESS_TEMPLATE
 EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000'
 
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
 
 # Reset password SMTP configuration
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'leadarc123@gmail.com'
-# EMAIL_HOST_PASSWORD = '9WiPy98qhUPBvFL'
-
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'leadarc123@gmail.com'
+EMAIL_HOST_PASSWORD = '9WiPy98qhUPBvFL'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 
 STATIC_URL = os.path.join(BASE_DIR, 'static/')
 STATIC_ROOT = STATIC_URL
 
-
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+# Twilio Account
+TWILIO_ACCOUNT_SID="AC68016ee6409197841ef818937d8e5432"
+TWILIO_AUTH_TOKEN="7cb2d7fa3d8d36fbee7b67aa49492d7e"
+SERVICE_SID="VA128b1ebf99c803485cc3a3e266a34809"
