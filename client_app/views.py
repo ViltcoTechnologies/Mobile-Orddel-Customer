@@ -7,8 +7,9 @@ from rest_framework.response import Response
 from .models import *
 from .serializers import *
 import json
-# CRUD operations of client
 
+
+# CRUD operations of client
 class ClientRegisterApiView(APIView):
 
     def post(self, request, id=None):
@@ -46,7 +47,8 @@ class ClientRegisterApiView(APIView):
                     data_to_pass = Client.objects.get(
                         username=saved_data.username)
                     serializer = ClientSerializer(data_to_pass)
-                    return Response(status=status.HTTP_200_OK, data={"local_account_data": serializer.data})
+                    return Response(status=status.HTTP_200_OK,
+                                    data={"local_account_data": serializer.data})
                 except AssertionError as err:
                     return Response(status=status.HTTP_200_OK, data=err)
             except AssertionError as err:
@@ -110,7 +112,6 @@ class ListClientsApiView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND, data={"No Clients Found"})
 
 
-
 # CRUD operations of Business Detail
 class BusinessDetailInsertApiView(APIView):
 
@@ -159,7 +160,6 @@ class ListBusinessDetailsApiView(APIView):
         return Response(status=status.HTTP_200_OK, data={"business_details": data_to_pass.data})
 
 
-
 class ListClientBusinessDetailsApiView(APIView):
 
     def get(self, request, id = None):
@@ -171,7 +171,6 @@ class ListClientBusinessDetailsApiView(APIView):
 
             except Exception as e:
                 return Response(status = status.HTTP_404_NOT_FOUND, data={'Error' : 'client not found'})
-
 
 
 class UpdateBusinessApiView(APIView):
@@ -198,6 +197,7 @@ class UpdateBusinessApiView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception": e})
 
+
 class DeleteBusinessApiView(APIView):
 
     def delete(self, request, id = None):
@@ -211,7 +211,6 @@ class DeleteBusinessApiView(APIView):
 
 
 # CRUD of Shipment Address
-
 class ShipmentAddressCreateApiView(APIView):
 
     def post(self, request, id = None):
@@ -280,6 +279,7 @@ class UpdateShipmentAddressApiView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception": e})
 
+
 class DeleteShipmentAddressApiView(APIView):
 
     def delete(self, request, id = None):
@@ -344,6 +344,7 @@ class BankDetailsUpdateApiView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception": e})
 
+
 class ListBankDetailsApiView(APIView):
     def get(self, request, id=None):
             if id:
@@ -362,6 +363,7 @@ class ListBankDetailsApiView(APIView):
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'Error': e})
 
             return Response(status=status.HTTP_200_OK, data={"bank_details": data_to_pass.data})
+
 
 class ListClientBankDetailsApiView(APIView):
 
@@ -403,7 +405,6 @@ class PackageCreateApiView(APIView):
                 description = request.data['description']
                 price = request.data['price']
 
-
                 package_record = Package.objects.create(
                     name=name,
                     description=description,
@@ -428,7 +429,6 @@ class PackageUpdateApiView(APIView):
                 name = request.data['name']
                 description = request.data['description']
                 price = request.data['price']
-
 
                 package_detail = Package.objects.filter(id=package_id).update(
                     name=name,

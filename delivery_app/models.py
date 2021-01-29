@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from products.models import *
 
-# Create your models here.
 
 gender_choices = (
     ('male', 'Male'),
@@ -10,11 +9,28 @@ gender_choices = (
     ('other', 'Other')
 )
 
+admin_approval_choices = (
+    ('pending', 'Pending'),
+    ('approved', 'Approved'),
+    ('unapproved', 'Unapproved')
+)
+
+
+class DeliveryPersonPackage(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.TextField(max_length=500, null=True, blank=True)
+    no_of_invoices = models.IntegerField(default=10)
+    price = models.CharField(max_length=200, null=True, blank=True)
+    date_created = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
 
 # Delivery Person registration model
 class DeliveryPerson(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    package = models.ForeignKey(Package, on_delete=models.SET_NULL, null=True, blank=True)
+    package = models.ForeignKey(DeliveryPersonPackage, on_delete=models.SET_NULL, null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     username = models.CharField(max_length=100)
@@ -29,10 +45,48 @@ class DeliveryPerson(models.Model):
     image = models.ImageField(upload_to=f"delivery_person/photos/{user}/", null=True, blank=True)
     no_of_invoices = models.IntegerField(default=0)
     date_created = models.DateTimeField(auto_now=True, null=True, blank=True)
-    admin_approval_status = models.BooleanField(default=False)
+    otp_status = models.BooleanField(default=False)
+    admin_approval_status = models.CharField(max_length=300, choices=admin_approval_choices)
 
     def __str__(self):
         return str(self.username)
+
+
+class DeliveryPersonPackageLog(models.Model):
+    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.CASCADE)
+    package = models.ForeignKey(DeliveryPersonPackage, on_delete=models.SET_NULL, null=True, blank=True)
+    date_activated = models.DateField(auto_now=True)
+    status = models.CharField(max_length=100, choices=package_activation_choices)
+
+    def __str__(self):
+        return self.id
+
+
+# Client can have multiple businesses
+class DeliveryPersonBusinessDetail(models.Model):
+    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    nature = models.CharField(max_length=100, null=True, blank=True)
+    type = models.CharField(max_length=100, null=True, blank=True)
+    logo = models.ImageField(upload_to=f"business/logo/{name}/", null=True)
+    date_created = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+# Client can have multiple bank accounts
+class DeliveryPersonBankDetail(models.Model):
+    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.CASCADE, null=True, blank=True)
+    bank_name = models.CharField(max_length=100, null=True, blank=True)
+    branch_code = models.CharField(max_length=100, null=True, blank=True)
+    credit_card_no = models.CharField(max_length=150, null=True, blank=True)
+    sort_code = models.CharField(max_length=10, null=True, blank=True)
+    credit_card_expiry = models.DateField(auto_now=False, null=True, blank=True)
+    date_created = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.bank_name
 
 
 # Vehicle registration model
@@ -55,10 +109,9 @@ class Vehicle(models.Model):
 
 
 class ConsolidatedPurchase(models.Model):
-    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True)
+    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    quantity = models.IntegerField()
-    cost_per_unit = models.IntegerField()
-    purchased_from = models.CharField(max_length=300)
-
-
+    quantity = models.IntegerField(null=True, blank=True)
+    cost_per_unit = models.IntegerField(null=True, blank=True)
+    purchased_from = models.CharField(max_length=300, null=True, blank=True)
+    date_created = models.DateTimeField(auto_now=True)

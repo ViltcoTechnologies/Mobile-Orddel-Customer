@@ -24,6 +24,7 @@ class RegisterDeliveryPersonApiView(APIView):
             address = request.data['address']
             gender = request.data['gender']
             image = request.data['image']
+            current_location = request.data['current_location']
             try:
                 # required parameters
                 first_name = request.data['first_name']
@@ -62,6 +63,7 @@ class RegisterDeliveryPersonApiView(APIView):
                                 last_name=last_name,
                                 username=username,
                                 email=email,
+                                current_location=current_location,
                                 buying_capacity=buying_capacity,
                                 phone_number=phone_number,
                                 address=address,
@@ -73,6 +75,8 @@ class RegisterDeliveryPersonApiView(APIView):
                             new_auth_user.save()
                             twilio_verification = TwilioVerification(str(phone_number))
                             twilio_verification.send_otp()
+
+                            print("Data Saved: ", new_delivery_person)
                             return Response(status=status.HTTP_200_OK,
                                             data={"delivery_person_created": serializer.data})
                         except:
@@ -92,7 +96,8 @@ class RegisterDeliveryPersonApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data="Error! Make sure you're not missing one "
                                  "of the following optional fields: "
-                                 "(buying_capacity, address, gender, image) "
+                                 "(buying_capacity, address, gender,"
+                                 "current_location, image) "
                                  "Note: If you want to leave fields blank, then "
                                  "send null or empty")
 
@@ -351,3 +356,351 @@ class DeleteVehicleApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"Error Msg": "ID missing from URL"})
 
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+
+# CRUD operations of Business Detail
+class BusinessDetailInsertApiView(APIView):
+
+    def post(self, request):
+        try:
+            username = request.data['username']
+            business_name = request.data['business_name']
+            business_nature = request.data['business_nature']
+            business_type = request.data['business_type']
+            business_logo = request.data['business_logo']
+
+            delivery_person = DeliveryPerson.objects.get(username=username)
+            business_detail = DeliveryPersonBusinessDetail.objects.create(
+                delivery_person=delivery_person,
+                name=business_name,
+                nature=business_nature,
+                type=business_type,
+                logo=business_logo
+            )
+            bd = DeliveryPersonBusinessDetail.objects\
+                .filter(id=business_detail.id, delivery_person=delivery_person)
+            data_to_pass = DeliveryPersonBusinessDetailSerializer(bd, many=True)
+            return Response(status=status.HTTP_200_OK,
+                            data={"business_details": data_to_pass.data[0]})
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"Exception": e})
+
+
+class ListBusinessDetailsApiView(APIView):
+
+    def get(self, request):
+        if id:
+            try:
+                business_detail = DeliveryPersonBusinessDetail.objects.get(id=id)
+                data_to_pass = DeliveryPersonBusinessDetailSerializer(business_detail)
+
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={'Error': e})
+
+        else:
+            try:
+                business_detail = DeliveryPersonBusinessDetail.objects.all()
+                data_to_pass = DeliveryPersonBusinessDetailSerializer(business_detail, many=True)
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={'Error': e})
+
+        return Response(status=status.HTTP_200_OK,
+                        data={"business_details": data_to_pass.data})
+
+
+class ListClientBusinessDetailsApiView(APIView):
+
+    def get(self, request, id = None):
+        if id:
+            try:
+                business_detail = DeliveryPersonBusinessDetail.objects.get(delivery_person__id=id)
+                data_to_pass = DeliveryPersonBusinessDetailSerializer(business_detail)
+                return Response(status=status.HTTP_200_OK,
+                                data={"delivery_person_businesses": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data={'Error' : 'delivery_person not found'})
+
+
+class UpdateBusinessApiView(APIView):
+
+    def put(self, request):
+        try:
+            business_id = request.data['id']
+            business_name = request.data['business_name']
+            business_nature = request.data['business_nature']
+            business_type = request.data['business_type']
+            business_logo = request.data['business_logo']
+
+            business_detail = DeliveryPersonBusinessDetail.objects.filter(id=business_id).update(
+                name=business_name,
+                nature=business_nature,
+                type=business_type,
+                logo=business_logo
+            )
+            print("Business Detail id :", business_detail)
+            bd = DeliveryPersonBusinessDetail.objects.get(id=business_id)
+            data_to_pass = DeliveryPersonBusinessDetailSerializer(bd)
+            return Response(status=status.HTTP_200_OK,
+                            data={"updated_business_details": data_to_pass.data})
+
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"Exception": e})
+
+
+class DeleteBusinessApiView(APIView):
+
+    def delete(self, request, id=None):
+        if id:
+            try:
+                business = DeliveryPersonBusinessDetail.objects.get(id=id).delete()
+                name = business.name
+                return Response(status=status.HTTP_200_OK,
+                                data={"business_delete": name})
+
+            except Exception as e:
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data={"error": "record not found against the given id"})
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+
+class BankDetailsCreateApiView(APIView):
+
+    def post(self, request):
+        try:
+            delivery_person_id = request.data['delivery_person']
+            bank_name = request.data['bank_name']
+            branch_code = request.data['branch_code']
+            credit_card_no = request.data['credit_card_no']
+            sort_code = request.data['sort_code']
+            credit_card_expiry = request.data['credit_card_expiry']
+
+            delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
+            bank_record = DeliveryPersonBankDetail.objects.create(
+                delivery_person=delivery_person,
+                bank_name=bank_name,
+                branch_code=branch_code,
+                credit_card_no=credit_card_no,
+                sort_code=sort_code,
+                credit_card_expiry=credit_card_expiry
+            )
+            data_to_pass = DeliveryPersonBankDetailSerializer(bank_record)
+            return Response(status=status.HTTP_200_OK,
+                            data={"bank_details_created": data_to_pass.data})
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"Exception" : e})
+
+
+class BankDetailsUpdateApiView(APIView):
+
+    def put(self, request):
+        try:
+            bank_detail_id = request.data['id']
+            bank_name = request.data['bank_name']
+            branch_code = request.data['branch_code']
+            credit_card_no = request.data['credit_card_no']
+            sort_code = request.data['sort_code']
+            credit_card_expiry = request.data['credit_card_expiry']
+
+            bank_detail = DeliveryPersonBankDetail.objects.filter(id=bank_detail_id).update(
+                bank_name=bank_name,
+                branch_code=branch_code,
+                credit_card_no=credit_card_no,
+                sort_code=sort_code,
+                credit_card_expiry=credit_card_expiry
+            )
+            print("Bank Detail id :", bank_detail)
+            bd = DeliveryPersonBankDetail.objects.get(id=bank_detail_id)
+            data_to_pass = BankDetailsSerializer(bd)
+            return Response(status=status.HTTP_200_OK,
+                            data={"updated_business_details": data_to_pass.data})
+
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"Exception": e})
+
+
+class ListBankDetailsApiView(APIView):
+    def get(self, request, id=None):
+            if id:
+                try:
+                    bank_detail = DeliveryPersonBankDetail.objects.get(id=id)
+                    data_to_pass = DeliveryPersonBankDetailSerializer(bank_detail)
+
+                except Exception as e:
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data={'Error': e})
+
+            else:
+                try:
+                    bank_details = DeliveryPersonBankDetail.objects.all()
+                    data_to_pass = DeliveryPersonBankDetailSerializer(bank_details, many=True)
+                except Exception as e:
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data={'Error': e})
+
+            return Response(status=status.HTTP_200_OK,
+                            data={"bank_details": data_to_pass.data})
+
+
+class ListClientBankDetailsApiView(APIView):
+
+    def get(self, request):
+        if id:
+            try:
+                bank_details = DeliveryPersonBankDetail.objects.filter(delivery_person__id=id)
+                data_to_pass = DeliveryPersonBankDetailSerializer(bank_details, many=True)
+                return Response(status=status.HTTP_200_OK,
+                                data={"bank_details": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data={'Error': 'Delivery Person not found'})
+
+
+class DeleteBankDetailsApiView(APIView):
+
+    def delete(self, request, id=None):
+        if id:
+            try:
+                bank_rec = DeliveryPersonBankDetail.objects.get(id=id)
+                bank_name = bank_rec.bank_name
+                bank_rec.delete()
+                return Response(status=status.HTTP_200_OK,
+                                data={"record_deleted": bank_name})
+
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"Error": "Unable to delete record"})
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+
+class PackageCreateApiView(APIView):
+
+    def post(self, request):
+        name = request.data['name']
+        try:
+            package = DeliveryPersonPackage.objects.get(name=name)
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"error": f"{name} record already exists"})
+        except:
+            try:
+                description = request.data['description']
+                price = request.data['price']
+                package_record = DeliveryPersonPackage.objects.create(
+                    name=name,
+                    description=description,
+                    price=price
+                )
+                data_to_pass = DeliveryPersonPackageSerializer(package_record)
+                return Response(status=status.HTTP_200_OK,
+                                data={"package_created": data_to_pass.data})
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"Exception": e})
+
+
+class PackageUpdateApiView(APIView):
+
+    def put(self, request):
+        try:
+            name = request.data['name']
+            package = DeliveryPersonPackage.objects.get(name=name)
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"error": f"{package.name} record already exists"})
+        except:
+            try:
+                package_id = request.data['id']
+                name = request.data['name']
+                description = request.data['description']
+                price = request.data['price']
+
+                package_detail = DeliveryPersonPackage.objects.filter(id=package_id).update(
+                    name=name,
+                    description=description,
+                    price=price,
+                )
+                print("Package ID :", package_detail)
+                bd = DeliveryPersonPackage.objects.get(id=package_id)
+                data_to_pass = DeliveryPersonPackageSerializer(bd)
+                return Response(status=status.HTTP_200_OK,
+                                data={"updated_package": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"Exception": e})
+
+
+class ListPackagesApiView(APIView):
+
+    def get(self, request):
+        if id:
+            try:
+                package = DeliveryPersonPackage.objects.filter(id=id)
+                data_to_pass = DeliveryPersonPackageSerializer(package, many=True)
+                return Response(status=status.HTTP_200_OK,
+                                data={"package_details": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data={'Error': 'package not found'})
+        else:
+            try:
+                package = DeliveryPersonPackage.objects.all()
+                data_to_pass = DeliveryPersonPackageSerializer(package, many=True)
+                return Response(status=status.HTTP_200_OK,
+                                data={"all_package": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data={'Error': 'package not found'})
+
+
+class ListClientPackagesApiView(APIView):
+
+    def get(self, request):
+        if id:
+            try:
+                delivery_person_in_package = DeliveryPerson.objects.filter(package__id=id)
+                data_to_pass = DeliveryPersonSerializer(delivery_person_in_package, many=True)
+                return Response(status=status.HTTP_200_OK,
+                                data={"delivery_person_in_package": data_to_pass.data})
+
+            except Exception as e:
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data={'Error': 'package not found'})
+
+
+class DeletePackageApiView(APIView):
+
+    def delete(self, request, id=None):
+        if id:
+            try:
+                package_rec = DeliveryPersonPackage.objects.get(id=id)
+                package_name = package_rec.name
+                package_rec.delete()
+                return Response(status=status.HTTP_200_OK,
+                                data={"record_deleted": package_name})
+
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"Error": "Unable to delete record"})
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+
+class UpdateApprovalStatusApiView(APIView):
+    pass

@@ -3,7 +3,31 @@ from django.contrib.auth.models import User
 from .models import *
 
 
+class DeliveryPersonPackageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliveryPerson
+        fields = "__all__"
+
+
 class DeliveryPersonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliveryPerson
+        fields = "__all__"
+
+
+class DeliveryPersonPackageLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliveryPerson
+        fields = "__all__"
+
+
+class DeliveryPersonBusinessDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliveryPerson
+        fields = "__all__"
+
+
+class DeliveryPersonBankDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeliveryPerson
         fields = "__all__"

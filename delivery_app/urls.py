@@ -31,4 +31,43 @@ urlpatterns = [
     path('consolidated_purchase_list/delivery_person/<id>/', ListDeliveryPersonVehicleApiView.as_view()),
     path('update_consolidated_purchase/', UpdateVehicleApiView.as_view()),
     path('delete_consolidated_purchase/<id>/', DeleteVehicleApiView.as_view()),
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # Business API Routes
+    path('insert_business/', BusinessDetailInsertApiView.as_view(), name='insert_business_details'),
+    path('list_business/', ListBusinessDetailsApiView.as_view(), name='list_business_details'),
+    path('list_business/<id>/', ListBusinessDetailsApiView.as_view(), name='list_business_details/<id>'),
+    path('list_business/delivery_person/<id>/', ListClientBusinessDetailsApiView.as_view(),
+         name='list_business_details/delivery_person/<id>'),
+    path('update_business/', UpdateBusinessApiView.as_view(), name='update_business_details'),
+    # Delete
+    path('delete_business/<id>/', DeleteBusinessApiView.as_view(), name='delete_business/<id>'),
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # Bank Details API Routes
+    path('create_bank_details/', BankDetailsCreateApiView.as_view(), name='create_bank_details'),
+    path('update_bank_details/', BankDetailsUpdateApiView.as_view(), name='update_bank_details'),
+    path('list_bank_details/', ListBankDetailsApiView.as_view(), name='list_bank_details'),
+    path('list_bank_details/<id>/', ListBankDetailsApiView.as_view(), name='list_bank_details/<id>'),
+    path('list_bank_details/delivery_person/<id>/', ListClientBankDetailsApiView.as_view(),
+         name='list_bank_details/delivery_person/<id>'),
+    path('delete_bank_details/<id>/', DeleteBankDetailsApiView.as_view(), name='delete_bank_details'),
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # Package API Routes
+    path('create_package/', PackageCreateApiView.as_view(), name='create_package'),
+    path('update_package/', PackageUpdateApiView.as_view(), name='update_package'),
+    path('list_packages/', ListPackagesApiView.as_view(), name='list_packages'),
+    path('list_packages/<id>/', ListPackagesApiView.as_view(), name='list_packages/<id>'),
+    path('list_delivery_person/package/<id>/', ListClientPackagesApiView.as_view(),
+         name='list_delivery_person/package/<id>'),
+    path('delete_package/<id>/', DeletePackageApiView.as_view(), name='delete_package'),
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    path('update_approval_status/', UpdateApprovalStatusApiView.as_view(), name='delete_package'),
+    path('pending_approval_list/', UpdateApprovalStatusApiView.as_view(), name='delete_package'),
 ]
