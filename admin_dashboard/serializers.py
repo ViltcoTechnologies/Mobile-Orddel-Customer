@@ -7,3 +7,15 @@ class AdminUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminUser
         fields = "__all__"
+
+
+class ClientApprovalLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClientApprovalLog
+        fields = "__all__"
+
+
+class DeliveryPersonApprovalLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliveryPersonApprovalLog
+        fields = "__all__"

@@ -233,7 +233,7 @@ class ListProductApiView(APIView):
             try:
                 product = Product.objects.all()
                 serializer = ProductSerializer(product, many=True)
-                if not delivery_person:
+                if not product:
                     return Response(status=status.HTTP_200_OK,
                                     data={"Product table is empty": serializer.data})
                 return Response(serializer.data,

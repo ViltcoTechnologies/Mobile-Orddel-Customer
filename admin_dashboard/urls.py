@@ -5,6 +5,7 @@ from .views import *
 app_name = 'admin_dashboard'
 
 urlpatterns = [
+    # Admin Dashboard API Routes
     path('admin_user_registration/', RegisterAdminUserApiView.as_view()),
     path('admin_user_list/', ListAdminUserApiView.as_view()),
     path('admin_user_list/<id>/', ListAdminUserApiView.as_view()),
@@ -13,5 +14,12 @@ urlpatterns = [
 
     # ------------------------------------------------------------------------------------------------------------------
 
+    # Orddel Dashboard API Routes
     path('dashboard/', AdminDashboardApiView.as_view()),
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # Approval Log API Routes
+    path('create_client_approval_log/', CreateClientApprovalLog.as_view()),
+    path('create_delivery_person_approval_log/', CreateDeliveryPersonApprovalLog.as_view()),
 ]

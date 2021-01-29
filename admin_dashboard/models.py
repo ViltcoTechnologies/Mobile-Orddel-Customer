@@ -11,6 +11,12 @@ gender_choices = (
     ('other', 'Other')
 )
 
+admin_approval_choices = (
+    ('pending', 'Pending'),
+    ('approved', 'Approved'),
+    ('unapproved', 'Unapproved')
+)
+
 
 class AdminUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -27,3 +33,16 @@ class AdminUser(models.Model):
     def __str__(self):
         return str(self.username)
 
+
+class ClientApprovalLog(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
+    admin = models.ForeignKey(AdminUser, on_delete=models.SET_NULL, null=True, blank=True)
+    admin_approval_status = models.CharField(max_length=300, choices=admin_approval_choices)
+    date_created = models.DateTimeField(auto_now=True)
+
+
+class DeliveryPersonApprovalLog(models.Model):
+    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.CASCADE, null=True, blank=True)
+    admin = models.ForeignKey(AdminUser, on_delete=models.SET_NULL, null=True, blank=True)
+    approval_status = models.CharField(max_length=300, choices=admin_approval_choices)
+    date_created = models.DateTimeField(auto_now=True)
