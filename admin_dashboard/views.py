@@ -9,6 +9,7 @@ from payment.models import *
 from client_app.models import *
 from .serializers import *
 from django_email_verification import sendConfirm
+from datetime import datetime
 
 
 # Admin Registration API
@@ -53,7 +54,6 @@ class RegisterAdminUserApiView(APIView):
                         )
                         new_user.first_name = first_name
                         new_user.last_name = last_name
-                        sendConfirm(new_user)
                         try:
                             new_user_details = AdminUser.objects.create(
                                 user=new_user,
@@ -208,20 +208,139 @@ class AdminDashboardApiView(APIView):
 
     def get(self, request):
 
-        # Get orders
-        # order_data = OrderDetail.objects.all()
+        # Get total orders
+        orders_count = OrderDetail.objects.all().count
 
-        # Get invoices
-        invoice_data = Invoice.objects.all().count()
-        print(invoice_data)
+        # Get total invoices
+        invoices_count = Invoice.objects.all().count()
 
-        # Get clients
-        client_data = Client.objects.all().count()
-        total_client_income = Client.objects.all().aggregate(average_price=Avg('total_amount_shopped'))
+        # Get total clients
+        client_count = Client.objects.all().count()
+        # total_client_income = Client.objects.all().aggregate(average_price=Avg('total_amount_shopped'))
 
-        # Get delivery_persons
-        delivery_person_data = DeliveryPerson.objects.all().count()
-        print(delivery_person_data)
+        # Get total delivery_persons
+        delivery_person_count = DeliveryPerson.objects.all().count()
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+# Home screen - Dashboard resources
+class OrderGraphApiView(APIView):
+    # permission_classes = [permissions.IsAuthenticated, ]
+    # authentication_classes = (authentication.JWTAuthentication,)
+
+    def get(self, request):
+        try:
+            graph_type = self.request.query_params.get('graph_type').lower()
+            print(graph_type)
+            try:
+                if graph_type == 'today':
+                    orders_count = OrderDetail.objects.all().count
+                    datetime_now = datetime.now().year
+                    print(datetime_now)
+                    timestamp = datetime.timestamp(datetime_now)
+                    print(timestamp)
+                    seconds = 24 * 60 * 60
+                    timestamp_24h_ago = timestamp - seconds
+                    price_dates = []
+                    for candlestick in candles:
+                        time = datetime.fromtimestamp(int(str(candlestick[0])[:-3]))
+                        tz_conv = timezone('Etc/GMT+1').localize(time)
+                        formatted_time = tz_conv.strftime("%d-%b %H:%M")
+                        price_dates.append({"Closing Price": float(candlestick[4]),
+                                            "Time": str(formatted_time)})
+                    response = price_dates
+                    print(len(candles))
+                    return Response(response, status=status.HTTP_200_OK)
+
+                if graph_type == 'daily':
+                    orders_count = OrderDetail.objects.all().count
+                    datetime_now = datetime.now()
+                    timestamp = datetime.timestamp(datetime_now)
+                    seconds = 7 * 3600 * 24
+                    print(seconds)
+                    print(timestamp)
+                    date_7_days_back = datetime.fromtimestamp(int(timestamp - seconds)).date()
+                    print(date_7_days_back)
+                    candles = client.get_historical_klines("BTCEUR", Client.KLINE_INTERVAL_1DAY, str(date_7_days_back))
+
+                    price_dates = []
+                    for candlestick in candles:
+                        price_dates.append({"Closing Price": float(candlestick[4]),
+                                            "Date": datetime.fromtimestamp(int(str(candlestick[0])[:-3])).date().strftime(
+                                                "%d %b")})
+
+                    response = price_dates
+                    print(len(candles))
+                    return Response(response, status=status.HTTP_200_OK)
+
+                if graph_type == 'weekly':
+                    orders_count = OrderDetail.objects.all().count
+                    datetime_now = datetime.now()
+                    timestamp = datetime.timestamp(datetime_now)
+                    seconds = 56 * 3600 * 24
+                    print(seconds)
+                    print(timestamp)
+                    date_8_weeks_back = datetime.fromtimestamp(int(timestamp - seconds)).date()
+                    print(date_8_weeks_back)
+                    candles = client.get_historical_klines("BTCEUR", Client.KLINE_INTERVAL_1WEEK, str(date_8_weeks_back))
+                    price_dates = []
+                    for candlestick in candles:
+                        price_dates.append({"Closing Price": float(candlestick[4]),
+                                            "Date": datetime.fromtimestamp(int(str(candlestick[0])[:-3])).date().strftime(
+                                                "%d %b")})
+
+                    response = price_dates
+                    print(len(candles))
+                    return Response(response, status=status.HTTP_200_OK)
+
+                if graph_type == 'monthly':
+                    orders_count = OrderDetail.objects.all().count
+                    datetime_now = datetime.now()
+                    timestamp = datetime.timestamp(datetime_now)
+                    seconds = 365 * 3600 * 24
+                    print(seconds)
+                    print(timestamp)
+                    date_12_months_back = datetime.fromtimestamp(int(timestamp - seconds)).date()
+                    print(date_12_months_back)
+                    candles = client.get_historical_klines("BTCEUR", Client.KLINE_INTERVAL_1MONTH, str(date_12_months_back))
+                    price_dates = []
+                    for candlestick in candles:
+                        price_dates.append({"Closing Price": float(candlestick[4]),
+                                            "Date": datetime.fromtimestamp(int(str(candlestick[0])[:-3])).date().strftime(
+                                                "%b %y")})
+                    response = price_dates
+                    print(len(candles))
+                    return Response(response, status=status.HTTP_200_OK)
+
+                if graph_type == 'all':
+                    orders_count = OrderDetail.objects.all().count
+                    datetime_now = datetime.now()
+                    timestamp = datetime.timestamp(datetime_now)
+                    seconds = 365 * 3600 * 24
+                    print(seconds)
+                    print(timestamp)
+                    date_12_months_back = datetime.fromtimestamp(int(timestamp - seconds)).date()
+                    print(date_12_months_back)
+                    candles = client.get_historical_klines("BTCEUR", Client.KLINE_INTERVAL_1MONTH, str(date_12_months_back))
+                    price_dates = []
+                    for candlestick in candles:
+                        price_dates.append({"Closing Price": float(candlestick[4]),
+                                            "Date": datetime.fromtimestamp(int(str(candlestick[0])[:-3])).date().strftime(
+                                                "%b %y")})
+                    response = price_dates
+                    print(len(candles))
+                    return Response(response, status=status.HTTP_200_OK)
+                else:
+                    return Response(status=status.HTTP_404_NOT_FOUND,
+                                    data=f"'{graph_type}' is not valid graph_type, select "
+                                         f"between today, daily, weekly, monthly and all")
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data="Oops! Required field graph_type is missing")
 
 
 # ----------------------------------------------------------------------------------------------------------------------

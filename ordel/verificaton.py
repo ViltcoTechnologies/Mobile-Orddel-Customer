@@ -1,9 +1,11 @@
 import random
 import os
 from twilio.rest import Client
-account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
-auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
-service_sid = os.environ.get('SERVICE_SID')
+from django.conf import settings
+
+account_sid = settings.TWILIO_ACCOUNT_SID
+auth_token = settings.TWILIO_AUTH_TOKEN
+service_sid = settings.SERVICE_SID
 
 client = Client(account_sid, auth_token)
 
@@ -32,3 +34,7 @@ class TwilioVerification:
                 .services(service_sid) \
                 .verification_checks \
                 .create(to=self.phone_number, code=self.verification_code)
+
+    # def create_service(self):
+    #     service = client.verify.services.create(friendly_name='My Verify Service')
+    #     print(service.sid)

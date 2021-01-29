@@ -12,7 +12,8 @@ gender_choices = (
 admin_approval_choices = (
     ('pending', 'Pending'),
     ('approved', 'Approved'),
-    ('unapproved', 'Unapproved')
+    ('unapproved', 'Unapproved'),
+    ('cancelled', 'cancelled')
 )
 
 

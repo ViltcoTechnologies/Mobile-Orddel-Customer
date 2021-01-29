@@ -702,5 +702,41 @@ class DeletePackageApiView(APIView):
 # ------------------------------------------------------------------------------------------------------------------------
 
 
-class UpdateApprovalStatusApiView(APIView):
-    pass
+class UpdateDeliveryPersonApprovalStatus(APIView):
+
+    def post(self, request):
+        try:
+            delivery_person_id = request.data['delivery_person']
+            delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
+            approval_status = request.data['approval_status']
+            approval_status.lower()
+            if approval_status == 'approved':
+                delivery_person.admin_approval_status = 'approved'
+                delivery_person.save()
+
+            elif approval_status == 'unapproved':
+                delivery_person.admin_approval_status = 'unapproved'
+                delivery_person.save()
+
+            elif approval_status == 'pending':
+                delivery_person.admin_approval_status = 'pending'
+                delivery_person.save()
+
+            elif approval_status == 'cancelled':
+                delivery_person.admin_approval_status = 'cancelled'
+                delivery_person.save()
+
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"error": "incorrect option for approval status"})
+            send_mail(
+                'Notification Email',
+                f'Your account has been {approval_status}.',
+                'orddel@viltco.com',
+                [f"{client.email}"],
+                fail_silently=False,
+            )
+            return Response(status=status.HTTP_200_OK, data={"approval_status": client.admin_approval_status})
+
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "client id incorrect"})
