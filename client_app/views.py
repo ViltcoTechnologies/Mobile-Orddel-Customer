@@ -29,6 +29,7 @@ class ClientRegisterApiView(APIView):
                 username = request.data['email']
                 phone_number = request.data['phone_number']
                 password = request.data['password']
+                admin_approval_status = 'pending'
                 if first_name == ""\
                         or last_name == ""\
                         or email == ""\
@@ -58,6 +59,7 @@ class ClientRegisterApiView(APIView):
                                 first_name=first_name,
                                 last_name=last_name,
                                 username=username,
+                                admin_approval_status=admin_approval_status,
                                 email=email,
                                 current_location=current_location,
                                 phone_number=phone_number,
@@ -564,5 +566,23 @@ class UpdateClientApprovalStatus(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "client id incorrect"})
 
 
+# ------------------------------------------------------------------------------------------------------------------------
 
 
+class PendingApprovalListApiView(APIView):
+
+    def get(self, request, id=None):
+        try:
+            admin_approval_status = request.data['admin_approval_status']
+            try:
+                client = Client.objects.filter(admin_approval_status=admin_approval_status)
+                serializer = ClientSerializer(client, many=True)
+                if not client:
+                    return Response(status=status.HTTP_200_OK,
+                                    data={"Delivery Person table is empty": serializer.data})
+                return Response(status=status.HTTP_200_OK,
+                                data={"pending_approval_list": serializer.data})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            pass

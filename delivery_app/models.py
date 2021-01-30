@@ -48,6 +48,7 @@ class DeliveryPerson(models.Model):
     date_created = models.DateTimeField(auto_now=True, null=True, blank=True)
     otp_status = models.BooleanField(default=False)
     admin_approval_status = models.CharField(max_length=300, choices=admin_approval_choices)
+    approval_read_status = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.username)

@@ -69,5 +69,5 @@ urlpatterns = [
     # ------------------------------------------------------------------------------------------------------------------
 
     path('update_approval_status/', UpdateDeliveryPersonApprovalStatus.as_view()),
-    # path('pending_approval_list/', PendingApprovalListApiView.as_view()),
+    path('approval_list/', PendingApprovalListApiView.as_view()),
 ]
