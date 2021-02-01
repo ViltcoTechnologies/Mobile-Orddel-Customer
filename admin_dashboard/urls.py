@@ -23,4 +23,6 @@ urlpatterns = [
     # Approval Log API Routes
     path('create_client_approval_log/', CreateClientApprovalLog.as_view()),
     path('create_delivery_person_approval_log/', CreateDeliveryPersonApprovalLog.as_view()),
+    path('admin_user_login/', AdminLogin.as_view()),
+
 ]

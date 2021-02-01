@@ -8,7 +8,12 @@ from rest_framework import status
 from .models import *
 from .serializers import *
 from django_email_verification import sendConfirm
+from django.core.mail import send_mail
 from ordel.verificaton import TwilioVerification
+
+# Token Obtain pair
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 # Delivery Person Registration API
@@ -738,10 +743,10 @@ class UpdateDeliveryPersonApprovalStatus(APIView):
                 'Notification Email',
                 f'Your account has been {approval_status}.',
                 'orddel@viltco.com',
-                [f"{client.email}"],
+                [f"{delivery_person.email}"],
                 fail_silently=False,
             )
-            return Response(status=status.HTTP_200_OK, data={"approval_status": client.admin_approval_status})
+            return Response(status=status.HTTP_200_OK, data={"approval_status": delivery_person.admin_approval_status})
 
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "client id incorrect"})
@@ -767,3 +772,66 @@ class PendingApprovalListApiView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except:
             pass
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+        return data
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+class DeliveryPersonLogin(TokenObtainPairView):
+
+    def post(self, request):
+        # print(request.data)
+        try:
+            username = request.data['username']
+            try:
+                _ = request.data['password']
+                try:
+                    serializer_class = MyTokenObtainPairSerializer(data=request.data)
+                    if serializer_class.is_valid(self):
+                        print("here")
+                        user = User.objects.get(username=username)
+                        delivery_person = DeliveryPerson.objects.get(username=username)
+                        is_active = user.is_active
+                        otp_status = delivery_person.otp_status
+                        approval_status = delivery_person.admin_approval_status
+                        print(is_active)
+                        print(otp_status)
+                        print(approval_status)
+                        if is_active and otp_status and approval_status == 'approved':
+                            return Response(status=status.HTTP_200_OK, data={"data": serializer_class.validated_data})
+                        else:
+                            return Response(status=status.HTTP_200_OK, data={"data": "delivery person not authorized"})
+
+                    else:
+                        print("invalid username and password")
+
+                except:
+                    user = User.objects.get(username=username)
+                    is_active = user.is_active
+                    if not is_active:
+                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                        data="The account is not verified via email")
+                    else:
+                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                        data="username or password not correct")
+
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data="Password is required!")
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data="Username is required!")
+
+
+# ------------------------------------------------------------------------------------------------------------------------

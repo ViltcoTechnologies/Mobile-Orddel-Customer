@@ -70,4 +70,5 @@ urlpatterns = [
 
     path('update_approval_status/', UpdateDeliveryPersonApprovalStatus.as_view()),
     path('approval_list/', PendingApprovalListApiView.as_view()),
+    path('delivery_person_login/', DeliveryPersonLogin.as_view()),
 ]

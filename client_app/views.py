@@ -16,6 +16,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from axes.backends import AxesBackend as a
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+
 # CRUD operations of client
 class ClientRegisterApiView(APIView):
     def post(self, request):
@@ -621,9 +622,16 @@ class ClientLogin(TokenObtainPairView):
 
                     else:
                         print("invalid username and password")
+
                 except:
-                    return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data="username or password not correct")
+                    user = User.objects.get(username=username)
+                    is_active = user.is_active
+                    if not is_active:
+                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                        data="The account is not verified via email")
+                    else:
+                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                        data="username or password not correct")
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data="Password is required!")
@@ -652,3 +660,4 @@ class PendingApprovalListApiView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except:
             pass
+

@@ -11,6 +11,10 @@ from .serializers import *
 from django_email_verification import sendConfirm
 from datetime import datetime
 
+# Token Obtain pair
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 # Admin Registration API
 class RegisterAdminUserApiView(APIView):
@@ -30,6 +34,7 @@ class RegisterAdminUserApiView(APIView):
                 last_name = request.data['last_name']
                 email = request.data['email']
                 username = request.data['email']
+                admin_approval_status = request.data['admin_approval_status'].lower()
                 phone_number = request.data['phone_number']
                 password = request.data['password']
                 if first_name == ""\
@@ -61,6 +66,7 @@ class RegisterAdminUserApiView(APIView):
                                 last_name=last_name,
                                 username=username,
                                 email=email,
+                                admin_approval_status=admin_approval_status,
                                 phone_number=phone_number,
                                 address=address,
                                 gender=gender,
@@ -69,6 +75,7 @@ class RegisterAdminUserApiView(APIView):
                             new_user_details.save()
                             serializer = AdminUserSerializer(new_user_details)
                             new_user.save()
+                            sendConfirm(new_user)
                             return Response(status=status.HTTP_200_OK,
                                             data={"admin_user_created": serializer.data})
                         except:
@@ -83,7 +90,7 @@ class RegisterAdminUserApiView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data="Error! Make sure you're not missing one of the "
                                      "following required fields: (first_name, last_name, "
-                                     "email, phone_number, password)")
+                                     "email, admin_approval_status, phone_number, password)")
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data="Error! Make sure you're not missing one of the "
@@ -130,6 +137,7 @@ class UpdateAdminUserApiView(APIView):
             address = request.data['address']
             gender = request.data['gender']
             image = request.data['image']
+            admin_approval_status = request.data['admin_approval_status']
             phone_number = request.data['phone_number']
             first_name = request.data['first_name']
             last_name = request.data['last_name']
@@ -148,6 +156,7 @@ class UpdateAdminUserApiView(APIView):
                         updated_admin_user = saved_admin_user.update(
                             first_name=first_name,
                             last_name=last_name,
+                            admin_approval_status=admin_approval_status,
                             phone_number=phone_number,
                             address=address,
                             gender=gender,
@@ -175,8 +184,9 @@ class UpdateAdminUserApiView(APIView):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data="Oops! Make sure following fields are not missing "
-                                 "(first_name, last_name, phone_number address, "
-                                 "gender, image) Note: If you want to leave fields "
+                                 "(first_name, last_name, admin approval status, "
+                                 "phone_number address, gender, image) Note: If "
+                                 "you want to leave fields "
                                  "blank, then send null or empty")
 
 
@@ -415,3 +425,65 @@ class CreateDeliveryPersonApprovalLog(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data="Oops! Make sure you're not missing one or more required"
                                  "fields (id of client, admin and admin_approval_status) ")
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+        return data
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+class AdminLogin(TokenObtainPairView):
+
+    def post(self, request):
+        # print(request.data)
+        try:
+            username = request.data['username']
+            try:
+                _ = request.data['password']
+                try:
+                    serializer_class = MyTokenObtainPairSerializer(data=request.data)
+                    if serializer_class.is_valid(self):
+                        print("here")
+                        user = User.objects.get(username=username)
+                        admin_user = AdminUser.objects.get(username=username)
+                        is_active = user.is_active
+                        # otp_status = admin_user.otp_status
+                        # approval_status = admin_user.admin_approval_status
+                        print(is_active)
+                        # print(otp_status)
+                        # print(approval_status)
+                        if is_active:
+                            return Response(status=status.HTTP_200_OK, data={"data": serializer_class.validated_data})
+                        else:
+                            return Response(status=status.HTTP_200_OK, data={"data": "delivery person not authorized"})
+
+                    else:
+                        print("invalid username and password")
+
+                except Exception as e:
+                    print(e)
+                    user = User.objects.get(username=username)
+                    is_active = user.is_active
+                    if not is_active:
+                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                        data="The account is not verified via email")
+                    else:
+                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                        data="username or password not correct")
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data="Password is required!")
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data="Username is required!")
+
+
+# ------------------------------------------------------------------------------------------------------------------------

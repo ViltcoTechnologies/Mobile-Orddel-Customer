@@ -76,6 +76,7 @@ class Client(models.Model):
     no_of_invoices = models.IntegerField(default=0)
     otp_status = models.BooleanField(default=False)
     admin_approval_status = models.CharField(max_length=100, choices=admin_approval_choices)
+    approval_read_status = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):

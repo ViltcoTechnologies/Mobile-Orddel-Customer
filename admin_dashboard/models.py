@@ -28,6 +28,7 @@ class AdminUser(models.Model):
     address = models.CharField(max_length=200, null=True, blank=True)
     gender = models.CharField(max_length=300, choices=gender_choices, null=True, blank=True)
     image = models.ImageField(upload_to=f"delivery_person/photos/{user}", null=True, blank=True)
+    admin_approval_status = models.CharField(max_length=300, choices=admin_approval_choices)
     date_created = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
