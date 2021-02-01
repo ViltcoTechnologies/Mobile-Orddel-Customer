@@ -64,6 +64,9 @@ urlpatterns = [
     path('delete_package/<id>/', DeletePackageApiView.as_view(), name='delete_package'),
 
     # Admin Approval
-    path('update_approval_status', UpdateClientApprovalStatus.as_view())
+    path('update_approval_status/', UpdateClientApprovalStatus.as_view()),
+
+    # Login
+    path('client_login/', ClientLogin.as_view())
 
 ]

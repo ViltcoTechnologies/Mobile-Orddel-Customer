@@ -55,11 +55,12 @@ def populate(n):
             new_auth_user.first_name = fake.first_name()
             new_auth_user.last_name = fake.last_name()
 
-            # package_instance = Package.objects.get(id=package_id)
+            package_instance = ClientPackage.objects.get(id=package_id)
 
             # Entering record in the Client Table
             new_client = Client.objects.create(
                 user=new_auth_user,
+                package=package_instance,
                 first_name=first_name,
                 last_name=last_name,
                 username=username,
@@ -92,10 +93,12 @@ def populate(n):
             )
             new_auth_user.first_name = fake.first_name()
             new_auth_user.last_name = fake.last_name()
+            package_instance_d = DeliveryPersonPackage.objects.get(id=package_id)
 
             # Entering record in the Delivery Person Table
             new_delivery_person = DeliveryPerson.objects.create(
                 user=new_auth_user,
+                package=package_instance_d,
                 first_name=fake.first_name(),
                 last_name=fake.last_name(),
                 username=profile['username'],

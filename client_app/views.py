@@ -1,3 +1,5 @@
+# from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate
 from django.shortcuts import render
 from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
@@ -8,11 +10,16 @@ from .models import *
 from .serializers import *
 import json
 from django.core.mail import send_mail
-
 from ordel.verificaton import TwilioVerification
 
+# Token Obtain pair
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from axes.backends import AxesBackend as a
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 # CRUD operations of client
+
 class ClientRegisterApiView(APIView):
     def post(self, request):
         try:
@@ -564,5 +571,48 @@ class UpdateClientApprovalStatus(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "client id incorrect"})
 
 
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+        return data
 
 
+class ClientLogin(TokenObtainPairView):
+
+    def post(self, request):
+        # print(request.data)
+        try:
+            username = request.data['username']
+            try:
+                _ = request.data['password']
+                try:
+                    serializer_class = MyTokenObtainPairSerializer(data=request.data)
+                    if serializer_class.is_valid(self):
+                        print("here")
+                        user = User.objects.get(username=username)
+                        client = Client.objects.get(username=username)
+                        is_active = user.is_active
+                        otp_status = client.otp_status
+                        approval_status = client.admin_approval_status
+                        print(is_active)
+                        print(otp_status)
+                        print(approval_status)
+                        if is_active and otp_status and approval_status == 'approved':
+                            return Response(status=status.HTTP_200_OK, data={"data": serializer_class.validated_data})
+                        else:
+                            return Response(status=status.HTTP_200_OK, data={"data": "client user not authorized"})
+
+                    else:
+                        print("invalid username and password")
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data="username or password not correct")
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data="Password is required!")
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data="Username is required!")
