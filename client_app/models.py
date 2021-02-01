@@ -21,7 +21,8 @@ package_activation_choices = (
 admin_approval_choices = (
     ('pending', 'Pending'),
     ('approved', 'Approved'),
-    ('unapproved', 'Unapproved')
+    ('unapproved', 'Unapproved'),
+    ('cancelled', 'Cancelled')
 )
 
 # package_type_choices = (

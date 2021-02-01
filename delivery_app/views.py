@@ -33,6 +33,7 @@ class RegisterDeliveryPersonApiView(APIView):
                 username = request.data['email']
                 phone_number = request.data['phone_number']
                 password = request.data['password']
+                admin_approval_status = 'pending'
                 if first_name == ""\
                         or last_name == ""\
                         or email == ""\
@@ -62,6 +63,7 @@ class RegisterDeliveryPersonApiView(APIView):
                                 first_name=first_name,
                                 last_name=last_name,
                                 username=username,
+                                admin_approval_status=admin_approval_status,
                                 email=email,
                                 current_location=current_location,
                                 buying_capacity=buying_capacity,
@@ -645,7 +647,7 @@ class PackageUpdateApiView(APIView):
 
 class ListPackagesApiView(APIView):
 
-    def get(self, request):
+    def get(self, request, id=None):
         if id:
             try:
                 package = DeliveryPersonPackage.objects.filter(id=id)
@@ -702,5 +704,66 @@ class DeletePackageApiView(APIView):
 # ------------------------------------------------------------------------------------------------------------------------
 
 
-class UpdateApprovalStatusApiView(APIView):
-    pass
+class UpdateDeliveryPersonApprovalStatus(APIView):
+
+    def get(self, request):
+        return Response(status=status.HTTP_200_OK)
+
+    def post(self, request):
+        try:
+            delivery_person_id = request.data['delivery_person']
+            delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
+            approval_status = request.data['approval_status']
+            approval_status.lower()
+            if approval_status == 'approved':
+                delivery_person.admin_approval_status = 'approved'
+                delivery_person.save()
+
+            elif approval_status == 'unapproved':
+                delivery_person.admin_approval_status = 'unapproved'
+                delivery_person.save()
+
+            elif approval_status == 'pending':
+                delivery_person.admin_approval_status = 'pending'
+                delivery_person.save()
+
+            elif approval_status == 'cancelled':
+                delivery_person.admin_approval_status = 'cancelled'
+                delivery_person.save()
+
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"error": "incorrect option for approval status"})
+            send_mail(
+                'Notification Email',
+                f'Your account has been {approval_status}.',
+                'orddel@viltco.com',
+                [f"{client.email}"],
+                fail_silently=False,
+            )
+            return Response(status=status.HTTP_200_OK, data={"approval_status": client.admin_approval_status})
+
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "client id incorrect"})
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+
+class PendingApprovalListApiView(APIView):
+
+    def get(self, request, id=None):
+        try:
+            admin_approval_status = request.data['admin_approval_status']
+            try:
+                delivery_person = DeliveryPerson.objects.filter(admin_approval_status=admin_approval_status)
+                serializer = DeliveryPersonSerializer(delivery_person, many=True)
+                if not delivery_person:
+                    return Response(status=status.HTTP_200_OK,
+                                    data={"Delivery Person table is empty": serializer.data})
+                return Response(status=status.HTTP_200_OK,
+                                data={"pending_approval_list": serializer.data})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            pass

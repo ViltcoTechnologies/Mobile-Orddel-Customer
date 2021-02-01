@@ -68,6 +68,6 @@ urlpatterns = [
 
     # ------------------------------------------------------------------------------------------------------------------
 
-    path('update_approval_status/', UpdateApprovalStatusApiView.as_view(), name='delete_package'),
-    path('pending_approval_list/', UpdateApprovalStatusApiView.as_view(), name='delete_package'),
+    path('update_approval_status/', UpdateDeliveryPersonApprovalStatus.as_view()),
+    path('approval_list/', PendingApprovalListApiView.as_view()),
 ]

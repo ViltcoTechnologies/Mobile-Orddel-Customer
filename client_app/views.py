@@ -1,5 +1,3 @@
-# from django.contrib.auth import authenticate
-from django.contrib.auth import authenticate
 from django.shortcuts import render
 from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
@@ -19,7 +17,6 @@ from axes.backends import AxesBackend as a
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 # CRUD operations of client
-
 class ClientRegisterApiView(APIView):
     def post(self, request):
         try:
@@ -36,6 +33,7 @@ class ClientRegisterApiView(APIView):
                 username = request.data['email']
                 phone_number = request.data['phone_number']
                 password = request.data['password']
+                admin_approval_status = 'pending'
                 if first_name == ""\
                         or last_name == ""\
                         or email == ""\
@@ -65,6 +63,7 @@ class ClientRegisterApiView(APIView):
                                 first_name=first_name,
                                 last_name=last_name,
                                 username=username,
+                                admin_approval_status=admin_approval_status,
                                 email=email,
                                 current_location=current_location,
                                 phone_number=phone_number,
@@ -555,6 +554,14 @@ class UpdateClientApprovalStatus(APIView):
                 client.admin_approval_status = 'unapproved'
                 client.save()
 
+            elif approval_status == 'pending':
+                client.admin_approval_status = 'pending'
+                client.save()
+
+            elif approval_status == 'cancelled':
+                client.admin_approval_status = 'cancelled'
+                client.save()
+
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={"error": "incorrect option for approval status"})
@@ -571,13 +578,20 @@ class UpdateClientApprovalStatus(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "client id incorrect"})
 
 
+# ------------------------------------------------------------------------------------------------------------------------
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+
     def validate(self, attrs):
         data = super().validate(attrs)
         refresh = self.get_token(self.user)
         data['refresh'] = str(refresh)
         data['access'] = str(refresh.access_token)
         return data
+
+
+# ------------------------------------------------------------------------------------------------------------------------
 
 
 class ClientLogin(TokenObtainPairView):
@@ -616,3 +630,25 @@ class ClientLogin(TokenObtainPairView):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data="Username is required!")
+
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+
+class PendingApprovalListApiView(APIView):
+
+    def get(self, request, id=None):
+        try:
+            admin_approval_status = request.data['admin_approval_status']
+            try:
+                client = Client.objects.filter(admin_approval_status=admin_approval_status)
+                serializer = ClientSerializer(client, many=True)
+                if not client:
+                    return Response(status=status.HTTP_200_OK,
+                                    data={"Delivery Person table is empty": serializer.data})
+                return Response(status=status.HTTP_200_OK,
+                                data={"pending_approval_list": serializer.data})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            pass
