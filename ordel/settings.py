@@ -27,7 +27,7 @@ SECRET_KEY = '3&6_2w!n-d*na4@a(p-us406+b4!6^xle2993x!^lefg_^*t&s'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.118', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['192.168.1.118', '127.0.0.1', 'localhost', '192.168.1.99']
 
 
 # Application definition
@@ -199,22 +199,29 @@ USE_TZ = True
 # Email configuration
 EMAIL_ACTIVE_FIELD = 'is_active'
 EMAIL_SERVER = 'smtp.gmail.com'
+# EMAIL_SERVER = 'mail.viltco.com'
 EMAIL_ADDRESS = 'leadarc123@gmail.com'
-EMAIL_FROM_ADDRESS = 'noreply@aliasaddress.com'
+# EMAIL_ADDRESS = 'orddel@viltco.com'
+EMAIL_FROM_ADDRESS = 'orddel@viltco.com'
 EMAIL_PASSWORD = '9WiPy98qhUPBvFL' # os.environ['password_key'] suggested
+# EMAIL_PASSWORD = 'orddel@3221'  # os.environ['password_key'] suggested
 EMAIL_MAIL_SUBJECT = 'Confirm your email'
 EMAIL_MAIL_HTML = EMAIL_TEMPLATE_PATH
 # EMAIL_MAIL_PLAIN = 'mail_body.txt'
 EMAIL_PAGE_TEMPLATE = EMAIL_SUCCESS_TEMPLATE
-EMAIL_PAGE_DOMAIN = 'http://0.0.0.0:8000'
+EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000'
 
 
 # Reset password SMTP configuration
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_HOST = 'mail.viltco.com'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
+# EMAIL_PORT = 465
+# EMAIL_HOST_USER = 'orddel@viltco.com'
 EMAIL_HOST_USER = 'leadarc123@gmail.com'
 EMAIL_HOST_PASSWORD = '9WiPy98qhUPBvFL'
+# EMAIL_HOST_PASSWORD = 'orddel@3221'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 

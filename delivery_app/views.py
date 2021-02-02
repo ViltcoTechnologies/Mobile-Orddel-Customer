@@ -809,7 +809,7 @@ class DeliveryPersonLogin(TokenObtainPairView):
                         print(otp_status)
                         print(approval_status)
                         if is_active and otp_status and approval_status == 'approved':
-                            return Response(status=status.HTTP_200_OK, data={"data": serializer_class.validated_data})
+                            return Response(status=status.HTTP_200_OK, data={"delivery_person": delivery_person.id, "data": serializer_class.validated_data})
                         else:
                             return Response(status=status.HTTP_200_OK, data={"data": "delivery person not authorized"})
 
