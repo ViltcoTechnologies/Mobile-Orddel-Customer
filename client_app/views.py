@@ -606,20 +606,18 @@ class ClientLogin(TokenObtainPairView):
                 try:
                     serializer_class = MyTokenObtainPairSerializer(data=request.data)
                     if serializer_class.is_valid(self):
-                        print("here")
                         user = User.objects.get(username=username)
                         client = Client.objects.get(username=username)
                         is_active = user.is_active
                         otp_status = client.otp_status
                         approval_status = client.admin_approval_status
-                        print(is_active)
-                        print(otp_status)
-                        print(approval_status)
                         if is_active and otp_status and approval_status == 'approved':
 
-                            return Response(status=status.HTTP_200_OK, data={"client_id": client.id, "data": serializer_class.validated_data})
+                            return Response(status=status.HTTP_200_OK, data={"client_id": client.id,
+                                                                             "data": serializer_class.validated_data})
                         else:
-                            return Response(status=status.HTTP_401_UNAUTHORIZED, data={"data": "client user not authorized"})
+                            return Response(status=status.HTTP_401_UNAUTHORIZED,
+                                            data={"data": "client user not authorized"})
 
                     else:
                         print("invalid username and password")
@@ -629,16 +627,16 @@ class ClientLogin(TokenObtainPairView):
                     is_active = user.is_active
                     if not is_active:
                         return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data="The account is not verified via email")
+                                        data={"message": "The account is not verified via email"})
                     else:
                         return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data="username or password not correct")
+                                        data={"message": "username or password not correct"})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data="Password is required!")
+                                data={"message": "Password is required!"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data="Username is required!")
+                            data={"message": "Username is required!"})
 
 
 # ------------------------------------------------------------------------------------------------------------------------

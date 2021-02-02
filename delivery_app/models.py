@@ -13,7 +13,7 @@ admin_approval_choices = (
     ('pending', 'Pending'),
     ('approved', 'Approved'),
     ('unapproved', 'Unapproved'),
-    ('cancelled', 'cancelled')
+    ('cancelled', 'Cancelled')
 )
 
 

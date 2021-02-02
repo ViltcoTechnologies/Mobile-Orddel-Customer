@@ -474,16 +474,16 @@ class AdminLogin(TokenObtainPairView):
                     is_active = user.is_active
                     if not is_active:
                         return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data="The account is not verified via email")
+                                        data={"message": "The account is not verified via email"})
                     else:
                         return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data="username or password not correct")
+                                        data={"message": "username or password not correct"})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data="Password is required!")
+                                data={"message": "Password is required!"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data="Username is required!")
+                            data={"message": "Username is required!"})
 
 
 # ------------------------------------------------------------------------------------------------------------------------
