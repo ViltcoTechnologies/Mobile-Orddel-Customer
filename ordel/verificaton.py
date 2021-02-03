@@ -34,6 +34,7 @@ class TwilioVerification:
                 .services(service_sid) \
                 .verification_checks \
                 .create(to=self.phone_number, code=self.verification_code)
+        return verification.status
 
     # def create_service(self):
     #     service = client.verify.services.create(friendly_name='My Verify Service')

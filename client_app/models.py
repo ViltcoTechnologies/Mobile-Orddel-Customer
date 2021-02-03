@@ -69,7 +69,7 @@ class Client(models.Model):
     phone_number = models.CharField(max_length=50)
     address = models.CharField(max_length=200, null=True, blank=True)
     current_location = models.CharField(max_length=100, null=True, blank=True)
-    gender = models.CharField(max_length=300, choices=gender_choices)
+    gender = models.CharField(max_length=300, choices=gender_choices, blank=True, null=True)
     image = models.ImageField(upload_to=f"clients/photos/{user}/", null=True, blank=True)
     number_of_order = models.IntegerField(default=0)
     total_amount_shopped = models.IntegerField(default=0)

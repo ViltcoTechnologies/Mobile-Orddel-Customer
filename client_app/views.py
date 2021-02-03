@@ -17,6 +17,17 @@ from axes.backends import AxesBackend as a
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
+# Client home screen Dashboard
+class ClientDashboardApiView(APIView):
+
+    def post(self, request):
+        try:
+            client_id = request.data['client']
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"message": "client is required"})
+
+
 # CRUD operations of client
 class ClientRegisterApiView(APIView):
     def post(self, request):
@@ -35,70 +46,84 @@ class ClientRegisterApiView(APIView):
                 phone_number = request.data['phone_number']
                 password = request.data['password']
                 admin_approval_status = 'pending'
+                package = request.data['package']
                 if first_name == ""\
                         or last_name == ""\
                         or email == ""\
                         or phone_number == ""\
                         or password == "":
                     return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data="Ooops! following required fields can't "
-                                         "be empty: (first_name, last_name, email, "
-                                         "phone_number, password)")
+                                    data={"message": "following required fields can't "
+                                          "be empty: (first_name, last_name, email, "
+                                          "phone_number, password)"})
                 try:
                     saved_data = Client.objects.get(phone_number=phone_number)
                     return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data="Phone Number already registered!")
+                                    data={"message": "Phone Number already registered!"})
                 except:
                     try:
-                        new_auth_user = User.objects.create_user(
-                            email,
-                            email,
-                            password
-                        )
-                        new_auth_user.first_name = first_name
-                        new_auth_user.last_name = last_name
-                        sendConfirm(new_auth_user)
+                        twilio_verification = TwilioVerification(str(phone_number))
+                        twilio_verification.send_otp()
                         try:
-                            new_client = Client.objects.create(
-                                user=new_auth_user,
-                                first_name=first_name,
-                                last_name=last_name,
-                                username=username,
-                                admin_approval_status=admin_approval_status,
-                                email=email,
-                                current_location=current_location,
-                                phone_number=phone_number,
-                                address=address,
-                                gender=gender,
-                                image=image
-                            )
-                            new_client.save()
-                            serializer = ClientSerializer(new_client)
-                            new_auth_user.save()
-                            # twilio_verification = TwilioVerification(str(phone_number))
-                            # twilio_verification.send_otp()
-                            return Response(status=status.HTTP_200_OK,
-                                            data={"client_created": serializer.data})
+                            package = ClientPackage.objects.get(id=package)
+                            no_of_invoices = package.no_of_invoices
+                            try:
+                                new_auth_user = User.objects.create_user(
+                                    email,
+                                    email,
+                                    password
+                                )
+                                new_auth_user.first_name = first_name
+                                new_auth_user.last_name = last_name
+                                sendConfirm(new_auth_user)
+                                try:
+                                    new_client = Client.objects.create(
+                                        user=new_auth_user,
+                                        package=package,
+                                        first_name=first_name,
+                                        last_name=last_name,
+                                        username=username,
+                                        admin_approval_status=admin_approval_status,
+                                        email=email,
+                                        no_of_invoices=no_of_invoices,
+                                        current_location=current_location,
+                                        phone_number=phone_number,
+                                        address=address,
+                                        gender=gender,
+                                        image=image
+                                    )
+                                    new_client.save()
+                                    serializer = ClientSerializer(new_client)
+                                    new_auth_user.save()
+                                    return Response(status=status.HTTP_200_OK,
+                                                    data={"client_created": serializer.data})
+                                except:
+                                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                    data={"message": "there was a error creating "
+                                                                     "delivery_person was not created"})
+                            except:
+                                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                data={"message": "There was a error creating"
+                                                                 "auth user"})
                         except:
-                            return Response(status=status.HTTP_400_BAD_REQUEST,
-                                            data="Error! delivery_person was not created "
-                                                 "but auth_user was created "
-                                                 "deleting auth-user entry")
+                            return Response(status=status.HTTP_404_NOT_FOUND,
+                                            data={"message": f"No package with the ID: {package}"})
                     except:
                         return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data="Email already registered")
+                                        data={"message": "There was a error sending otp"
+                                                         "please try to sign up again"})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data="Error! Make sure you're not missing one of the "
-                                     "following required fields: (first_name, last_name, "
-                                     "email, phone_number, password)")
+                                data={"message": "Error! Make sure you're not missing one of the "
+                                      "following required fields: (first_name, last_name, "
+                                      "email, phone_number, password)"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data="Error! Make sure you're not missing one "
-                                 "of the following optional fields: "
-                                 "(current_location, address, gender, image) "
-                                 "Note: If you want to leave fields blank, then "
-                                 "send null or empty")
+                            data={"message": "Make sure you're not missing one "
+                                  "of the following optional fields: "
+                                  "(current_location, address, gender, image) "
+                                  "Note: If you want to leave fields blank, then "
+                                  "send null or empty"})
 
 
 class UpdateClientApiView(APIView):
@@ -108,7 +133,6 @@ class UpdateClientApiView(APIView):
             saved_data = User.objects.get(email = request.data['email'])
             saved_data.first_name = request.data['first_name']
             saved_data.last_name = request.data['last_name']
-            # saved_data.password = request.data['password']
             Client.objects.filter(user_id = saved_data.id).update(
                     first_name=request.data["first_name"],
                     last_name=request.data["last_name"],
@@ -133,7 +157,6 @@ class DeleteClientApiView(APIView):
             try:
                 client = Client.objects.get(id=id)
                 user = User.objects.get(id=client.user.id)
-                # print(client.user__id)
                 username = user.username
                 user.delete()
                 return Response(status=status.HTTP_200_OK, data={"Deleted record against username": username})
@@ -153,7 +176,7 @@ class ListClientsApiView(APIView):
             else:
                 clients = Client.objects.all().order_by('-date_created')
                 data_to_pass = ClientSerializer(clients, many=True)
-            return Response(status=status.HTTP_200_OK, data={"all_clients": data_to_pass.data})
+            return Response(status=status.HTTP_200_OK, data={"client": data_to_pass.data})
         except Exception as e:
             return Response(status=status.HTTP_404_NOT_FOUND, data={"No Clients Found"})
 
@@ -163,13 +186,13 @@ class BusinessDetailInsertApiView(APIView):
 
     def post(self, request):
         try:
-            username = request.data['username']
+            client_id = request.data['client']
             business_name = request.data['business_name']
             business_nature = request.data['business_nature']
             business_type = request.data['business_type']
             business_logo = request.data['business_logo']
 
-            client = Client.objects.get(username=username)
+            client = Client.objects.get(id=client_id)
             business_detail = ClientBusinessDetail.objects.create(
                 client=client,
                 name=business_name,
@@ -207,7 +230,7 @@ class ListBusinessDetailsApiView(APIView):
 
 
 class ListClientBusinessDetailsApiView(APIView):
-    def get(self, request, id = None):
+    def get(self, request, id=None):
         if id:
             try:
                 business_detail = ClientBusinessDetail.objects.get(client__id=id)
@@ -221,7 +244,7 @@ class ListClientBusinessDetailsApiView(APIView):
 
 class UpdateBusinessApiView(APIView):
 
-    def put(self, request, id = None):
+    def put(self, request, id=None):
         try:
             business_id = request.data['id']
             business_name = request.data['business_name']
@@ -644,15 +667,15 @@ class ClientLogin(TokenObtainPairView):
 
 class PendingApprovalListApiView(APIView):
 
-    def get(self, request, id=None):
+    def get(self, request):
         try:
-            admin_approval_status = request.data['admin_approval_status']
+            admin_approval_status = self.request.query_params.get('admin_approval_status').lower()
             try:
                 client = Client.objects.filter(admin_approval_status=admin_approval_status)
                 serializer = ClientSerializer(client, many=True)
                 if not client:
                     return Response(status=status.HTTP_200_OK,
-                                    data={"Delivery Person table is empty": serializer.data})
+                                    data={"message": "Client table is empty"})
                 return Response(status=status.HTTP_200_OK,
                                 data={"pending_approval_list": serializer.data})
             except:

@@ -16,6 +16,11 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
+# Delivery Person home screen Dashboard
+class DeliveryPersonDashboardApiView(APIView):
+    pass
+
+
 # Delivery Person Registration API
 class RegisterDeliveryPersonApiView(APIView):
 
@@ -39,6 +44,7 @@ class RegisterDeliveryPersonApiView(APIView):
                 phone_number = request.data['phone_number']
                 password = request.data['password']
                 admin_approval_status = 'pending'
+                package = request.data['package']
                 if first_name == ""\
                         or last_name == ""\
                         or email == ""\
@@ -54,51 +60,61 @@ class RegisterDeliveryPersonApiView(APIView):
                                     data="Phone Number already registered!")
                 except:
                     try:
-                        new_auth_user = User.objects.create_user(
-                            email,
-                            email,
-                            password
-                        )
-                        new_auth_user.first_name = first_name
-                        new_auth_user.last_name = last_name
-                        sendConfirm(new_auth_user)
+                        twilio_verification = TwilioVerification(str(phone_number))
+                        twilio_verification.send_otp()
                         try:
-                            new_delivery_person = DeliveryPerson.objects.create(
-                                user=new_auth_user,
-                                first_name=first_name,
-                                last_name=last_name,
-                                username=username,
-                                admin_approval_status=admin_approval_status,
-                                email=email,
-                                current_location=current_location,
-                                buying_capacity=buying_capacity,
-                                phone_number=phone_number,
-                                address=address,
-                                gender=gender,
-                                image=image
-                            )
-                            new_delivery_person.save()
-                            serializer = DeliveryPersonSerializer(new_delivery_person)
-                            new_auth_user.save()
-                            twilio_verification = TwilioVerification(str(phone_number))
-                            twilio_verification.send_otp()
-
-                            print("Data Saved: ", new_delivery_person)
-                            return Response(status=status.HTTP_200_OK,
-                                            data={"delivery_person_created": serializer.data})
+                            package = DeliveryPersonPackage.objects.get(id=package)
+                            no_of_invoices = package.no_of_invoices
+                            try:
+                                new_auth_user = User.objects.create_user(
+                                    email,
+                                    email,
+                                    password
+                                )
+                                new_auth_user.first_name = first_name
+                                new_auth_user.last_name = last_name
+                                sendConfirm(new_auth_user)
+                                try:
+                                    new_delivery_person = DeliveryPerson.objects.create(
+                                        user=new_auth_user,
+                                        first_name=first_name,
+                                        last_name=last_name,
+                                        username=username,
+                                        admin_approval_status=admin_approval_status,
+                                        email=email,
+                                        current_location=current_location,
+                                        buying_capacity=buying_capacity,
+                                        phone_number=phone_number,
+                                        address=address,
+                                        gender=gender,
+                                        image=image,
+                                        no_of_invoices=no_of_invoices,
+                                    )
+                                    new_delivery_person.save()
+                                    serializer = DeliveryPersonSerializer(new_delivery_person)
+                                    new_auth_user.save()
+                                    return Response(status=status.HTTP_200_OK,
+                                                    data={"delivery_person_created": serializer.data})
+                                except:
+                                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                    data={"message": "there was a error "
+                                                                     "creating delivery_person"})
+                            except:
+                                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                data={"message": "There was a error creating"
+                                                                 "auth user"})
                         except:
-                            return Response(status=status.HTTP_400_BAD_REQUEST,
-                                            data="Error! delivery_person was not created "
-                                                 "but auth_user was created "
-                                                 "deleting auth-user entry")
+                            return Response(status=status.HTTP_404_NOT_FOUND,
+                                            data={"message": f"No package with the ID: {package}"})
                     except:
                         return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data="Email already registered")
+                                        data={"message": "There was a error sending otp"
+                                                         "please try to sign up again"})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data="Error! Make sure you're not missing one of the "
-                                     "following required fields: (first_name, last_name, "
-                                     "email, phone_number, password)")
+                                data={"message": "Make sure you're not missing one of the "
+                                      "following required fields: (first_name, last_name, "
+                                      "email, phone_number, password)"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data="Error! Make sure you're not missing one "
@@ -757,15 +773,15 @@ class UpdateDeliveryPersonApprovalStatus(APIView):
 
 class PendingApprovalListApiView(APIView):
 
-    def get(self, request, id=None):
+    def get(self, request):
         try:
-            admin_approval_status = request.data['admin_approval_status']
+            admin_approval_status = self.request.query_params.get('admin_approval_status').lower()
             try:
                 delivery_person = DeliveryPerson.objects.filter(admin_approval_status=admin_approval_status)
                 serializer = DeliveryPersonSerializer(delivery_person, many=True)
                 if not delivery_person:
                     return Response(status=status.HTTP_200_OK,
-                                    data={"Delivery Person table is empty": serializer.data})
+                                    data={"message": "Delivery Person table is empty"})
                 return Response(status=status.HTTP_200_OK,
                                 data={"pending_approval_list": serializer.data})
             except:

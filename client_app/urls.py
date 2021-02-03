@@ -68,6 +68,8 @@ urlpatterns = [
     path('approval_list/', PendingApprovalListApiView.as_view()),
 
     # Login
-    path('client_login/', ClientLogin.as_view())
+    path('client_login/', ClientLogin.as_view()),
 
+    # Client home screen Dashboard
+    path('client_dashboard/', ClientDashboardApiView.as_view())
 ]
