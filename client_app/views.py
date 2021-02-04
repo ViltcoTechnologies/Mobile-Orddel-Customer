@@ -4,7 +4,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt import authentication
 from django_email_verification import sendConfirm
 from rest_framework.response import Response
-from .models import *
+from client_app.models import *
+from order.models import *
 from .serializers import *
 import json
 from django.core.mail import send_mail
@@ -23,6 +24,44 @@ class ClientDashboardApiView(APIView):
     def post(self, request):
         try:
             client_id = request.data['client']
+            if client_id == "":
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "client can't be empty"})
+            try:
+                client = Client.object.get(id=client_id)
+                package = ClientPackage.objects.get(id=client.package.id)
+                try:
+                    client_image = delivery_person.image
+                    client_name = f"{client.first_name} {client.last_name}"
+                    total_invoices = package.no_of_invoices
+                    remaining_invoices = client.no_of_invoices
+                    used_invoices = orignal_no_of_invoices - remaining_invoices
+                    no_of_pending_orders = OrderDetails.objects.filter(status="pending").count()
+                    no_of_completed_orders = OrderDetails.objects.filter(status="completed").count()
+                    no_of_in_progress_orders = OrderDetails.objects.filter(status="in_progress").count()
+                    if not no_of_pending_orders:
+                        no_of_pending_orders = 0
+                    if not no_of_completed_orders:
+                        no_of_completed_orders = 0
+                    data = {
+                        "no_of_in_progress_orders": no_of_in_progress_orders,
+                        "client_image": client_image,
+                        "client_name": client_name,
+                        "total_invoices": total_invoices,
+                        "remaining_invoices": remaining_invoices,
+                        "used_invoices": used_invoices,
+                        "no_of_pending_orders": no_of_pending_orders,
+                        "no_of_completed_orders": no_of_completed_orders
+                    }
+                    return Response(status=status.HTTP_200_OK,
+                                    data=data)
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data={"message": "There was a error fetching data "
+                                                     "from the database"})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "Incorrect Client ID"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"message": "client is required"})
@@ -564,6 +603,7 @@ class DeletePackageApiView(APIView):
 
 
 class UpdateClientApprovalStatus(APIView):
+
     def post(self, request):
         try:
             client = request.data['client']
@@ -596,10 +636,12 @@ class UpdateClientApprovalStatus(APIView):
                 [f"{client.email}"],
                 fail_silently=False,
             )
-            return Response(status=status.HTTP_200_OK, data={"approval_status": client.admin_approval_status})
+            return Response(status=status.HTTP_200_OK,
+                            data={"approval_status": client.admin_approval_status})
 
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "client id incorrect"})
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"error": "client id incorrect"})
 
 
 # ------------------------------------------------------------------------------------------------------------------------
@@ -673,6 +715,7 @@ class PendingApprovalListApiView(APIView):
             try:
                 client = Client.objects.filter(admin_approval_status=admin_approval_status)
                 serializer = ClientSerializer(client, many=True)
+                print(admin_approval_status, client)
                 if not client:
                     return Response(status=status.HTTP_200_OK,
                                     data={"message": "Client table is empty"})

@@ -5,7 +5,8 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
-from .models import *
+from client_app.models import *
+from order.models import *
 from .serializers import *
 from django_email_verification import sendConfirm
 from django.core.mail import send_mail
@@ -18,7 +19,51 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 # Delivery Person home screen Dashboard
 class DeliveryPersonDashboardApiView(APIView):
-    pass
+
+    def post(self, request):
+        try:
+            delivery_person_id = request.data['delivery_person']
+            if delivery_person_id == "":
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "delivery_person can't be empty"})
+            try:
+                delivery_person = DeliveryPerson.object.get(id=delivery_person_id)
+                package = DeliveryPersonPackage.objects.get(id=delivery_person_id.package.id)
+                try:
+                    delivery_person_image = delivery_person.image
+                    delivery_person_name = f"{delivery_person.first_name} {delivery_person.last_name}"
+                    total_invoices = package.no_of_invoices
+                    remaining_invoices = delivery_person.no_of_invoices
+                    used_invoices = orignal_no_of_invoices - remaining_invoices
+                    no_of_pending_orders = OrderDetails.objects.filter(status="pending").count()
+                    no_of_completed_orders = OrderDetails.objects.filter(status="completed").count()
+                    no_of_in_progress_orders = OrderDetails.objects.filter(status="in_progress").count()
+                    if not no_of_pending_orders:
+                        no_of_pending_orders = 0
+                    if not no_of_completed_orders:
+                        no_of_completed_orders = 0
+                    data = {
+                        "no_of_in_progress_orders": no_of_in_progress_orders,
+                        "delivery_person_image": delivery_person_image,
+                        "delivery_person_name": delivery_person_name,
+                        "total_invoices": total_invoices,
+                        "remaining_invoices": remaining_invoices,
+                        "used_invoices": used_invoices,
+                        "no_of_pending_orders": no_of_pending_orders,
+                        "no_of_completed_orders": no_of_completed_orders
+                    }
+                    return Response(status=status.HTTP_200_OK,
+                                    data=data)
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data={"message": "There was a error fetching data "
+                                                     "from the database"})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "Incorrect Delivery Person ID"})
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"message": "client is required"})
 
 
 # Delivery Person Registration API
@@ -77,6 +122,7 @@ class RegisterDeliveryPersonApiView(APIView):
                                 try:
                                     new_delivery_person = DeliveryPerson.objects.create(
                                         user=new_auth_user,
+                                        package=package,
                                         first_name=first_name,
                                         last_name=last_name,
                                         username=username,
@@ -780,7 +826,7 @@ class PendingApprovalListApiView(APIView):
                 delivery_person = DeliveryPerson.objects.filter(admin_approval_status=admin_approval_status)
                 serializer = DeliveryPersonSerializer(delivery_person, many=True)
                 if not delivery_person:
-                    return Response(status=status.HTTP_200_OK,
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={"message": "Delivery Person table is empty"})
                 return Response(status=status.HTTP_200_OK,
                                 data={"pending_approval_list": serializer.data})

@@ -25,32 +25,23 @@ admin_approval_choices = (
     ('cancelled', 'Cancelled')
 )
 
-# package_type_choices = (
-#     ('client', 'Client'),
-#     ('delivery', 'Delivery')
-# )
-
 # business_choices = (
 #     ('shop', 'Shop'),
 #     ('restaurant', 'Restaurant'),
 #     ('catering', 'Catering')
-#
-#
 #     )
-#
+
 # business_type_choices = (
 #     ('online', 'Online'),
 #     ('physical', 'Physical')
-#
 #     )
-
-# Many clients can be registered to a single package
 
 
 class ClientPackage(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(max_length=500, null=True, blank=True)
     no_of_invoices = models.IntegerField(default=10)
+    validity_in_days = models.IntegerField(default=0)
     price = models.CharField(max_length=200, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
 
