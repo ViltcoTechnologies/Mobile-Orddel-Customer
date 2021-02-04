@@ -461,7 +461,9 @@ class AdminLogin(TokenObtainPairView):
                         # print(otp_status)
                         # print(approval_status)
                         if is_active:
-                            return Response(status=status.HTTP_200_OK, data={"admin_user_id": admin_user.id, "data": serializer_class.validated_data})
+                            response = serializer_class.validated_data
+                            response["admin_user_id"] = admin_user.id
+                            return Response(status=status.HTTP_200_OK, data={"data": response})
                         else:
                             return Response(status=status.HTTP_200_OK, data={"data": "delivery person not authorized"})
 
