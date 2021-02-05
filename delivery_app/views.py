@@ -789,20 +789,21 @@ class UpdateDeliveryPersonApprovalStatus(APIView):
                     and admin_id == "" \
                     and admin_approval_status == "":
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data="Ooops! id of delivery_person, admin or "
-                                     "admin_approval_status can't be empty")
+                                data={"message": "id of delivery_person, admin or "
+                                      "admin_approval_status can't be empty"})
             try:
                 delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
-                if not approval_status == 'approved' \
-                        or approval_status == 'unapproved' \
-                        or approval_status == 'pending' \
-                        or approval_status == 'cancelled':
+                admin = AdminUser.objects.get(id=admin_id)
+                if not admin_approval_status == 'approved' \
+                        and not admin_approval_status == 'unapproved' \
+                        and not admin_approval_status == 'pending' \
+                        and not admin_approval_status == 'cancelled':
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={"message": "incorrect option for approval status"})
                 try:
                     new_approval_log = DeliveryPersonApprovalLog.objects.create(
-                        client=client_id,
-                        admin=admin_id,
+                        delivery_person=delivery_person,
+                        admin=admin,
                         admin_approval_status=admin_approval_status
                     )
                     serializer = DeliveryPersonApprovalLogSerializer(new_approval_log)
