@@ -269,7 +269,6 @@ class BusinessDetailInsertApiView(APIView):
 class ListBusinessDetailsApiView(APIView):
 
     def get(self, request, id=None):
-        print(id)
         if id:
             try:
                 business_detail = ClientBusinessDetail.objects.get(id=id)
