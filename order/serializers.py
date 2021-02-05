@@ -3,22 +3,22 @@ from django.contrib.auth.models import User
 from .models import *
 
 
-class CartSerializer(serializers.ModelSerializer):
+class OrderBoxSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cart
+        model = OrderBox
         fields = "__all__"
 
 
-class CartProductsSerializer(serializers.ModelSerializer):
+class OrderProductsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CartProducts
+        model = OrderProduct
         fields = "__all__"
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderDetail
-        fields = "__all__"
+        exclude = ('order_products',)
 
 
 class ConsolidatedPurchaseSerializer(serializers.ModelSerializer):

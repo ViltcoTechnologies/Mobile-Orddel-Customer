@@ -2,29 +2,29 @@ from django.contrib import admin
 from .models import *
 
 
-class CartAdmin(admin.ModelAdmin):
+class OrderBoxAdmin(admin.ModelAdmin):
     list_display = ('id', 'client')
     list_display_links = ('client',)
 
 
-admin.site.register(Cart, CartAdmin)
+admin.site.register(OrderBox, OrderBoxAdmin)
 
 
-class CartProductsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'cart', 'product', 'quantity', 'total_amount')
-    list_display_links = ('cart',)
+class OrderProductAdmin(admin.ModelAdmin):
+    list_display = ('id', 'order_box', 'product', 'quantity', 'total_amount')
+    list_display_links = ('order_box',)
 
 
-admin.site.register(CartProducts, CartProductsAdmin)
+admin.site.register(OrderProduct, OrderProductAdmin)
 
 
 class OrderDetailAdmin(admin.ModelAdmin):
-    list_display = ('id', 'cart', 'purchase_order_no', 'order_title', 'delivery_person', 'order_created_datetime',
-                    'order_delivery_datetime', 'shipment_address', 'delivery_notes', 'comment', 'distance', 'total_units_ordered',
+    list_display = ('id', 'order_box', '__str__', 'purchase_order_no', 'order_title', 'delivery_person', 'order_created_datetime',
+                    'order_delivery_datetime', 'shipment_address', 'delivery_notes', 'comment', 'distance',
                     'status', 'payment_type'
 
                     )
-    list_display_links = ('cart', 'purchase_order_no', 'order_title')
+    list_display_links = ('order_box', 'purchase_order_no', 'order_title')
 
 
 admin.site.register(OrderDetail, OrderDetailAdmin)
