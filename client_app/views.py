@@ -6,7 +6,9 @@ from django_email_verification import sendConfirm
 from rest_framework.response import Response
 from client_app.models import *
 from order.models import *
+from admin_dashboard.models import *
 from .serializers import *
+from admin_dashboard.serializers import *
 import json
 from django.core.mail import send_mail
 from ordel.verificaton import TwilioVerification
@@ -21,37 +23,49 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 # Client home screen Dashboard
 class ClientDashboardApiView(APIView):
 
-    def post(self, request):
+    def get(self, request, id=None):
         try:
-            client_id = request.data['client']
+            client_id = id
             if client_id == "":
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={"message": "client can't be empty"})
             try:
-                client = Client.object.get(id=client_id)
+                client = Client.objects.get(id=client_id)
                 package = ClientPackage.objects.get(id=client.package.id)
                 try:
-                    client_image = delivery_person.image
+                    # client_image = delivery_person.image
                     client_name = f"{client.first_name} {client.last_name}"
                     total_invoices = package.no_of_invoices
                     remaining_invoices = client.no_of_invoices
-                    used_invoices = orignal_no_of_invoices - remaining_invoices
-                    no_of_pending_orders = OrderDetails.objects.filter(status="pending").count()
-                    no_of_completed_orders = OrderDetails.objects.filter(status="completed").count()
-                    no_of_in_progress_orders = OrderDetails.objects.filter(status="in_progress").count()
-                    if not no_of_pending_orders:
-                        no_of_pending_orders = 0
-                    if not no_of_completed_orders:
-                        no_of_completed_orders = 0
+                    used_invoices = total_invoices - remaining_invoices
+                    # no_of_pending_orders = 5
+                    no_of_pending_orders = OrderDetails.objects.filter(status="pending")
+                    no_of_completed_orders = 6
+                    # no_of_completed_orders = OrderDetails.objects.filter(status="completed")
+                    no_of_in_progress_orders = 7
+                    # no_of_in_progress_orders = OrderDetails.objects.filter(status="in_progress")
+                    # if no_of_pending_orders:
+                    #     no_of_pending_orders.count()
+                    # else:
+                    #     no_of_pending_orders = 0
+                    # if no_of_completed_orders:
+                    #     no_of_completed_orders.count()
+                    # else:
+                    #     no_of_completed_orders = 0
+                    # if no_of_in_progress_orders:
+                    #     no_of_in_progress_orders.count()
+                    # else:
+                    #     no_of_in_progress_orders = 0
+                    print("here")
                     data = {
-                        "no_of_in_progress_orders": no_of_in_progress_orders,
-                        "client_image": client_image,
+                        # "client_image": client_image,
                         "client_name": client_name,
                         "total_invoices": total_invoices,
                         "remaining_invoices": remaining_invoices,
                         "used_invoices": used_invoices,
                         "no_of_pending_orders": no_of_pending_orders,
-                        "no_of_completed_orders": no_of_completed_orders
+                        "no_of_completed_orders": no_of_completed_orders,
+                        "no_of_in_progress_orders": no_of_in_progress_orders,
                     }
                     return Response(status=status.HTTP_200_OK,
                                     data=data)
@@ -226,30 +240,36 @@ class BusinessDetailInsertApiView(APIView):
     def post(self, request):
         try:
             client_id = request.data['client']
-            business_name = request.data['business_name']
-            business_nature = request.data['business_nature']
-            business_type = request.data['business_type']
-            business_logo = request.data['business_logo']
-
-            client = Client.objects.get(id=client_id)
-            business_detail = ClientBusinessDetail.objects.create(
-                client=client,
-                name=business_name,
-                nature=business_nature,
-                type=business_type,
-                logo=business_logo
-            )
-            print(business_detail.id)
-            bd = ClientBusinessDetail.objects.filter(id=business_detail.id, client = client)
-            data_to_pass = BusinessDetailSerializer(bd, many=True)
-            return Response(status=status.HTTP_200_OK, data={"business_details": data_to_pass.data[0]})
-        except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception": e})
+            business_name = request.data['name']
+            business_nature = request.data['nature']
+            business_type = request.data['type']
+            business_logo = request.data['logo']
+            try:
+                client = Client.objects.get(id=client_id)
+                business_detail = ClientBusinessDetail.objects.create(
+                    client=client,
+                    name=business_name,
+                    nature=business_nature,
+                    type=business_type,
+                    logo=business_logo
+                )
+                print(business_detail.id)
+                bd = ClientBusinessDetail.objects.filter(id=business_detail.id, client=client)
+                data_to_pass = BusinessDetailSerializer(bd, many=True)
+                return Response(status=status.HTTP_200_OK,
+                                data={"business_details": data_to_pass.data[0]})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data="There was a error inserting business details")
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"message": "you're missing on the required fields"})
 
 
 class ListBusinessDetailsApiView(APIView):
 
-    def get(self, request):
+    def get(self, request, id=None):
+        print(id)
         if id:
             try:
                 business_detail = ClientBusinessDetail.objects.get(id=id)
@@ -602,46 +622,60 @@ class DeletePackageApiView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"Error": "Unable to delete record"})
 
 
+# ------------------------------------------------------------------------------------------------------------------------
+
+
+# Update client approval status
 class UpdateClientApprovalStatus(APIView):
 
     def post(self, request):
         try:
-            client = request.data['client']
-            client = Client.objects.get(id=client)
-            approval_status = request.data['approval_status']
-            approval_status.lower()
-            if approval_status == 'approved':
-                client.admin_approval_status = 'approved'
-                client.save()
-
-            elif approval_status == 'unapproved':
-                client.admin_approval_status = 'unapproved'
-                client.save()
-
-            elif approval_status == 'pending':
-                client.admin_approval_status = 'pending'
-                client.save()
-
-            elif approval_status == 'cancelled':
-                client.admin_approval_status = 'cancelled'
-                client.save()
-
-            else:
+            # required parameters
+            client_id = request.data['client']
+            admin_id = request.data['admin']
+            admin_approval_status = request.data['admin_approval_status']
+            if client_id == "" \
+                    and admin_id == "" \
+                    and admin_approval_status == "":
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={"error": "incorrect option for approval status"})
-            send_mail(
-                'Notification Email',
-                f'Your account has been {approval_status}.',
-                'orddel@viltco.com',
-                [f"{client.email}"],
-                fail_silently=False,
-            )
-            return Response(status=status.HTTP_200_OK,
-                            data={"approval_status": client.admin_approval_status})
-
+                                data="Ooops! id of client, admin or "
+                                     "admin_approval_status can't be empty")
+            try:
+                client = Client.objects.get(id=client_id)
+                if not approval_status == 'approved'\
+                        or approval_status == 'unapproved'\
+                        or approval_status == 'pending'\
+                        or approval_status == 'cancelled':
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data={"message": "incorrect option for approval status"})
+                try:
+                    new_approval_log = ClientApprovalLog.objects.create(
+                        client=client_id,
+                        admin=admin_id,
+                        admin_approval_status=admin_approval_status
+                    )
+                    serializer = ClientApprovalLogSerializer(new_approval_log)
+                    client.admin_approval_status = admin_approval_status
+                    client.save()
+                    send_mail(
+                        'Notification Email',
+                        f'Your account is {approval_status}.',
+                        'orddel@viltco.com',
+                        [f"{client.email}"],
+                        fail_silently=False,
+                    )
+                    return Response(status=status.HTTP_200_OK,
+                                    data={"log_created": serializer.data})
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data={"message": "Error creating client approval log"})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "invalid client or admin ID"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data={"error": "client id incorrect"})
+                            data={"message": "missing one or more required"
+                                  "fields (id of client, admin and admin_approval_status) "})
 
 
 # ------------------------------------------------------------------------------------------------------------------------
