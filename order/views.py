@@ -4,35 +4,35 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt import authentication
 from rest_framework.response import Response
 from .models import *
+from datetime import date
 from .serializers import *
 import json
 import random
 import string
 
-# Create your views here.
 
-class CreateCartApiView(APIView):
+# Create your views here.
+class CreateOrderBoxApiView(APIView):
     def post(self, request):
         client_id = request.data['client_id']
-        grand_total = request.data['grand_total']
 
         try:
             client = Client.objects.get(id=client_id)
             try:
-                try:
-                    cart = Cart.objects.get(client=client.id)
-                    print(cart)
-                    serializer = CartSerializer(cart)
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data={"cart_already_present": serializer.data["client"]})
+                # try:
+                #     order_box = OrderBox.objects.get(client=client.id)
+                #     print(order_box)
+                #     serializer = OrderBoxSerializer(order_box)
+                #     return Response(status=status.HTTP_400_BAD_REQUEST, data={"cart_already_present": serializer.data["client"]})
+                #
+                # except:
 
-                except:
-                    cart = Cart.objects.create(
-                        client=client,
-                        grand_total=grand_total
-                    )
-                    instance = Cart.objects.get(id=cart.id)
-                    serializer = CartSerializer(instance)
-                    return Response(status=status.HTTP_201_CREATED, data={"cart": serializer.data})
+                cart = OrderBox.objects.create(
+                    client=client
+                )
+                instance = OrderBox.objects.get(id=cart.id)
+                serializer = OrderBoxSerializer(instance)
+                return Response(status=status.HTTP_201_CREATED, data={"cart": serializer.data})
 
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "error in record creation"})
@@ -41,29 +41,29 @@ class CreateCartApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "Invalid data entered"})
 
 
-class ListCartApiView(APIView):
+class ListOrderBoxApiView(APIView):
     def get(self, request, id=None):
         try:
             if id:
-                cart = Cart.objects.get(id=id)
-                data_to_pass = CartSerializer(cart)
+                order_box = OrderBox.objects.get(id=id)
+                data_to_pass = OrderBoxSerializer(order_box)
             else:
-                cart = Cart.objects.all().order_by('-date_created')
-                data_to_pass = CartSerializer(cart, many=True)
-            return Response(status=status.HTTP_200_OK, data={"cart(s)": data_to_pass.data})
+                order_box = OrderBox.objects.all().order_by('-date_created')
+                data_to_pass = OrderBoxSerializer(order_box, many=True)
+            return Response(status=status.HTTP_200_OK, data={"order_box": data_to_pass.data})
         except Exception as e:
-            return Response(status=status.HTTP_404_NOT_FOUND, data={"No Carts Found"})
+            return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "No Order-box(es) Found"})
 
 
-class UpdateCartApiView(APIView):
+class UpdateOrderBoxApiView(APIView):
     def put(self, request):
         try:
-            cart_id = request.data['cart_id']
+            order_box_id = request.data['order_box']
             client_id = request.data['client_id']
 
 
             try:
-                cart = Cart.objects.get(id=cart_id)
+                order_box = OrderBox.objects.get(id=order_box_id)
 
                 try:
                     client = Client.objects.get(id=client_id)
@@ -74,150 +74,137 @@ class UpdateCartApiView(APIView):
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "cart not entered or not found"})
 
-            Cart.objects.filter(id=cart_id).update(
+            OrderBox.objects.filter(id=order_box_id).update(
                     client=client
                 )
-            cart = Cart.objects.get(id=cart_id)
-            print("Cart ID :", cart)
-            data_to_pass = CartSerializer(cart)
-            return Response(status=status.HTTP_200_OK, data={"updated_business_details": data_to_pass.data})
+            order_box = OrderBox.objects.get(id=order_box_id)
+            print("Cart ID :", order_box)
+            data_to_pass = OrderBoxSerializer(order_box)
+            return Response(status=status.HTTP_200_OK, data={"updated_order_box": data_to_pass.data})
 
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception": e})
 
 
-class DeleteCartApiView(APIView):
+class DeleteOrderBoxApiView(APIView):
     def delete(self, request, id=None):
         if id:
             try:
-                cart = Cart.objects.get(id=id)
-                data = CartSerializer(cart)
-                cart.delete()
-                return Response(status=status.HTTP_200_OK, data={"Deleted cart of client ": data.data['client']})
+                order_box = OrderBox.objects.get(id=id)
+                data = OrderBoxSerializer(order_box)
+                order_box.delete()
+                return Response(status=status.HTTP_200_OK, data={"message": f"Deleted orderbox of client {data.data['client']}"})
             except Exception as e:
-                return Response(status = status.HTTP_400_BAD_REQUEST, data={"Exception": e})
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception": e})
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"Error Msg": "ID missing from URL"})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error_msg": "ID missing from URL"})
 
 
-class AddCartProductsApiView(APIView):
+class AddOrderBoxProductsApiView(APIView):
 
     def post(self, request):
 
+    # try:
+        order_box_id = request.data['order_box']
+        products = request.data['order_products']
         try:
-            cart_id = request.data['cart_id']
-            products = request.data['cart_products']
-            try:
-                cart = Cart.objects.get(id=cart_id)
-                for prod in products:
-                    product = Product.objects.get(id=prod['id'])
-                    price = product.avg_price
-                    try:
-                        cart_prod = CartProducts.objects.get(cart=cart, product=product)
-                        cart_prod.quantity += prod['quantity']
-                        cart_prod.total_amount += price*prod['quantity']
-                        cart_prod.save()
+            order_box = OrderBox.objects.get(id=order_box_id)
+            for prod in products:
+                product = Product.objects.get(id=prod['id'])
+                # price = product.avg_price
+                try:
+                    order_pro = OrderProduct.objects.get(order_box=order_box, product=product)
+                    order_pro.quantity += prod['quantity']
+                    order_pro.total_amount += prod['total_amount']
+                    order_pro.save()
 
-                    except:
-                        CartProducts.objects.create(
-                            cart=cart,
-                            product=product,
-                            quantity=prod['quantity'],
-                            total_amount=price*prod['quantity']
-                        )
-                add_to_cart = CartProducts.objects.filter(cart=cart)
-                data_list = []
-                grand_total = 0
-                for obj in add_to_cart:
-                    serializer = CartProductsSerializer(obj)
-                    data_list.append(serializer.data)
-                    grand_total += obj.total_amount
+                except:
+                    OrderProduct.objects.create(
+                        order_box=order_box,
+                        product=product,
+                        quantity=prod['quantity'],
+                        total_amount=prod['total_amount']
+                    )
+            add_to_order = OrderProduct.objects.filter(order_box=order_box)
+            data_list = []
+            grand_total = 0
+            for obj in add_to_order:
+                serializer = OrderProductsSerializer(obj)
+                data_list.append(serializer.data)
+                grand_total += obj.total_amount
 
-                cart.save()
-                cart = {
-                        "cart_id": cart.id,
-                        "grand_total": grand_total,
-                        "client": str(cart.client.user),
-                        "cart_products": data_list
-                }
+            # order_box.save()
+            order_box = {
+                    "order_box": order_box.id,
+                    "grand_total": grand_total,
+                    "client": str(order_box.client.first_name + " " + order_box.client.last_name),
+                    "order_products": data_list
+            }
 
-                return Response(status=status.HTTP_201_CREATED, data={"cart": cart})
-            except Exception as e:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": e})
+            return Response(status=status.HTTP_201_CREATED, data={"order_box": order_box})
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": e})
+    # except Exception as e:
+    #     return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": e})
 
 
-class ListCartProductsApiView(APIView):
+class ListOrderBoxProductsApiView(APIView):
 
     def get(self, request, id=None):
 
         try:
             if id:
-                cart_products = CartProducts.objects.filter(cart__id=id)
+                order_products = OrderProduct.objects.filter(order_box__id=id)
                 data_list = []
                 grand_total = 0
-                cart = {}
-                for obj in cart_products:
-                    serializer = CartProductsSerializer(obj)
+                order_box = {}
+                for obj in order_products:
+                    serializer = OrderProductsSerializer(obj)
                     data_list.append(serializer.data)
                     grand_total += obj.total_amount
 
-                cart_id = int(str(data_list[0]['cart']))
-                cart_obj = Cart.objects.get(id=cart_id)
-                cart["cart_id"] = cart_obj.id
-                cart["grand_total"] = grand_total
-                cart["client"] = str(cart_obj.client.user)
-                cart["products"] = data_list
-                return Response(status=status.HTTP_200_OK, data={"cart_products": cart})
+                order_box_id = int(str(data_list[0]['order_box']))
+                order_box_obj = OrderBox.objects.get(id=order_box_id)
+                order_box["order_box_id"] = order_box_obj.id
+                order_box["grand_total"] = grand_total
+                order_box["client"] = str(order_box_obj.client.user)
+                order_box["products"] = data_list
+                return Response(status=status.HTTP_200_OK, data={"order_box_products": order_box})
 
             else:
-                cart_obj = Cart.objects.all().order_by('-date_created')
+                order_box_obj = OrderBox.objects.all().order_by('-date_created')
 
-                carts = []
-                for c_obj in cart_obj:
-                    cart_dict = {}
-                    cart_dict["cart_id"] = c_obj.id
-                    cart_prod = c_obj.cartproducts_set.all()
-                    serializer = CartProductsSerializer(cart_prod, many=True)
-                    cart_dict["products"] = serializer.data
-                    carts.append(cart_dict)
+                order_box = []
+                for o_obj in order_box_obj:
+                    order_box_dict = {}
+                    order_box_dict["order_box_id"] = o_obj.id
+                    order_box_prod = o_obj.orderproducts_set.all()
+                    serializer = OrderProductsSerializer(order_box_prod, many=True)
+                    order_box_dict["products"] = serializer.data
+                    order_box.append(order_box_dict)
 
-                return Response(status=status.HTTP_200_OK, data={"carts": carts})
+                return Response(status=status.HTTP_200_OK, data={"carts": order_box})
 
 
         except Exception as e:
-            return Response(status=status.HTTP_404_NOT_FOUND, data={"No Carts Found"})
+            return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "No Order-box(es) Found"})
 
 
-class UpdateCartProductsApiView(APIView):
-    pass
-#     def put(self, request):
-#         cart_id = request.data["cart_id"]
-#         grand_total = request.data["grand_total"]
-#         client = request.data["client"]
-#         products = request.data["products"]
-#
-#         for prod in products:
-#             total_amount = prod['product']
-#             cartprod = CartProducts.objects.filter(id=prod['id']).update(
-#                 product=prod['product'],
-#                 quantity=prod['quantity']
-#
-#
-#             )
+class UpdateOrderBoxProductsApiView(generics.UpdateAPIView):
+    queryset = OrderProduct.objects.all()
+    serializer_class = OrderProductsSerializer
 
 
-class DeleteCartProductsApiView(APIView):
+class DeleteOrderBoxProductsApiView(APIView):
 
     def delete(self, request, id=None):
         if id:
             try:
-                cart_products = CartProducts.objects.filter(cart__id=id)
-                print(cart_products)
-                serializer = CartProductsSerializer(cart_products, many=True)
-                cart_products.delete()
-                return Response(status=status.HTTP_200_OK, data={"deleted_products": serializer.data})
+                order_box_products = OrderProduct.objects.filter(order_box__id=id)
+                print(order_box_products)
+                serializer = OrderProductsSerializer(order_box_products, many=True)
+                order_box_products.delete()
+                return Response(status=status.HTTP_200_OK, data={"status": "Successfully Deleted"})
 
             except Exception as e:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception": e})
@@ -227,25 +214,26 @@ class DeleteCartProductsApiView(APIView):
 
 class CreateOrderApiView(APIView):
 
-    def generate_ordernum(self):
-        letters_and_digits = string.ascii_letters + string.digits
-        rand_alphanum = ''.join((random.choice(letters_and_digits) for i in range(16)))
-        return rand_alphanum
+    # def generate_ordernum(self):
+    #     letters_and_digits = string.ascii_letters + string.digits
+    #     rand_alphanum = ''.join((random.choice(letters_and_digits) for i in range(16)))
+    #     return rand_alphanum
 
     def post(self, request):
 
-        while True:
-            try:
-                purchase_ordernum = self.generate_ordernum()
-                order = OrderDetail.objects.get(purchase_order_no=purchase_ordernum)
-                if not order:
-                    break
+        # while True:
+        #     try:
+        #         purchase_ordernum = self.generate_ordernum()
+        #         order = OrderDetail.objects.get(purchase_order_no=purchase_ordernum)
+        #         if not order:
+        #             break
+        #
+        #     except:
+        #         break
 
-            except:
-                break
 
-        cart = request.data['cart']
-        purchase_order_no = purchase_ordernum
+
+        order_box = request.data['order_box']
         order_title = request.data['order_title']
         delivery_person = request.data['delivery_person']
         order_delivery_datetime = request.data['order_delivery_datetime']
@@ -253,11 +241,11 @@ class CreateOrderApiView(APIView):
         delivery_notes = request.data['delivery_notes']
         comment = request.data['comment']
         distance = request.data['distance']
-        total_units_ordered = request.data['total_units_ordered']
-        delivery_status = request.data['status']
-        payment_type = request.data['payment_type']
+        # total_units_ordered = request.data['total_units_ordered']
+        delivery_status = request.data['status'].lower()
+        payment_type = request.data['payment_type'].lower()
         try:
-            cart_obj = Cart.objects.get(id=cart)
+            order_box_obj = OrderBox.objects.get(id=order_box)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "cart does not exist"})
 
@@ -267,39 +255,109 @@ class CreateOrderApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "delivery person does not exist"})
 
         try:
-            shipment_obj = ShipmentAddress.objects.get(id=shipment_address)
+            shipment_obj = ClientShipmentAddress.objects.get(id=shipment_address)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "shipment address does not exist"})
-
+        #
+        # try:
+        #
+        #     order = OrderDetail.objects.get(order_box=order_box_obj)
+        #     print(order)
+        #     return Response(status=status.HTTP_409_CONFLICT, data={"error": "record already exists"})
+        #
+        # except:
         try:
-            print("here")
-            order = OrderDetail.objects.get(cart=cart_obj)
-            print(order)
-            return Response(status=status.HTTP_409_CONFLICT, data={"error": "record already exists"})
+            client_id = order_box_obj.client.id
+            # print(client_id)
+            client = Client.objects.get(id=client_id)
+            orderdetail = OrderDetail.objects.filter(order_box=order_box).last()
+            if orderdetail:
+                po_number_list = orderdetail.purchase_order_no.split("_")
+                po_number = int(po_number_list[2])
+                po_number += 1
+                purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
+            else:
+                po_number = 1
+                purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
+
+            list_of_order_prods = []
+            list_of_order_prods.extend(order_box_obj.orderproduct_set.all())
+            # print(list_of_order_prods)
+            order = OrderDetail.objects.create(
+                order_box=order_box_obj,
+                purchase_order_no=purchase_order_no,
+                order_title=order_title,
+                delivery_person=delivery_obj,
+                order_delivery_datetime=order_delivery_datetime,
+                shipment_address=shipment_obj,
+                delivery_notes=delivery_notes,
+                comment=comment,
+                distance=distance,
+                # total_units_ordered=total_units_ordered,
+                status=delivery_status,
+                payment_type=payment_type
+            )
+            for prod in list_of_order_prods:
+                order.order_products.add(prod.id)
+            # print(client.number_of_order)
+            if client.no_of_invoices != 0:
+                client.no_of_invoices -= 1
+            client.number_of_order += 1
+            client.save()
+            serializer = OrderDetailSerializer(order)
+            response = serializer.data
+            products_details = []
+            for prod in list_of_order_prods:
+                product = {}
+                order_prod_obj = OrderProduct.objects.get(id=prod.id)
+                product['product_name'] = order_prod_obj.product.name
+                product['product_unit'] = order_prod_obj.product.unit
+                product['quantity'] = order_prod_obj.quantity
+                product['total_amount'] = order_prod_obj.total_amount
+                products_details.append(product)
+            response['order_products'] = products_details
+            return Response(status=status.HTTP_201_CREATED, data={"order": response})
 
         except:
-            try:
-                order = OrderDetail.objects.create(
-                    cart=cart_obj,
-                    purchase_order_no=purchase_order_no,
-                    order_title=order_title,
-                    delivery_person=delivery_obj,
-                    order_delivery_datetime=order_delivery_datetime,
-                    shipment_address=shipment_obj,
-                    delivery_notes=delivery_notes,
-                    comment=comment,
-                    distance=distance,
-                    total_units_ordered=total_units_ordered,
-                    status=delivery_status,
-                    payment_type=payment_type
-                )
-
-                serializer = OrderDetailSerializer(order)
-                return Response(status=status.HTTP_201_CREATED, data={"order": serializer.data})
-
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "record_creation_failed"})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "record_creation_failed"})
 
 
-class UpdateOrderApiView(APIView):
-    pass
+class UpdateOrderApiView(generics.UpdateAPIView):
+    queryset = OrderDetail.objects.all()
+    serializer_class = OrderDetailSerializer
+
+
+class ListOrderApiView(APIView):
+    def get(self, request, id=None):
+        try:
+            if id:
+                order_detail = OrderDetail.objects.get(order_box=id)
+                data_to_pass = OrderDetailSerializer(order_detail)
+            else:
+                order_detail = OrderDetail.objects.all().order_by('-date_created')
+                data_to_pass = OrderDetailSerializer(order_detail, many=True)
+
+            response = data_to_pass.data
+            order_box = response['order_box']
+            order_box_obj = OrderBox.objects.get(id=order_box)
+            order_prods = []
+            order_prods.extend(order_box_obj.orderproduct_set.all())
+            products_details = []
+            for prod in order_prods:
+                product = {}
+                order_prod_obj = OrderProduct.objects.get(id=prod.id)
+                product['product_name'] = order_prod_obj.product.name
+                product['product_unit'] = order_prod_obj.product.unit
+                product['quantity'] = order_prod_obj.quantity
+                product['total_amount'] = order_prod_obj.total_amount
+                products_details.append(product)
+            response['order_products'] = products_details
+            return Response(status=status.HTTP_200_OK, data={"order": response})
+
+        except Exception as e:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "No Order-box(es) Found"})
+
+
+class DeleteOrderApiView(generics.DestroyAPIView):
+    queryset = OrderDetail.objects.all()
+    serializer_class = OrderDetailSerializer

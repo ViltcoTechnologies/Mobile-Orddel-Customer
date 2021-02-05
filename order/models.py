@@ -14,6 +14,7 @@ payment_choices = (
 
 order_status_choices = (
     ('pending', 'Pending'),
+    ('in_progress', 'In Progress'),
     ('delivered', 'Delivered')
 
 )
@@ -25,7 +26,7 @@ cart_staging_choices = (
 )
 
 
-class Cart(models.Model):
+class OrderBox(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
     # grand_total = models.FloatField(default=0.0)
@@ -34,8 +35,8 @@ class Cart(models.Model):
         return str(self.id)
 
 
-class CartProducts(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True, blank=True)
+class OrderProduct(models.Model):
+    order_box = models.ForeignKey(OrderBox, on_delete=models.CASCADE, null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     total_amount = models.FloatField(default=0.0)
@@ -45,11 +46,11 @@ class CartProducts(models.Model):
         return str(self.id)
 
 
-
 class OrderDetail(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True, blank=True)
-    # cart_products = models.ManyToManyField(CartProducts)
-    purchase_order_no = models.CharField(max_length=100) # Unique Purchase Order Number assigned to client on every order
+    order_box = models.ForeignKey(OrderBox, on_delete=models.SET_NULL, null=True, blank=True)
+    order_products = models.ManyToManyField(OrderProduct)
+    # Unique Purchase Order Number assigned to client on every order
+    purchase_order_no = models.CharField(max_length=100)
     order_title = models.CharField(max_length=100, null=True, blank=True)
     delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
     order_created_datetime = models.DateTimeField(auto_now=True)
@@ -58,9 +59,9 @@ class OrderDetail(models.Model):
     delivery_notes = models.TextField(max_length=1000, null=True, blank=True)
     comment = models.TextField(max_length=500, null=True, blank=True)
     distance = models.CharField(max_length=100, null=True, blank=True)
-    total_units_ordered = models.IntegerField(default=0)
-    status = models.CharField(max_length=100, choices = order_status_choices, null=True, blank=True)
-    payment_type = models.CharField(max_length=100, choices = payment_choices, null=True, blank=True)
+    # total_units_ordered = models.IntegerField(default=0)
+    status = models.CharField(max_length=100, choices=order_status_choices, null=True, blank=True)
+    payment_type = models.CharField(max_length=100, choices=payment_choices, null=True, blank=True)
 
     def __str__(self):
         return self.order_title
