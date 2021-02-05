@@ -33,46 +33,40 @@ class ResendOtpApiView(APIView):
 
 class VerifyPhoneNumberApiView(APIView):
 
+    def get(self, request):
+        return Response(status=status.HTTP_200_OK)
+
     def post(self, request):
         try:
             phone_number = request.data['phone_number']
             verification_code = request.data['verification_code']
             user_type = request.data['user_type'].lower()
-            if user_type == "client":
-                try:
-                    twilio_verification = TwilioVerification(
-                        str(phone_number),
-                        str(verification_code)
+            print(verification_code)
+            try:
+                twilio_verification = TwilioVerification(
+                    str(phone_number),
+                    str(verification_code)
+                )
+                verification = twilio_verification.verify_otp()
+                if verification == "approved":
+                    if user_type == "client":
+                        saved_user = Client.objects.filter(phone_number=phone_number)
+                    if user_type == "delivery_person":
+                        saved_user = DeliveryPerson.objects.filter(phone_number=phone_number)
+                    saved_user.update(
+                        otp_status=True
                     )
-                    twilio_verification.verify_otp()
-                    client = Client.objects.get(phone_number=phone_number)
-                    client.otp_status = True
                     return Response(status=status.HTTP_200_OK,
                                     data="Verification successful")
-                except:
-                    return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data="There was a error "
-                                         "Verification code")
-            elif user_type == "delivery_person":
-                try:
-                    twilio_verification = TwilioVerification(
-                        str(phone_number),
-                        str(verification_code)
-                    )
-                    twilio_verification.verify_otp()
-                    delivery_person = DeliveryPerson.objects.get(phone_number=phone_number)
-                    delivery_person.otp_status = True
-                    return Response(status=status.HTTP_200_OK,
-                                    data="Verification successful")
-                except:
-                    return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data="There was a error "
-                                         "Verification code")
-            else:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data="Ooops! Invalid user_type "
-                                     "choose between client, delivery_person")
+                                data={"message": "The verification was not "
+                                                 "successful"})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "Twilio server is down, "
+                                                 "please try again later"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data="Oops! phone_number, verification_code "
-                                 "and user_type is required")
+                            data={"message": "you're missing one of the following "
+                                             "required field (phone_number, "
+                                             "verification_code or user_type"})

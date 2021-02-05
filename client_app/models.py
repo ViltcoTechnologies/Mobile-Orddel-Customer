@@ -25,32 +25,23 @@ admin_approval_choices = (
     ('cancelled', 'Cancelled')
 )
 
-# package_type_choices = (
-#     ('client', 'Client'),
-#     ('delivery', 'Delivery')
-# )
-
 # business_choices = (
 #     ('shop', 'Shop'),
 #     ('restaurant', 'Restaurant'),
 #     ('catering', 'Catering')
-#
-#
 #     )
-#
+
 # business_type_choices = (
 #     ('online', 'Online'),
 #     ('physical', 'Physical')
-#
 #     )
-
-# Many clients can be registered to a single package
 
 
 class ClientPackage(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(max_length=500, null=True, blank=True)
     no_of_invoices = models.IntegerField(default=10)
+    validity_in_days = models.IntegerField(default=0)
     price = models.CharField(max_length=200, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
 
@@ -69,7 +60,7 @@ class Client(models.Model):
     phone_number = models.CharField(max_length=50)
     address = models.CharField(max_length=200, null=True, blank=True)
     current_location = models.CharField(max_length=100, null=True, blank=True)
-    gender = models.CharField(max_length=300, choices=gender_choices)
+    gender = models.CharField(max_length=300, choices=gender_choices, blank=True, null=True)
     image = models.ImageField(upload_to=f"clients/photos/{user}/", null=True, blank=True)
     number_of_order = models.IntegerField(default=0)
     total_amount_shopped = models.IntegerField(default=0)

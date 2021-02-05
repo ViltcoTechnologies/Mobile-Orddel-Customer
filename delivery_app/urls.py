@@ -71,4 +71,7 @@ urlpatterns = [
     path('update_approval_status/', UpdateDeliveryPersonApprovalStatus.as_view()),
     path('approval_list/', PendingApprovalListApiView.as_view()),
     path('delivery_person_login/', DeliveryPersonLogin.as_view()),
+
+    # Delivery Person home screen Dashboard
+    path('delivery_person_dashboard/', DeliveryPersonDashboardApiView.as_view())
 ]
