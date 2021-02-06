@@ -334,24 +334,25 @@ class ListOrderApiView(APIView):
                 order_detail = OrderDetail.objects.get(order_box=id)
                 data_to_pass = OrderDetailSerializer(order_detail)
             else:
-                order_detail = OrderDetail.objects.all().order_by('-date_created')
+                order_detail = OrderDetail.objects.all().order_by('-order_created_datetime')
                 data_to_pass = OrderDetailSerializer(order_detail, many=True)
 
             response = data_to_pass.data
-            order_box = response['order_box']
-            order_box_obj = OrderBox.objects.get(id=order_box)
-            order_prods = []
-            order_prods.extend(order_box_obj.orderproduct_set.all())
-            products_details = []
-            for prod in order_prods:
-                product = {}
-                order_prod_obj = OrderProduct.objects.get(id=prod.id)
-                product['product_name'] = order_prod_obj.product.name
-                product['product_unit'] = order_prod_obj.product.unit
-                product['quantity'] = order_prod_obj.quantity
-                product['total_amount'] = order_prod_obj.total_amount
-                products_details.append(product)
-            response['order_products'] = products_details
+            if not isinstance(response, list):
+                order_box = response['order_box']
+                order_box_obj = OrderBox.objects.get(id=order_box)
+                order_prods = []
+                order_prods.extend(order_box_obj.orderproduct_set.all())
+                products_details = []
+                for prod in order_prods:
+                    product = {}
+                    order_prod_obj = OrderProduct.objects.get(id=prod.id)
+                    product['product_name'] = order_prod_obj.product.name
+                    product['product_unit'] = order_prod_obj.product.unit
+                    product['quantity'] = order_prod_obj.quantity
+                    product['total_amount'] = order_prod_obj.total_amount
+                    products_details.append(product)
+                response['order_products'] = products_details
             return Response(status=status.HTTP_200_OK, data={"order": response})
 
         except Exception as e:
