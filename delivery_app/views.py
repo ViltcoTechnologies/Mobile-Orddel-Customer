@@ -7,7 +7,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from client_app.models import *
 from order.models import *
+from admin_dashboard.models import *
 from .serializers import *
+from admin_dashboard.serializers import *
 from django_email_verification import sendConfirm
 from django.core.mail import send_mail
 from ordel.verificaton import TwilioVerification
@@ -20,40 +22,49 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 # Delivery Person home screen Dashboard
 class DeliveryPersonDashboardApiView(APIView):
 
-    def post(self, request):
+    def get(self, request, id=None):
         try:
-            delivery_person_id = request.data['delivery_person']
+            delivery_person_id = id
             if delivery_person_id == "":
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={"message": "delivery_person can't be empty"})
             try:
-                delivery_person = DeliveryPerson.object.get(id=delivery_person_id)
-                package = DeliveryPersonPackage.objects.get(id=delivery_person_id.package.id)
+                delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
                 try:
                     delivery_person_image = delivery_person.image
                     delivery_person_name = f"{delivery_person.first_name} {delivery_person.last_name}"
-                    total_invoices = package.no_of_invoices
+                    delivery_person_package = delivery_person.package.name
+                    total_invoices = delivery_person.package.no_of_invoices
                     remaining_invoices = delivery_person.no_of_invoices
-                    used_invoices = orignal_no_of_invoices - remaining_invoices
-                    no_of_pending_orders = OrderDetails.objects.filter(status="pending").count()
-                    no_of_completed_orders = OrderDetails.objects.filter(status="completed").count()
-                    no_of_in_progress_orders = OrderDetails.objects.filter(status="in_progress").count()
-                    if not no_of_pending_orders:
+                    used_invoices = total_invoices - remaining_invoices
+                    no_of_pending_orders = OrderDetail.objects.filter(status="pending")
+                    no_of_completed_orders = OrderDetail.objects.filter(status="completed")
+                    no_of_in_progress_orders = OrderDetail.objects.filter(status="in_progress")
+                    if no_of_pending_orders:
+                        no_of_pending_orders.count()
+                    else:
                         no_of_pending_orders = 0
-                    if not no_of_completed_orders:
+                    if no_of_completed_orders:
+                        no_of_completed_orders.count()
+                    else:
                         no_of_completed_orders = 0
+                    if no_of_in_progress_orders:
+                        no_of_in_progress_orders.count()
+                    else:
+                        no_of_in_progress_orders = 0
                     data = {
-                        "no_of_in_progress_orders": no_of_in_progress_orders,
-                        "delivery_person_image": delivery_person_image,
+                        # "delivery_person_image": delivery_person_image,
                         "delivery_person_name": delivery_person_name,
+                        "delivery_person_package": delivery_person_package,
                         "total_invoices": total_invoices,
                         "remaining_invoices": remaining_invoices,
                         "used_invoices": used_invoices,
                         "no_of_pending_orders": no_of_pending_orders,
-                        "no_of_completed_orders": no_of_completed_orders
+                        "no_of_completed_orders": no_of_completed_orders,
+                        "no_of_in_progress_orders": no_of_in_progress_orders
                     }
                     return Response(status=status.HTTP_200_OK,
-                                    data=data)
+                                    data={"delivery_person_dashboard": data})
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={"message": "There was a error fetching data "
@@ -656,6 +667,7 @@ class DeleteBankDetailsApiView(APIView):
 # ------------------------------------------------------------------------------------------------------------------------
 
 
+# create package
 class PackageCreateApiView(APIView):
 
     def post(self, request):
@@ -681,6 +693,7 @@ class PackageCreateApiView(APIView):
                                 data={"Exception": e})
 
 
+# Update package
 class PackageUpdateApiView(APIView):
 
     def put(self, request):
@@ -712,6 +725,7 @@ class PackageUpdateApiView(APIView):
                                 data={"Exception": e})
 
 
+# Get all packages
 class ListPackagesApiView(APIView):
 
     def get(self, request, id=None):
@@ -771,47 +785,58 @@ class DeletePackageApiView(APIView):
 # ------------------------------------------------------------------------------------------------------------------------
 
 
+# Update delivery person approval status
 class UpdateDeliveryPersonApprovalStatus(APIView):
-
-    def get(self, request):
-        return Response(status=status.HTTP_200_OK)
 
     def post(self, request):
         try:
+            # required parameters
             delivery_person_id = request.data['delivery_person']
-            delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
-            approval_status = request.data['approval_status']
-            approval_status.lower()
-            if approval_status == 'approved':
-                delivery_person.admin_approval_status = 'approved'
-                delivery_person.save()
-
-            elif approval_status == 'unapproved':
-                delivery_person.admin_approval_status = 'unapproved'
-                delivery_person.save()
-
-            elif approval_status == 'pending':
-                delivery_person.admin_approval_status = 'pending'
-                delivery_person.save()
-
-            elif approval_status == 'cancelled':
-                delivery_person.admin_approval_status = 'cancelled'
-                delivery_person.save()
-
-            else:
+            admin_id = request.data['admin']
+            admin_approval_status = request.data['admin_approval_status']
+            if delivery_person_id == "" \
+                    and admin_id == "" \
+                    and admin_approval_status == "":
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={"error": "incorrect option for approval status"})
-            send_mail(
-                'Notification Email',
-                f'Your account has been {approval_status}.',
-                'orddel@viltco.com',
-                [f"{delivery_person.email}"],
-                fail_silently=False,
-            )
-            return Response(status=status.HTTP_200_OK, data={"approval_status": delivery_person.admin_approval_status})
-
+                                data={"message": "id of delivery_person, admin or "
+                                      "admin_approval_status can't be empty"})
+            try:
+                delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
+                admin = AdminUser.objects.get(id=admin_id)
+                if not admin_approval_status == 'approved' \
+                        and not admin_approval_status == 'unapproved' \
+                        and not admin_approval_status == 'pending' \
+                        and not admin_approval_status == 'cancelled':
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data={"message": "incorrect option for approval status"})
+                try:
+                    new_approval_log = DeliveryPersonApprovalLog.objects.create(
+                        delivery_person=delivery_person,
+                        admin=admin,
+                        admin_approval_status=admin_approval_status
+                    )
+                    serializer = DeliveryPersonApprovalLogSerializer(new_approval_log)
+                    delivery_person.admin_approval_status = admin_approval_status
+                    delivery_person.save()
+                    send_mail(
+                        'Notification Email',
+                        f'Your account is {approval_status}.',
+                        'orddel@viltco.com',
+                        [f"{client.email}"],
+                        fail_silently=False,
+                    )
+                    return Response(status=status.HTTP_200_OK,
+                                    data={"log_created": serializer.data})
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data={"message": "Error creating client approval log"})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "invalid client or admin ID"})
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "client id incorrect"})
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"message": "missing one or more required"
+                                             "fields (id of client, admin and admin_approval_status) "})
 
 
 # ------------------------------------------------------------------------------------------------------------------------

@@ -9,3 +9,19 @@ class AdminUserAdmin(admin.ModelAdmin):
 
 
 admin.site.register(AdminUser, AdminUserAdmin)
+
+
+class ClientApprovalLogAdmin(admin.ModelAdmin):
+    list_display = ('id', 'client', 'admin', 'admin_approval_status', 'date_created')
+    list_display_links = ('client',)
+
+
+admin.site.register(ClientApprovalLog, ClientApprovalLogAdmin)
+
+
+class DeliveryPersonApprovalLogAdmin(admin.ModelAdmin):
+    list_display = ('id', 'delivery_person', 'admin', 'admin_approval_status', 'date_created')
+    list_display_links = ('delivery_person',)
+
+
+admin.site.register(DeliveryPersonApprovalLog, DeliveryPersonApprovalLogAdmin)
