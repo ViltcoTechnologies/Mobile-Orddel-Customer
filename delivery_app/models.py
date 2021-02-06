@@ -20,7 +20,8 @@ admin_approval_choices = (
 class DeliveryPersonPackage(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(max_length=500, null=True, blank=True)
-    no_of_invoices = models.IntegerField(default=10)
+    no_of_invoices = models.IntegerField(default=0)
+    validity_in_days = models.IntegerField(default=0)
     price = models.CharField(max_length=200, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
 

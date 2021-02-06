@@ -31,44 +31,41 @@ class ClientDashboardApiView(APIView):
                                 data={"message": "client can't be empty"})
             try:
                 client = Client.objects.get(id=client_id)
-                package = ClientPackage.objects.get(id=client.package.id)
                 try:
-                    # client_image = delivery_person.image
+                    client_image = client.image
                     client_name = f"{client.first_name} {client.last_name}"
-                    total_invoices = package.no_of_invoices
+                    client_package = client.package.name
+                    total_invoices = client.package.no_of_invoices
                     remaining_invoices = client.no_of_invoices
                     used_invoices = total_invoices - remaining_invoices
-                    # no_of_pending_orders = 5
-                    no_of_pending_orders = OrderDetails.objects.filter(status="pending")
-                    no_of_completed_orders = 6
-                    # no_of_completed_orders = OrderDetails.objects.filter(status="completed")
-                    no_of_in_progress_orders = 7
-                    # no_of_in_progress_orders = OrderDetails.objects.filter(status="in_progress")
-                    # if no_of_pending_orders:
-                    #     no_of_pending_orders.count()
-                    # else:
-                    #     no_of_pending_orders = 0
-                    # if no_of_completed_orders:
-                    #     no_of_completed_orders.count()
-                    # else:
-                    #     no_of_completed_orders = 0
-                    # if no_of_in_progress_orders:
-                    #     no_of_in_progress_orders.count()
-                    # else:
-                    #     no_of_in_progress_orders = 0
-                    print("here")
+                    no_of_pending_orders = OrderDetail.objects.filter(status="pending")
+                    no_of_completed_orders = OrderDetail.objects.filter(status="completed")
+                    no_of_in_progress_orders = OrderDetail.objects.filter(status="in_progress")
+                    if no_of_pending_orders:
+                        no_of_pending_orders.count()
+                    else:
+                        no_of_pending_orders = 0
+                    if no_of_completed_orders:
+                        no_of_completed_orders.count()
+                    else:
+                        no_of_completed_orders = 0
+                    if no_of_in_progress_orders:
+                        no_of_in_progress_orders.count()
+                    else:
+                        no_of_in_progress_orders = 0
                     data = {
                         # "client_image": client_image,
                         "client_name": client_name,
+                        "client_package": client_package,
                         "total_invoices": total_invoices,
                         "remaining_invoices": remaining_invoices,
                         "used_invoices": used_invoices,
                         "no_of_pending_orders": no_of_pending_orders,
                         "no_of_completed_orders": no_of_completed_orders,
-                        "no_of_in_progress_orders": no_of_in_progress_orders,
+                        "no_of_in_progress_orders": no_of_in_progress_orders
                     }
                     return Response(status=status.HTTP_200_OK,
-                                    data=data)
+                                    data={"client_dashboard": data})
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={"message": "There was a error fetching data "
@@ -298,7 +295,6 @@ class ListClientBusinessDetailsApiView(APIView):
 
             except Exception as e:
                 return Response(status=status.HTTP_404_NOT_FOUND, data={'Error' : 'client not found'})
-
 
 
 class UpdateBusinessApiView(APIView):
