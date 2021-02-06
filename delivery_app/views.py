@@ -22,7 +22,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 # Delivery Person home screen Dashboard
 class DeliveryPersonDashboardApiView(APIView):
 
-    def post(self, request, id=None):
+    def get(self, request, id=None):
         try:
             delivery_person_id = id
             if delivery_person_id == "":
@@ -30,32 +30,41 @@ class DeliveryPersonDashboardApiView(APIView):
                                 data={"message": "delivery_person can't be empty"})
             try:
                 delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
-                package = DeliveryPersonPackage.objects.get(id=delivery_person_id.package.id)
                 try:
                     delivery_person_image = delivery_person.image
                     delivery_person_name = f"{delivery_person.first_name} {delivery_person.last_name}"
-                    total_invoices = package.no_of_invoices
+                    delivery_person_package = delivery_person.package.name
+                    total_invoices = delivery_person.package.no_of_invoices
                     remaining_invoices = delivery_person.no_of_invoices
-                    used_invoices = orignal_no_of_invoices - remaining_invoices
-                    no_of_pending_orders = OrderDetails.objects.filter(status="pending").count()
-                    no_of_completed_orders = OrderDetails.objects.filter(status="completed").count()
-                    no_of_in_progress_orders = OrderDetails.objects.filter(status="in_progress").count()
-                    if not no_of_pending_orders:
+                    used_invoices = total_invoices - remaining_invoices
+                    no_of_pending_orders = OrderDetail.objects.filter(status="pending")
+                    no_of_completed_orders = OrderDetail.objects.filter(status="completed")
+                    no_of_in_progress_orders = OrderDetail.objects.filter(status="in_progress")
+                    if no_of_pending_orders:
+                        no_of_pending_orders.count()
+                    else:
                         no_of_pending_orders = 0
-                    if not no_of_completed_orders:
+                    if no_of_completed_orders:
+                        no_of_completed_orders.count()
+                    else:
                         no_of_completed_orders = 0
+                    if no_of_in_progress_orders:
+                        no_of_in_progress_orders.count()
+                    else:
+                        no_of_in_progress_orders = 0
                     data = {
-                        "no_of_in_progress_orders": no_of_in_progress_orders,
-                        "delivery_person_image": delivery_person_image,
+                        # "delivery_person_image": delivery_person_image,
                         "delivery_person_name": delivery_person_name,
+                        "delivery_person_package": delivery_person_package,
                         "total_invoices": total_invoices,
                         "remaining_invoices": remaining_invoices,
                         "used_invoices": used_invoices,
                         "no_of_pending_orders": no_of_pending_orders,
-                        "no_of_completed_orders": no_of_completed_orders
+                        "no_of_completed_orders": no_of_completed_orders,
+                        "no_of_in_progress_orders": no_of_in_progress_orders
                     }
                     return Response(status=status.HTTP_200_OK,
-                                    data=data)
+                                    data={"delivery_person_dashboard": data})
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={"message": "There was a error fetching data "
