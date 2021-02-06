@@ -654,13 +654,20 @@ class UpdateClientApprovalStatus(APIView):
                     serializer = ClientApprovalLogSerializer(new_approval_log)
                     client.admin_approval_status = admin_approval_status
                     client.save()
-                    send_mail(
-                        'Notification Email',
-                        f'Your account is {approval_status}.',
-                        'orddel@viltco.com',
-                        [f"{client.email}"],
-                        fail_silently=False,
-                    )
+                    try:
+                        send_mail(
+                            'Notification Email',
+                            f'Your account is {admin_approval_status}.',
+                            'orddel@viltco.com',
+                            [f"{client.email}"],
+                            fail_silently=False,
+                        )
+                    except:
+                        return Response(status=status.HTTP_200_OK,
+                                        data={"status": f"log created {serializer.data}"
+                                                        f"but email can not be sent, possibly due"
+                                                        f"to wrong email address provided "
+                                                        f"on registration"})
                     return Response(status=status.HTTP_200_OK,
                                     data={"log_created": serializer.data})
                 except:
