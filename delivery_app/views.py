@@ -41,15 +41,15 @@ class DeliveryPersonDashboardApiView(APIView):
                     no_of_completed_orders = OrderDetail.objects.filter(status="completed")
                     no_of_in_progress_orders = OrderDetail.objects.filter(status="in_progress")
                     if no_of_pending_orders:
-                        no_of_pending_orders.count()
+                        no_of_pending_orders = no_of_pending_orders.count()
                     else:
                         no_of_pending_orders = 0
                     if no_of_completed_orders:
-                        no_of_completed_orders.count()
+                        no_of_completed_orders = no_of_completed_orders.count()
                     else:
                         no_of_completed_orders = 0
                     if no_of_in_progress_orders:
-                        no_of_in_progress_orders.count()
+                        no_of_in_progress_orders = no_of_in_progress_orders.count()
                     else:
                         no_of_in_progress_orders = 0
                     data = {

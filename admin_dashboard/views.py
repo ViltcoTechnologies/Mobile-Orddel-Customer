@@ -217,19 +217,44 @@ class DeleteAdminUserApiView(APIView):
 class AdminDashboardApiView(APIView):
 
     def get(self, request):
-
-        # Get total orders
-        orders_count = OrderDetail.objects.all().count
-
-        # Get total invoices
-        invoices_count = Invoice.objects.all().count()
-
-        # Get total clients
-        client_count = Client.objects.all().count()
-        # total_client_income = Client.objects.all().aggregate(average_price=Avg('total_amount_shopped'))
-
-        # Get total delivery_persons
-        delivery_person_count = DeliveryPerson.objects.all().count()
+        try:
+            order_details = OrderDetail.objects.all()
+            invoices = Invoice.objects.all()
+            clients = Client.objects.all()
+            delivery_persons = DeliveryPerson.objects.all()
+            try:
+                if order_details:
+                    order_details = order_details.count()
+                else:
+                    order_details = 0
+                if invoices:
+                    invoices = invoices.count()
+                else:
+                    invoices = 0
+                if clients:
+                    clients = clients.count()
+                    # total_client_income = clients.aggregate(average_price=Avg('total_amount_shopped'))
+                else:
+                    clients = 0
+                if delivery_persons:
+                    delivery_persons = delivery_persons.count()
+                else:
+                    delivery_persons = 0
+                data = {
+                    "order_details": order_details,
+                    "invoices": invoices,
+                    "clients": clients,
+                    "delivery_persons": delivery_persons
+                }
+                return Response(status=status.HTTP_200_OK,
+                                data={"admin_dashboard": data})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "There was a error in calculation"})
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"message": "There was a error fetching data "
+                                             "from the database"})
 
 
 # ----------------------------------------------------------------------------------------------------------------------
