@@ -61,7 +61,7 @@ class Client(models.Model):
     address = models.CharField(max_length=200, null=True, blank=True)
     current_location = models.CharField(max_length=100, null=True, blank=True)
     gender = models.CharField(max_length=300, choices=gender_choices, blank=True, null=True)
-    image = models.ImageField(upload_to=f"clients/photos/{user}/", null=True, blank=True)
+    image = models.ImageField(upload_to=f"clients/photos/", null=True, blank=True)
     number_of_order = models.IntegerField(default=0)
     total_amount_shopped = models.IntegerField(default=0)
     no_of_invoices = models.IntegerField(default=0)
@@ -90,7 +90,7 @@ class ClientBusinessDetail(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
     nature = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=100, null=True, blank=True)
-    logo = models.ImageField(upload_to=f"business/logo/{name}/", null=True)
+    logo = models.ImageField(upload_to=f"business/logo/", null=True)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):

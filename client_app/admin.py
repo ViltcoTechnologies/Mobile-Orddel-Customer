@@ -3,9 +3,10 @@ from .models import *
 
 
 class ClientUserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_name', 'last_name', 'username', 'email', 'phone_number',
-                    'gender', 'date_created', 'otp_status', 'admin_approval_status', 'approval_read_status')
-    list_display_links = ('first_name', 'last_name', 'username', 'email')
+    list_display = ('id', 'first_name', 'last_name', 'username', 'phone_number',
+                    'gender', 'package', 'date_created', 'otp_status', 'admin_approval_status',
+                    'approval_read_status')
+    list_display_links = ('first_name', 'last_name', 'username', 'package')
 
 
 admin.site.register(Client, ClientUserAdmin)

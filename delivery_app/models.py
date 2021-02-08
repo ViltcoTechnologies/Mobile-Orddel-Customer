@@ -44,7 +44,7 @@ class DeliveryPerson(models.Model):
     buying_capacity = models.IntegerField(default=0, blank=True, null=True)
     total_amount_shopped = models.IntegerField(default=0, blank=True, null=True)
     gender = models.CharField(max_length=300, choices=gender_choices, blank=True, null=True)
-    image = models.ImageField(upload_to=f"delivery_person/photos/{user}/", null=True, blank=True)
+    image = models.ImageField(upload_to=f"delivery_person/photos/", null=True, blank=True)
     no_of_invoices = models.IntegerField(default=0)
     date_created = models.DateTimeField(auto_now=True, null=True, blank=True)
     otp_status = models.BooleanField(default=False)
@@ -71,7 +71,7 @@ class DeliveryPersonBusinessDetail(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
     nature = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=100, null=True, blank=True)
-    logo = models.ImageField(upload_to=f"business/logo/{name}/", null=True)
+    logo = models.ImageField(upload_to=f"business/logo/", null=True)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -100,10 +100,10 @@ class Vehicle(models.Model):
     color = models.CharField(max_length=100)
     year = models.CharField(max_length=100)
     registration_no = models.CharField(max_length=100)
-    license_image_front = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
-    license_image_back = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
-    copy_image_front = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
-    copy_image_back = models.ImageField(upload_to=f"vehicle/photos/{id}/", null=True, blank=True)
+    license_image_front = models.ImageField(upload_to=f"vehicle/photos/", null=True, blank=True)
+    license_image_back = models.ImageField(upload_to=f"vehicle/photos/", null=True, blank=True)
+    copy_image_front = models.ImageField(upload_to=f"vehicle/photos/", null=True, blank=True)
+    copy_image_back = models.ImageField(upload_to=f"vehicle/photos/", null=True, blank=True)
     license_no = models.CharField(max_length=100)
     date_created = models.DateTimeField(auto_now=True)
 
