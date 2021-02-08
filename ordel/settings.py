@@ -210,7 +210,7 @@ EMAIL_MAIL_SUBJECT = 'Confirm your email'
 EMAIL_MAIL_HTML = EMAIL_TEMPLATE_PATH
 # EMAIL_MAIL_PLAIN = 'mail_body.txt'
 EMAIL_PAGE_TEMPLATE = EMAIL_SUCCESS_TEMPLATE
-EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000'
+EMAIL_PAGE_DOMAIN = 'http://ec2-3-129-128-169.us-east-2.compute.amazonaws.com:8000'
 
 
 # Reset password SMTP configuration
