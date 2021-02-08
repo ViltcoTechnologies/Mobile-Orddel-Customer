@@ -12,8 +12,8 @@ admin.site.register(DeliveryPersonPackage, DeliveryPersonPackageAdmin)
 
 class DeliveryPersonAdmin(admin.ModelAdmin):
     list_display = ('id', 'first_name', 'last_name', 'username', 'phone_number',
-                    'no_of_orders', 'buying_capacity', 'gender', 'package', 'date_created',
-                    'otp_status', 'admin_approval_status', 'approval_read_status')
+                    'no_of_orders', 'buying_capacity', 'package', 'date_created',
+                    'otp_status', 'admin_approval_status', 'no_of_active_order')
     list_display_links = ('first_name', 'package')
 
 

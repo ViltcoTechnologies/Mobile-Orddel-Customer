@@ -928,3 +928,20 @@ class DeliveryPersonLogin(TokenObtainPairView):
 
 
 # ------------------------------------------------------------------------------------------------------------------------
+
+
+# Order notification
+class UpdateDeliveryPersonOrderApiView(APIView):
+
+    def post(self):
+        delivery_person_action = self.request.query_params.get('delivery_person_action').lower()
+        if delivery_person_action == "accepted":
+            # Create Accepted Order Entry in Delivery Person
+
+            pass
+        elif delivery_person_action == "rejected":
+            # transfer order to other delivery person
+            pass
+
+
+# ------------------------------------------------------------------------------------------------------------------------
