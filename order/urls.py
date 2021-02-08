@@ -27,4 +27,7 @@ urlpatterns = [
     path('list_order/<id>/', ListOrderApiView.as_view(), name='list_order/<id>/'),
     path('delete_order/<int:pk>', DeleteOrderApiView.as_view(), name='delete_order/'),
 
+    # Get PO number
+    path('get_po_number/<id>/', GetPONumberAPIView.as_view(), name='get_po_number'),
+
 ]

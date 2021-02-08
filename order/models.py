@@ -54,7 +54,7 @@ class OrderDetail(models.Model):
     order_title = models.CharField(max_length=100, null=True, blank=True)
     delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
     order_created_datetime = models.DateTimeField(auto_now=True)
-    order_delivery_datetime = models.DateTimeField(auto_now=False)
+    order_delivery_datetime = models.DateField(auto_now=False)
     shipment_address = models.ForeignKey(ClientShipmentAddress, on_delete=models.SET_NULL, null=True, blank=True)
     delivery_notes = models.TextField(max_length=1000, null=True, blank=True)
     comment = models.TextField(max_length=500, null=True, blank=True)
@@ -64,5 +64,5 @@ class OrderDetail(models.Model):
     payment_type = models.CharField(max_length=100, choices=payment_choices, null=True, blank=True)
 
     def __str__(self):
-        return self.order_title
+        return self.purchase_order_no
 

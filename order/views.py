@@ -234,6 +234,7 @@ class CreateOrderApiView(APIView):
 
 
         order_box = request.data['order_box']
+        purchase_order_no = request.data['purchase_order_no']
         order_title = request.data['order_title']
         delivery_person = request.data['delivery_person']
         order_delivery_datetime = request.data['order_delivery_datetime']
@@ -270,15 +271,15 @@ class CreateOrderApiView(APIView):
             client_id = order_box_obj.client.id
             # print(client_id)
             client = Client.objects.get(id=client_id)
-            orderdetail = OrderDetail.objects.filter(order_box=order_box).last()
-            if orderdetail:
-                po_number_list = orderdetail.purchase_order_no.split("_")
-                po_number = int(po_number_list[2])
-                po_number += 1
-                purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
-            else:
-                po_number = 1
-                purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
+            # orderdetail = OrderDetail.objects.filter(order_box=order_box).last()
+            # if orderdetail:
+            #     po_number_list = orderdetail.purchase_order_no.split("_")
+            #     po_number = int(po_number_list[2])
+            #     po_number += 1
+            #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
+            # else:
+            #     po_number = 1
+            #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
 
             list_of_order_prods = []
             list_of_order_prods.extend(order_box_obj.orderproduct_set.all())
@@ -362,3 +363,29 @@ class ListOrderApiView(APIView):
 class DeleteOrderApiView(generics.DestroyAPIView):
     queryset = OrderDetail.objects.all()
     serializer_class = OrderDetailSerializer
+
+
+class GetPONumberAPIView(APIView):
+
+    def get(self, request, id=None):
+        if id:
+            try:
+                orderdetail = OrderDetail.objects.filter(order_box=id).last()
+                print(orderdetail)
+                client = orderdetail.order_box.client.id
+                if orderdetail:
+                    po_number_list = orderdetail.purchase_order_no.split("_")
+                    po_number = int(po_number_list[2])
+                    po_number += 1
+                    purchase_order_no = f"PO#{str(client).zfill(5)}_{date.today().strftime('%Y')}_{str(po_number).zfill(5)}"
+                else:
+                    po_number = 1
+                    purchase_order_no = f"PO#{str(client).zfill(5)}_{date.today().strftime('%Y')}_{str(po_number).zfill(5)}"
+
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "order_box not found"})
+
+            return Response(status=status.HTTP_200_OK, data={"po_number": purchase_order_no})
+
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "id not provided"})
