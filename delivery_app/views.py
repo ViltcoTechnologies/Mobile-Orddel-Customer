@@ -858,7 +858,7 @@ class PendingApprovalListApiView(APIView):
                 delivery_person = DeliveryPerson.objects.filter(admin_approval_status=admin_approval_status)
                 serializer = DeliveryPersonSerializer(delivery_person, many=True)
                 if not delivery_person:
-                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                    return Response(status=status.HTTP_200_OK,
                                     data={"message": "Delivery Person table is empty"})
                 return Response(status=status.HTTP_200_OK,
                                 data={"pending_approval_list": serializer.data})
