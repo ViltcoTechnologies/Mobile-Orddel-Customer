@@ -374,6 +374,10 @@ class GetPONumberAPIView(APIView):
         if id:
             try:
                 orderdetail = OrderDetail.objects.filter(order_box=id).last()
+<<<<<<< HEAD
+=======
+                print(orderdetail)
+>>>>>>> image upload to s3 bucket
                 order_box = OrderBox.objects.get(id=id)
                 client = order_box.client.id
                 if orderdetail:
