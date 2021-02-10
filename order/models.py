@@ -64,5 +64,5 @@ class OrderDetail(models.Model):
     payment_type = models.CharField(max_length=100, choices=payment_choices, null=True, blank=True)
 
     def __str__(self):
-        return self.purchase_order_no
+        return str(self.id)
 

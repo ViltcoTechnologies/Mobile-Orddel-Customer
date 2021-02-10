@@ -340,6 +340,7 @@ class ListOrderApiView(APIView):
 
             response = data_to_pass.data
             if not isinstance(response, list):
+                print("here")
                 order_box = response['order_box']
                 order_box_obj = OrderBox.objects.get(id=order_box)
                 order_prods = []
@@ -354,7 +355,26 @@ class ListOrderApiView(APIView):
                     product['total_amount'] = order_prod_obj.total_amount
                     products_details.append(product)
                 response['order_products'] = products_details
-            return Response(status=status.HTTP_200_OK, data={"order": response})
+                response['products'] = products_details
+                order_b_obj = OrderBox.objects.get(id=response['order_box'])
+                response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
+                delivery_person_obj = DeliveryPerson.objects.get(id=response['delivery_person'])
+                response['delivery_person'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
+                shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
+                response['shipment_address_detail'] = shipment_address.shipment_address
+                return Response(status=status.HTTP_200_OK, data={"order": response})
+
+            else:
+                response_list = []
+                for res in response:
+                    order_b_obj = OrderBox.objects.get(id=res['order_box'])
+                    res['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
+                    delivery_person_obj = DeliveryPerson.objects.get(id=res['delivery_person'])
+                    res['delivery_person'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
+                    shipment_address = ClientShipmentAddress.objects.get(id=res['shipment_address'])
+                    res['shipment_address_detail'] = shipment_address.shipment_address
+                    response_list.append(res)
+                return Response(status=status.HTTP_200_OK, data={"orders": response_list})
 
         except Exception as e:
             return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "No Order-box(es) Found"})
@@ -372,7 +392,8 @@ class GetPONumberAPIView(APIView):
             try:
                 orderdetail = OrderDetail.objects.filter(order_box=id).last()
                 print(orderdetail)
-                client = orderdetail.order_box.client.id
+                order_box = OrderBox.objects.get(id=id)
+                client = order_box.client.id
                 if orderdetail:
                     po_number_list = orderdetail.purchase_order_no.split("_")
                     po_number = int(po_number_list[2])

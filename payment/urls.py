@@ -6,5 +6,7 @@ app_name = 'payment'
 
 urlpatterns = [
     path('create_list_invoice/', ListCreateInvoice.as_view()),
+    path('retrieve_update_destroy_invoice/<int:pk>', RetrieveUpdateDestroyInvoice.as_view()),
+    path('get_invoice_number/<id>/', GetInvNumberAPIView.as_view())
 
 ]
