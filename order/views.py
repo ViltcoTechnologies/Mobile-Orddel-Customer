@@ -163,13 +163,16 @@ class ListOrderBoxProductsApiView(APIView):
                     data_list.append(serializer.data)
                     grand_total += obj.total_amount
 
-                order_box_id = int(str(data_list[0]['order_box']))
-                order_box_obj = OrderBox.objects.get(id=order_box_id)
-                order_box["order_box_id"] = order_box_obj.id
-                order_box["grand_total"] = grand_total
-                order_box["client"] = str(order_box_obj.client.user)
-                order_box["products"] = data_list
-                return Response(status=status.HTTP_200_OK, data={"order_box_products": order_box})
+                if len(data_list) != 0:
+                    order_box_id = int(str(data_list[0]['order_box']))
+                    order_box_obj = OrderBox.objects.get(id=order_box_id)
+                    order_box["order_box_id"] = order_box_obj.id
+                    order_box["grand_total"] = grand_total
+                    order_box["client"] = str(order_box_obj.client.user)
+                    order_box["products"] = data_list
+                    return Response(status=status.HTTP_200_OK, data={"order_box_products": order_box})
+                else:
+                    return Response(status=status.HTTP_204_NO_CONTENT, data={"message": "No order box products"})
 
             else:
                 order_box_obj = OrderBox.objects.all().order_by('-date_created')
@@ -340,7 +343,6 @@ class ListOrderApiView(APIView):
 
             response = data_to_pass.data
             if not isinstance(response, list):
-                print("here")
                 order_box = response['order_box']
                 order_box_obj = OrderBox.objects.get(id=order_box)
                 order_prods = []

@@ -268,8 +268,8 @@ class ListBusinessDetailsApiView(APIView):
     def get(self, request, id=None):
         if id:
             try:
-                business_detail = ClientBusinessDetail.objects.filter(id=id)
-                data_to_pass = BusinessDetailSerializer(business_detail, many=True)
+                business_detail = ClientBusinessDetail.objects.get(id=id)
+                data_to_pass = BusinessDetailSerializer(business_detail)
 
             except Exception as e:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'Error' : e})
@@ -288,8 +288,8 @@ class ListClientBusinessDetailsApiView(APIView):
     def get(self, request, id=None):
         if id:
             try:
-                business_detail = ClientBusinessDetail.objects.get(client__id=id)
-                data_to_pass = BusinessDetailSerializer(business_detail)
+                business_detail = ClientBusinessDetail.objects.filter(client__id=id)
+                data_to_pass = BusinessDetailSerializer(business_detail, many=True)
                 return Response(status=status.HTTP_200_OK, data={"client_businesses": data_to_pass.data})
 
             except Exception as e:
