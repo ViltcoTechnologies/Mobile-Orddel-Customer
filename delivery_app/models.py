@@ -112,10 +112,3 @@ class Vehicle(models.Model):
         return str(self.id)
 
 
-class ConsolidatedPurchase(models.Model):
-    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.CASCADE, null=True)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    quantity = models.IntegerField(null=True, blank=True)
-    cost_per_unit = models.IntegerField(null=True, blank=True)
-    purchased_from = models.CharField(max_length=300, null=True, blank=True)
-    date_created = models.DateTimeField(auto_now=True)

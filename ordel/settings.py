@@ -237,7 +237,7 @@ AWS_ACCESS_KEY_ID = 'AKIAYD4FFDBGKS2T7FSP'
 AWS_SECRET_ACCESS_KEY = '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'
 AWS_STORAGE_BUCKET_NAME = 'orddel-frontend'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 

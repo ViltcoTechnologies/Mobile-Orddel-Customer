@@ -39,7 +39,3 @@ class VehicleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ConsolidatedPurchaseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ConsolidatedPurchase
-        fields = "__all__"

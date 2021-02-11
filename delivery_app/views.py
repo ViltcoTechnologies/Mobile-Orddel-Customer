@@ -38,7 +38,7 @@ class DeliveryPersonDashboardApiView(APIView):
                     remaining_invoices = delivery_person.no_of_invoices
                     used_invoices = total_invoices - remaining_invoices
                     no_of_pending_orders = OrderDetail.objects.filter(status="pending")
-                    no_of_completed_orders = OrderDetail.objects.filter(status="completed")
+                    no_of_completed_orders = OrderDetail.objects.filter(status="delivered")
                     no_of_in_progress_orders = OrderDetail.objects.filter(status="in_progress")
                     if no_of_pending_orders:
                         no_of_pending_orders = no_of_pending_orders.count()
@@ -493,7 +493,7 @@ class ListBusinessDetailsApiView(APIView):
                         data={"business_details": data_to_pass.data})
 
 
-class ListClientBusinessDetailsApiView(APIView):
+class ListDeliveryPersonBusinessDetailsApiView(APIView):
 
     def get(self, request, id = None):
         if id:
@@ -578,7 +578,7 @@ class BankDetailsCreateApiView(APIView):
                             data={"bank_details_created": data_to_pass.data})
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data={"Exception" : e})
+                            data={"Exception": e})
 
 
 class BankDetailsUpdateApiView(APIView):
@@ -601,7 +601,7 @@ class BankDetailsUpdateApiView(APIView):
             )
             print("Bank Detail id :", bank_detail)
             bd = DeliveryPersonBankDetail.objects.get(id=bank_detail_id)
-            data_to_pass = BankDetailsSerializer(bd)
+            data_to_pass = DeliveryPersonBankDetailSerializer(bd)
             return Response(status=status.HTTP_200_OK,
                             data={"updated_business_details": data_to_pass.data})
 
@@ -751,7 +751,7 @@ class ListPackagesApiView(APIView):
                                 data={'Error': 'package not found'})
 
 
-class ListClientPackagesApiView(APIView):
+class ListDeliveryPersonPackagesApiView(APIView):
 
     def get(self, request):
         if id:

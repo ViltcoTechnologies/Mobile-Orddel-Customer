@@ -38,7 +38,7 @@ urlpatterns = [
     path('insert_business/', BusinessDetailInsertApiView.as_view(), name='insert_business_details'),
     path('list_business/', ListBusinessDetailsApiView.as_view(), name='list_business_details'),
     path('list_business/<id>/', ListBusinessDetailsApiView.as_view(), name='list_business_details/<id>'),
-    path('list_business/delivery_person/<id>/', ListClientBusinessDetailsApiView.as_view(),
+    path('list_business/delivery_person/<id>/', ListDeliveryPersonBusinessDetailsApiView.as_view(),
          name='list_business_details/delivery_person/<id>'),
     path('update_business/', UpdateBusinessApiView.as_view(), name='update_business_details'),
     # Delete
@@ -62,7 +62,7 @@ urlpatterns = [
     path('update_package/', PackageUpdateApiView.as_view(), name='update_package'),
     path('list_packages/', ListPackagesApiView.as_view(), name='list_packages'),
     path('list_packages/<id>/', ListPackagesApiView.as_view(), name='list_packages/<id>'),
-    path('list_delivery_person/package/<id>/', ListClientPackagesApiView.as_view(),
+    path('list_delivery_person/package/<id>/', ListDeliveryPersonPackagesApiView.as_view(),
          name='list_delivery_person/package/<id>'),
     path('delete_package/<id>/', DeletePackageApiView.as_view(), name='delete_package'),
 
