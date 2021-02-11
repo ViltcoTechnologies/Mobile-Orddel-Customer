@@ -357,7 +357,6 @@ class ListOrderApiView(APIView):
                     product['total_amount'] = order_prod_obj.total_amount
                     products_details.append(product)
                 response['order_products'] = products_details
-                response['products'] = products_details
                 order_b_obj = OrderBox.objects.get(id=response['order_box'])
                 response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
                 delivery_person_obj = DeliveryPerson.objects.get(id=response['delivery_person'])
