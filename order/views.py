@@ -371,6 +371,18 @@ class ListOrderApiView(APIView):
                     order_detail_obj = OrderDetail.objects.get(order_box=res['order_box'])
                     res['no_of_products'] = order_detail_obj.order_products.count()
                     order_b_obj = OrderBox.objects.get(id=res['order_box'])
+                    order_prods = []
+                    order_prods.extend(order_b_obj.orderproduct_set.all())
+                    products_details = []
+                    for prod in order_prods:
+                        product = {}
+                        order_prod_obj = OrderProduct.objects.get(id=prod.id)
+                        product['product_name'] = order_prod_obj.product.name
+                        product['product_unit'] = order_prod_obj.product.unit
+                        product['quantity'] = order_prod_obj.quantity
+                        product['total_amount'] = order_prod_obj.total_amount
+                        products_details.append(product)
+                    res['order_products'] = products_details
                     res['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
                     delivery_person_obj = DeliveryPerson.objects.get(id=res['delivery_person'])
                     res['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
