@@ -333,46 +333,20 @@ class UpdateOrderApiView(generics.UpdateAPIView):
 
 class ListOrderApiView(APIView):
     def get(self, request, id=None):
-        # try:
-        if id:
-            order_detail = OrderDetail.objects.get(order_box=id)
-            data_to_pass = OrderDetailSerializer(order_detail)
-        else:
-            order_detail = OrderDetail.objects.all().order_by('-order_created_datetime')
-            data_to_pass = OrderDetailSerializer(order_detail, many=True)
+        try:
+            if id:
+                order_detail = OrderDetail.objects.get(order_box=id)
+                data_to_pass = OrderDetailSerializer(order_detail)
+            else:
+                order_detail = OrderDetail.objects.all().order_by('-order_created_datetime')
+                data_to_pass = OrderDetailSerializer(order_detail, many=True)
 
-        response = data_to_pass.data
-        if not isinstance(response, list):
-            order_box = response['order_box']
-            order_box_obj = OrderBox.objects.get(id=order_box)
-            order_prods = []
-            order_prods.extend(order_box_obj.orderproduct_set.all())
-            products_details = []
-            for prod in order_prods:
-                product = {}
-                order_prod_obj = OrderProduct.objects.get(id=prod.id)
-                product['product_name'] = order_prod_obj.product.name
-                product['product_unit'] = order_prod_obj.product.unit
-                product['quantity'] = order_prod_obj.quantity
-                product['total_amount'] = order_prod_obj.total_amount
-                products_details.append(product)
-            response['order_products'] = products_details
-            order_b_obj = OrderBox.objects.get(id=response['order_box'])
-            response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
-            delivery_person_obj = DeliveryPerson.objects.get(id=response['delivery_person'])
-            response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
-            shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
-            response['shipment_address_detail'] = shipment_address.shipment_address
-            return Response(status=status.HTTP_200_OK, data={"order": response})
-
-        else:
-            response_list = []
-            for res in response:
-                order_detail_obj = OrderDetail.objects.get(order_box=res['order_box'])
-                res['no_of_products'] = order_detail_obj.order_products.count()
-                order_b_obj = OrderBox.objects.get(id=res['order_box'])
+            response = data_to_pass.data
+            if not isinstance(response, list):
+                order_box = response['order_box']
+                order_box_obj = OrderBox.objects.get(id=order_box)
                 order_prods = []
-                order_prods.extend(order_b_obj.orderproduct_set.all())
+                order_prods.extend(order_box_obj.orderproduct_set.all())
                 products_details = []
                 for prod in order_prods:
                     product = {}
@@ -382,18 +356,45 @@ class ListOrderApiView(APIView):
                     product['quantity'] = order_prod_obj.quantity
                     product['total_amount'] = order_prod_obj.total_amount
                     products_details.append(product)
-                res['order_products'] = products_details
-                if order_b_obj.client != None:
-                    res['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
-                delivery_person_obj = DeliveryPerson.objects.get(id=res['delivery_person'])
-                res['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
-                shipment_address = ClientShipmentAddress.objects.get(id=res['shipment_address'])
-                res['shipment_address_detail'] = shipment_address.shipment_address
-                response_list.append(res)
-            return Response(status=status.HTTP_200_OK, data={"orders": response_list})
+                response['order_products'] = products_details
+                order_b_obj = OrderBox.objects.get(id=response['order_box'])
+                if order_b_obj.client != None: 
+                    response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
+                delivery_person_obj = DeliveryPerson.objects.get(id=response['delivery_person'])
+                response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
+                shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
+                response['shipment_address_detail'] = shipment_address.shipment_address
+                return Response(status=status.HTTP_200_OK, data={"order": response})
 
-        # except Exception as e:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "error in retrieving orders"})
+            else:
+                response_list = []
+                for res in response:
+                    order_detail_obj = OrderDetail.objects.get(order_box=res['order_box'])
+                    res['no_of_products'] = order_detail_obj.order_products.count()
+                    order_b_obj = OrderBox.objects.get(id=res['order_box'])
+                    order_prods = []
+                    order_prods.extend(order_b_obj.orderproduct_set.all())
+                    products_details = []
+                    for prod in order_prods:
+                        product = {}
+                        order_prod_obj = OrderProduct.objects.get(id=prod.id)
+                        product['product_name'] = order_prod_obj.product.name
+                        product['product_unit'] = order_prod_obj.product.unit
+                        product['quantity'] = order_prod_obj.quantity
+                        product['total_amount'] = order_prod_obj.total_amount
+                        products_details.append(product)
+                    res['order_products'] = products_details
+                    if order_b_obj.client != None:
+                        res['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
+                    delivery_person_obj = DeliveryPerson.objects.get(id=res['delivery_person'])
+                    res['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
+                    shipment_address = ClientShipmentAddress.objects.get(id=res['shipment_address'])
+                    res['shipment_address_detail'] = shipment_address.shipment_address
+                    response_list.append(res)
+                return Response(status=status.HTTP_200_OK, data={"orders": response_list})
+
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "error in retrieving orders"})
 
 
 class DeleteOrderApiView(generics.DestroyAPIView):
@@ -406,10 +407,13 @@ class GetPONumberAPIView(APIView):
     def get(self, request, id=None):
         if id:
             try:
-                orderdetail = OrderDetail.objects.filter(order_box=id).last()
-                print(orderdetail)
                 order_box = OrderBox.objects.get(id=id)
                 client = order_box.client.id
+                orderdetail = OrderDetail.objects.filter(order_box__client=client).last()
+                print(orderdetail)
+
+                # order_detail_client = orderdetail.order_box.client
+                
                 if orderdetail:
                     po_number_list = orderdetail.purchase_order_no.split("_")
                     po_number = int(po_number_list[2])
