@@ -14,6 +14,7 @@ payment_choices = (
 
 order_status_choices = (
     ('pending', 'Pending'),
+    ('rejected', 'Rejected'),
     ('in_progress', 'In Progress'),
     ('purchased', 'Purchased'),
     ('delivered', 'Delivered')

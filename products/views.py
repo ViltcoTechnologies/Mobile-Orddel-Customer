@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.response import Response
@@ -145,75 +146,77 @@ class DeleteCategoryApiView(APIView):
 
 # Product Registration API
 class CreateProductApiView(APIView):
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     def get(self, request, id=None):
         return Response(status=status.HTTP_200_OK)
 
     def post(self, request):
-        try:
-            # optional parameters
-            company = request.data['company']
-            description = request.data['description']
-            short_description = request.data['short_description']
-            image = request.data['image']
-            try:
-                # required parameters
-                sku = request.data['sku']
-                name = request.data['name']
-                unit = request.data['unit']
-                avg_price = request.data['avg_price']
-                currency = request.data['currency']
-                if sku == "" \
-                        or name == "" \
-                        or unit == "" \
-                        or avg_price == "" \
-                        or currency == "":
-                    return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data="Ooops! following required fields can't "
-                                         "be empty: (sku, name, unit, avg_price, "
-                                         "currency)")
-                try:
-                    saved_data = Product.objects.get(name=name, unit=unit, company=company)
-                    return Response(status=status.HTTP_200_OK,
-                                    data="Product already registered!")
-                except:
-                    try:
-                        category = Category.objects.get(id=request.data['category'])
-                        try:
-                            new_product_details = Product.objects.create(
-                                category=category,
-                                sku=sku,
-                                name=name,
-                                company=company,
-                                description=description,
-                                short_description=short_description,
-                                image=image,
-                                unit=unit,
-                                avg_price=avg_price,
-                                currency=currency
-                            )
-                            new_product_details.save()
-                            serializer = ProductSerializer(new_product_details)
-                            return Response(status=status.HTTP_200_OK,
-                                            data={"product_created": serializer.data})
-                        except:
-                            return Response(status=status.HTTP_400_BAD_REQUEST,
-                                            data="There was a error creating record!")
-                    except:
-                        return Response(status=status.HTTP_404_NOT_FOUND,
-                                        data="Product already in database!")
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data="Oops! Make sure you're not missing one of the "
-                                     "following required fields: (sku, name, unit"
-                                     "avg_price, currency)")
-        except:
+        # try:
+        # optional parameters
+        print(request.data)
+        company = request.data['company']
+        description = request.data['description']
+        short_description = request.data['short_description']
+        image = request.data['image']
+        # try:
+            # required parameters
+        sku = request.data['sku']
+        name = request.data['name']
+        unit = request.data['unit']
+        avg_price = request.data['avg_price']
+        currency = request.data['currency']
+        if sku == "" \
+                or name == "" \
+                or unit == "" \
+                or avg_price == "" \
+                or currency == "":
             return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data="Oops! Make sure you're not missing one "
-                                 "of the following optional fields: "
-                                 "(description, short_description, company, image) "
-                                 "Note: If you want to leave fields blank, then "
-                                 "send null or empty")
+                            data="Ooops! following required fields can't "
+                                 "be empty: (sku, name, unit, avg_price, "
+                                 "currency)")
+        try:
+            saved_data = Product.objects.get(name=name, unit=unit, company=company)
+            return Response(status=status.HTTP_200_OK,
+                            data="Product already registered!")
+        except:
+            # try:
+            category = Category.objects.get(id=request.data['category'])
+            # try:
+            new_product_details = Product.objects.create(
+                category=category,
+                sku=sku,
+                name=name,
+                company=company,
+                description=description,
+                short_description=short_description,
+                image=image,
+                unit=unit,
+                avg_price=avg_price,
+                currency=currency
+            )
+            new_product_details.save()
+            serializer = ProductSerializer(new_product_details)
+            return Response(status=status.HTTP_200_OK,
+                            data={"product_created": serializer.data})
+            # except:
+                    #     return Response(status=status.HTTP_400_BAD_REQUEST,
+                    #                     data="There was a error creating record!")
+                # except:
+                #     return Response(status=status.HTTP_404_NOT_FOUND,
+        #         #                     data="Product already in database!")
+        # except:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST,
+        #                     data="Oops! Make sure you're not missing one of the "
+        #                          "following required fields: (sku, name, unit"
+        #                          "avg_price, currency)")
+        # except:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST,
+        #                     data="Oops! Make sure you're not missing one "
+        #                          "of the following optional fields: "
+        #                          "(description, short_description, company, image) "
+        #                          "Note: If you want to leave fields blank, then "
+        #                          "send null or empty")
 
 
 # Product List API
@@ -230,16 +233,16 @@ class ListProductApiView(APIView):
                 return Response(status=status.HTTP_404_NOT_FOUND,
                                 data={"No Product with ID!": id})
         else:
-            try:
-                product = Product.objects.all()
-                serializer = ProductSerializer(product, many=True)
-                if not product:
-                    return Response(status=status.HTTP_200_OK,
-                                    data={"Product table is empty": serializer.data})
-                return Response(serializer.data,
-                                status=status.HTTP_200_OK)
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+            # try:
+            product = Product.objects.all()
+            serializer = ProductSerializer(product, many=True)
+            if not product:
+                return Response(status=status.HTTP_200_OK,
+                                data={"Product table is empty": serializer.data})
+            return Response(serializer.data,
+                            status=status.HTTP_200_OK)
+            # except:
+            #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 # Product List based on Category ID
@@ -286,7 +289,7 @@ class UpdateProductApiView(APIView):
                                          "be empty: (sku, name, unit, avg_price, "
                                          "currency)")
                 try:
-                    saved_product_data = Product.objects.filter(id=product_id)
+                    saved_product_data = Product.objects.filter(id=id)
                     try:
                         saved_product_data.update(
                             name=name,

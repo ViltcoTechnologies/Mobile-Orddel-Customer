@@ -41,6 +41,15 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    def upload_image_to(instance, filename):
+        import os
+        from django.utils.timezone import now
+        filename_base, filename_ext = os.path.splitext(filename)
+        return 'photos/%s/%s' % (
+            now().strftime("%Y%m%d"),
+            instance.id
+        )
+
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     sku = models.CharField(max_length=100)
     name = models.CharField(max_length=300)
@@ -48,7 +57,7 @@ class Product(models.Model):
     description = models.TextField(max_length=50000, null=True, blank=True)
     short_description = models.CharField(max_length=800, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to="photos/%Y/%m/%d/", null=True, blank=True)
+    image = models.ImageField(upload_to=upload_image_to, null=True, blank=True)
     is_available = models.BooleanField(default=True)
     unit = models.CharField(max_length=300, choices=unit_choices)
     avg_price = models.FloatField(default=0.0)
