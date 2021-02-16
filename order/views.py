@@ -353,6 +353,7 @@ class ListOrderApiView(APIView):
                     order_prod_obj = OrderProduct.objects.get(id=prod.id)
                     product['product_name'] = order_prod_obj.product.name
                     product['product_unit'] = order_prod_obj.product.unit
+                    product['avg_price'] = order_prod_obj.product.avg_price
                     product['quantity'] = order_prod_obj.quantity
                     product['total_amount'] = order_prod_obj.total_amount
                     products_details.append(product)
