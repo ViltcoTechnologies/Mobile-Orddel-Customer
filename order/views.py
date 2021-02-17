@@ -344,13 +344,15 @@ class ListOrderApiView(APIView):
             response = data_to_pass.data
             if not isinstance(response, list):
                 order_box = response['order_box']
-                order_box_obj = OrderBox.objects.get(id=order_box)
+                # order_box_obj = OrderBox.objects.get(id=order_box)
+                order_detail = OrderDetail.objects.get(order_box=order_box)
                 order_prods = []
-                order_prods.extend(order_box_obj.orderproduct_set.all())
+                order_prods.extend(order_detail.order_products.all())
                 products_details = []
                 for prod in order_prods:
                     product = {}
                     order_prod_obj = OrderProduct.objects.get(id=prod.id)
+                    product['product_id'] = order_prod_obj.product.id
                     product['product_name'] = order_prod_obj.product.name
                     product['product_unit'] = order_prod_obj.product.unit
                     product['avg_price'] = order_prod_obj.product.avg_price
