@@ -5,7 +5,9 @@ from rest_framework_simplejwt import authentication
 from rest_framework.response import Response
 from .models import *
 from datetime import date
+from django.db.models import Sum
 from .serializers import *
+from django.db import connection
 import json
 import random
 import string
@@ -270,60 +272,60 @@ class CreateOrderApiView(APIView):
         #     return Response(status=status.HTTP_409_CONFLICT, data={"error": "record already exists"})
         #
         # except:
-        try:
-            client_id = order_box_obj.client.id
-            # print(client_id)
-            client = Client.objects.get(id=client_id)
-            # orderdetail = OrderDetail.objects.filter(order_box=order_box).last()
-            # if orderdetail:
-            #     po_number_list = orderdetail.purchase_order_no.split("_")
-            #     po_number = int(po_number_list[2])
-            #     po_number += 1
-            #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
-            # else:
-            #     po_number = 1
-            #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
+        # try:
+        client_id = order_box_obj.client.id
+        # print(client_id)
+        client = Client.objects.get(id=client_id)
+        # orderdetail = OrderDetail.objects.filter(order_box=order_box).last()
+        # if orderdetail:
+        #     po_number_list = orderdetail.purchase_order_no.split("_")
+        #     po_number = int(po_number_list[2])
+        #     po_number += 1
+        #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
+        # else:
+        #     po_number = 1
+        #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
 
-            list_of_order_prods = []
-            list_of_order_prods.extend(order_box_obj.orderproduct_set.all())
-            # print(list_of_order_prods)
-            order = OrderDetail.objects.create(
-                order_box=order_box_obj,
-                purchase_order_no=purchase_order_no,
-                order_title=order_title,
-                delivery_person=delivery_obj,
-                order_delivery_datetime=order_delivery_datetime,
-                shipment_address=shipment_obj,
-                delivery_notes=delivery_notes,
-                comment=comment,
-                distance=distance,
-                # total_units_ordered=total_units_ordered,
-                status=delivery_status,
-                payment_type=payment_type
-            )
-            for prod in list_of_order_prods:
-                order.order_products.add(prod.id)
-            # print(client.number_of_order)
-            if client.no_of_invoices != 0:
-                client.no_of_invoices -= 1
-            client.number_of_order += 1
-            client.save()
-            serializer = OrderDetailSerializer(order)
-            response = serializer.data
-            products_details = []
-            for prod in list_of_order_prods:
-                product = {}
-                order_prod_obj = OrderProduct.objects.get(id=prod.id)
-                product['product_name'] = order_prod_obj.product.name
-                product['product_unit'] = order_prod_obj.product.unit
-                product['quantity'] = order_prod_obj.quantity
-                product['total_amount'] = order_prod_obj.total_amount
-                products_details.append(product)
-            response['order_products'] = products_details
-            return Response(status=status.HTTP_201_CREATED, data={"order": response})
+        list_of_order_prods = []
+        list_of_order_prods.extend(order_box_obj.orderproduct_set.all())
+        # print(list_of_order_prods)
+        order = OrderDetail.objects.create(
+            order_box=order_box_obj,
+            purchase_order_no=purchase_order_no,
+            order_title=order_title,
+            delivery_person=delivery_obj,
+            order_delivery_datetime=order_delivery_datetime,
+            shipment_address=shipment_obj,
+            delivery_notes=delivery_notes,
+            comment=comment,
+            distance=distance,
+            # total_units_ordered=total_units_ordered,
+            status=delivery_status,
+            payment_type=payment_type
+        )
+        for prod in list_of_order_prods:
+            order.order_products.add(prod.id)
+        # print(client.number_of_order)
+        if client.no_of_invoices != 0:
+            client.no_of_invoices -= 1
+        client.number_of_order += 1
+        client.save()
+        serializer = OrderDetailSerializer(order)
+        response = serializer.data
+        products_details = []
+        for prod in list_of_order_prods:
+            product = {}
+            order_prod_obj = OrderProduct.objects.get(id=prod.id)
+            product['product_name'] = order_prod_obj.product.name
+            product['product_unit'] = order_prod_obj.product.unit
+            product['quantity'] = order_prod_obj.quantity
+            product['total_amount'] = order_prod_obj.total_amount
+            products_details.append(product)
+        response['order_products'] = products_details
+        return Response(status=status.HTTP_201_CREATED, data={"order": response})
 
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "record_creation_failed"})
+        # except:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "record_creation_failed"})
 
 
 class UpdateOrderApiView(generics.UpdateAPIView):
@@ -474,5 +476,42 @@ class ListOrdersAssignedAPIView(APIView):
             return Response(status=status.HTTP_200_OK, data={'response': data_list})
 
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'error in retrieving records'})
+            pass
 
+
+class ConsolidatePurchaseAPIView(APIView):
+    def get(self, request, id=None):
+        if id:
+            try:
+                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name,s.unit 
+                        FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
+                        INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
+                        where M.status='in_progress' --and delivery_person_id={id}
+                        group by M.status,M.delivery_person_id,d.product_id,s.id, s.name,s.unit 
+                        order by s.name
+                        """
+                cursor = connection.cursor()
+                cursor.execute(sql)
+                #
+                rows = cursor.fetchall()
+                consolidated_purchases = []
+                for row in rows:
+                    data_dict = {'status': row[0], 'delivery_person_id': row[1], 'product_id': row[2], 'qty': row[3],
+                                 'product_name': row[5], 'unit': row[6]}
+                    consolidated_purchases.append(data_dict)
+
+                return Response(status=status.HTTP_200_OK, data={'data': consolidated_purchases,
+                                                                 'status_code': 200,
+                                                                 'message': "Successful"
+                                                                 })
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={
+                                                                        'status_code': 400,
+                                                                        'message': "Unsuccessful"
+                                                                        })
+
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={
+                                                             'status_code': 400,
+                                                             'message': "Unsuccessful"
+                                                             })
