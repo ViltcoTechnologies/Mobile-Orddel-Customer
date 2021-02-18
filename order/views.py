@@ -486,7 +486,7 @@ class ConsolidatePurchaseAPIView(APIView):
                 sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name,s.unit 
                         FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
                         INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
-                        where M.status='in_progress' --and delivery_person_id={id}
+                        where M.status='in_progress' and delivery_person_id={id}
                         group by M.status,M.delivery_person_id,d.product_id,s.id, s.name,s.unit 
                         order by s.name
                         """
@@ -500,10 +500,16 @@ class ConsolidatePurchaseAPIView(APIView):
                                  'product_name': row[5], 'unit': row[6]}
                     consolidated_purchases.append(data_dict)
 
-                return Response(status=status.HTTP_200_OK, data={'data': consolidated_purchases,
-                                                                 'status_code': 200,
-                                                                 'message': "Successful"
-                                                                 })
+                if consolidated_purchases:
+                    return Response(status=status.HTTP_200_OK, data={'data': consolidated_purchases,
+                                                                     'status_code': 200,
+                                                                     'message': "Successful"
+                                                                     })
+                else:
+                    return Response(status=status.HTTP_200_OK, data={'data': 'No orders found against the given ID',
+                                                                     'status_code': 200,
+                                                                     'message': "Successful"
+                                                                     })
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={
                                                                         'status_code': 400,
