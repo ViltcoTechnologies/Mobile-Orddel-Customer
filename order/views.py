@@ -439,7 +439,7 @@ class GetPONumberAPIView(APIView):
 
 class ListOrdersAssignedAPIView(APIView):
     def get(self, request):
-        delivery_person = self.request.query_params.get('delivery_person_id').lower()
+        delivery_person = self.request.query_params.get('delivery_person_id')
         choice = self.request.query_params.get('choice').lower()
         try:
             if choice == 'all':
@@ -521,3 +521,46 @@ class ConsolidatePurchaseAPIView(APIView):
                                                              'status_code': 400,
                                                              'message': "Unsuccessful"
                                                              })
+
+
+class ListClientOrdersAPIView(APIView):
+    def get(self, request):
+        client = self.request.query_params.get('client_id')
+        choice = self.request.query_params.get('choice').lower()
+        try:
+            if choice == 'all':
+                order_detail = OrderDetail.objects.filter(order_box__client=client)
+                serializer = OrderDetailSerializer(order_detail, many=True)
+
+            elif choice == 'pending':
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                serializer = OrderDetailSerializer(order_detail, many=True)
+
+            elif choice == 'in_progress':
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                serializer = OrderDetailSerializer(order_detail, many=True)
+
+            elif choice == 'delivered':
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                serializer = OrderDetailSerializer(order_detail, many=True)
+
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invalid Option entered'})
+
+            data_list = []
+            for data in serializer.data:
+                order_detail = OrderDetail.objects.get(id=data['id'])
+                data['no_of_items'] = order_detail.order_products.count()
+                if order_detail.order_box.client is not None:
+                    data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
+                # print(order_detail.order_box.client.first_name)
+                shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
+                data['shipment_address'] = shipment_address.shipment_address
+                delivery_person = DeliveryPerson.objects.get(id=order_detail.delivery_person.id)
+                data['delivery_person_name'] = delivery_person.first_name + " " + delivery_person.last_name
+                data_list.append(data)
+            return Response(status=status.HTTP_200_OK, data={'response': data_list})
+
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'failed to retrieve records'})
+

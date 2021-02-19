@@ -55,5 +55,5 @@ urlpatterns = [
     path('client_login/', ClientLogin.as_view()),
 
     # Client home screen Dashboard
-    path('client_dashboard/<id>/', ClientDashboardApiView.as_view())
+    path('client_dashboard/<id>/', ClientDashboardApiView.as_view()),
 ]
