@@ -483,7 +483,7 @@ class ConsolidatePurchaseAPIView(APIView):
     def get(self, request, id=None):
         if id:
             try:
-                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name,s.unit 
+                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price 
                         FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
                         INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
                         where M.status='in_progress' and delivery_person_id={id}
@@ -497,7 +497,7 @@ class ConsolidatePurchaseAPIView(APIView):
                 consolidated_purchases = []
                 for row in rows:
                     data_dict = {'status': row[0], 'delivery_person_id': row[1], 'product_id': row[2], 'qty': row[3],
-                                 'product_name': row[5], 'unit': row[6]}
+                                 'product_name': row[5], 'unit': row[6], 'avg_price': row[7]}
                     consolidated_purchases.append(data_dict)
 
                 if consolidated_purchases:
