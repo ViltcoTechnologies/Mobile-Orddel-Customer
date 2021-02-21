@@ -40,8 +40,12 @@ class OrderBox(models.Model):
 class OrderProduct(models.Model):
     order_box = models.ForeignKey(OrderBox, on_delete=models.CASCADE, null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
-    quantity = models.IntegerField(default=0, null=True, blank=True)
+    quantity = models.IntegerField(default=0)
     total_amount = models.FloatField(default=0.0)
+    supplier = models.CharField(max_length=30, null=True, blank=True)
+    unit_purchase_price = models.FloatField(default=0.0)
+    profit_margin = models.FloatField(default=0.0)
+    unit_sale_price = models.FloatField(default=0.0)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):

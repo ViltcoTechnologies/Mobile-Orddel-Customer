@@ -32,5 +32,6 @@ urlpatterns = [
     path('list_assigned_orders/', ListOrdersAssignedAPIView.as_view(), name='list_assigned_orders'),
     path('list_consolidate_purchases/<id>/', ConsolidatePurchaseAPIView.as_view(), name='list_consolidate_purchases'),
     path('list_client_orders/', ListClientOrdersAPIView.as_view()),
+    path('insert_purchase_details/', InsertPurchaseDetailsAPIView.as_view()),
 
 ]

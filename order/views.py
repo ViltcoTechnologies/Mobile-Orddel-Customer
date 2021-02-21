@@ -564,3 +564,40 @@ class ListClientOrdersAPIView(APIView):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'failed to retrieve records'})
 
+
+class InsertPurchaseDetailsAPIView(APIView):
+    def put(self, request):
+        try:
+            for detail in request.data['purchase_details']:
+                delivery_person = detail['delivery_person_id']
+                product_id = detail['product_id']
+                supplier = detail['supplier']
+                unit_purchase_price = detail['unit_purchase_price']
+                profit_margin = detail['profit_margin']
+                unit_sales_price = detail['unit_sales_price']
+
+                sql = f"""UPDATE 
+                            ORDER_ORDERPRODUCT D
+                         SET 
+                            profit_margin={profit_margin},
+                            supplier='{supplier}', 
+                            unit_purchase_price={unit_purchase_price}, 
+                            unit_sale_price={unit_sales_price}
+                        FROM 
+                            ORDER_ORDERDETAIL M 
+                        WHERE 
+                            M.order_box_id=D.order_box_id AND D.product_id={product_id} AND M.delivery_person_id={delivery_person} ;
+                     """
+                cursor = connection.cursor()
+                cursor.execute(sql)
+
+            return Response(status=status.HTTP_200_OK, data={'response': "Purchase Details submitted successfully",
+                                                             'status_code': '200',
+                                                             'message': 'Successful'
+                                                             })
+
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'response': 'Unable to submit purchase details',
+                                                                      'status_code': '200',
+                                                                      'message': 'Unsuccessful'
+                                                                      })
