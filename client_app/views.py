@@ -238,6 +238,7 @@ class BusinessDetailInsertApiView(APIView):
         try:
             client_id = request.data['client']
             business_name = request.data['name']
+            business_address = request.data['address']
             business_nature = request.data['nature']
             business_type = request.data['type']
             business_logo = request.data['logo']
@@ -246,6 +247,7 @@ class BusinessDetailInsertApiView(APIView):
                 business_detail = ClientBusinessDetail.objects.create(
                     client=client,
                     name=business_name,
+                    address=business_address,
                     nature=business_nature,
                     type=business_type,
                     logo=business_logo
@@ -272,7 +274,7 @@ class ListBusinessDetailsApiView(APIView):
                 data_to_pass = BusinessDetailSerializer(business_detail)
 
             except Exception as e:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'Error' : e})
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'Error': e})
 
         else:
             try:
@@ -293,7 +295,7 @@ class ListClientBusinessDetailsApiView(APIView):
                 return Response(status=status.HTTP_200_OK, data={"client_businesses": data_to_pass.data})
 
             except Exception as e:
-                return Response(status=status.HTTP_404_NOT_FOUND, data={'Error' : 'client not found'})
+                return Response(status=status.HTTP_404_NOT_FOUND, data={'Error': 'client or business not found'})
 
 
 class UpdateBusinessApiView(APIView):
@@ -333,6 +335,14 @@ class DeleteBusinessApiView(APIView):
             except Exception as e:
                 return Response(status=status.HTTP_404_NOT_FOUND,
                                 data={"error": "record not found against the given id"})
+
+
+# ----------------------------------------------------------------------------------------------------------------
+# Business Details API v2
+class BusinessDetailInsertGeneric(generics.ListCreateAPIView):
+    queryset = ClientBusinessDetail.objects.all()
+    lookup_field = 'client'
+    serializer_class = BusinessDetailSerializer
 
 
 # CRUD of Shipment Address

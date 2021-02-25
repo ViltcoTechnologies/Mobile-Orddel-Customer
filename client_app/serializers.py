@@ -13,6 +13,7 @@ class BusinessDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClientBusinessDetail
         fields = "__all__"
+        lookup_field = 'client'
 
 
 class ShipmentAddressSerializer(serializers.ModelSerializer):

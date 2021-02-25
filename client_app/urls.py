@@ -21,6 +21,9 @@ urlpatterns = [
     path('update_business/', UpdateBusinessApiView.as_view(), name='update_business_details'),
     path('delete_business/<id>/', DeleteBusinessApiView.as_view(), name='delete_business/<id>'),
 
+    # Business Details APIs v2
+    path('business_details/', BusinessDetailInsertGeneric.as_view(), name='insert_business_details'),
+
     # CRUD of Shipment Address
     path('insert_shipment/', ShipmentAddressCreateApiView.as_view(), name='insert_shipment'),
     path('list_shipment_address/', ListShipmentAddressApiView.as_view(), name='list_shipment_address'),
