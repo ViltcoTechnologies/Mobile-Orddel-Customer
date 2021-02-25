@@ -369,6 +369,8 @@ class ListOrderApiView(APIView):
                 response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
                 shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
                 response['shipment_address_detail'] = shipment_address.shipment_address
+                if response['status'] == 'in_progress':
+                    response['status'] = 'in progress'
                 return Response(status=status.HTTP_200_OK, data={"order": response})
 
             else:
@@ -414,6 +416,7 @@ class GetPONumberAPIView(APIView):
             try:
                 order_box = OrderBox.objects.get(id=id)
                 client = order_box.client.id
+                prefix = order_box.client.first_name[0:3]
                 orderdetail = OrderDetail.objects.filter(order_box__client=client).last()
                 print(orderdetail)
 
@@ -423,10 +426,10 @@ class GetPONumberAPIView(APIView):
                     po_number_list = orderdetail.purchase_order_no.split("_")
                     po_number = int(po_number_list[2])
                     po_number += 1
-                    purchase_order_no = f"PO#{str(client).zfill(5)}_{date.today().strftime('%Y')}_{str(po_number).zfill(5)}"
+                    purchase_order_no = f"PO#{prefix}_{str(client).zfill(5)}_{date.today().strftime('%Y')}_{str(po_number).zfill(5)}"
                 else:
                     po_number = 1
-                    purchase_order_no = f"PO#{str(client).zfill(5)}_{date.today().strftime('%Y')}_{str(po_number).zfill(5)}"
+                    purchase_order_no = f"PO#{prefix}_{str(client).zfill(5)}_{date.today().strftime('%Y')}_{str(po_number).zfill(5)}"
 
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "order_box not found"})
