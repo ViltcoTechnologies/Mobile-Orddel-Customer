@@ -156,6 +156,7 @@ class CreateProductApiView(APIView):
         # optional parameters
         print(request.data)
         company = request.data['company']
+        vat = request.data['vat']
         description = request.data['description']
         short_description = request.data['short_description']
         image = request.data['image']
@@ -192,6 +193,7 @@ class CreateProductApiView(APIView):
                 short_description=short_description,
                 image=image,
                 unit=unit,
+                vat=vat,
                 avg_price=avg_price,
                 currency=currency
             )

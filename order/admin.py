@@ -20,7 +20,7 @@ admin.site.register(OrderProduct, OrderProductAdmin)
 
 class OrderDetailAdmin(admin.ModelAdmin):
     list_display = ('id', 'order_box', '__str__', 'purchase_order_no', 'order_title', 'delivery_person', 'order_created_datetime',
-                    'order_delivery_datetime', 'shipment_address', 'delivery_notes', 'comment', 'distance',
+                    'order_delivery_datetime', 'business', 'delivery_notes', 'comment', 'distance',
                     'status', 'payment_type'
 
                     )

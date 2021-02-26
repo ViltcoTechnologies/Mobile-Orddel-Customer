@@ -111,9 +111,6 @@ class ClientRegisterApiView(APIView):
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={"message": "Phone Number already registered!"})
                 except:
-                    try:
-                        twilio_verification = TwilioVerification(str(phone_number))
-                        twilio_verification.send_otp()
                         try:
                             package = ClientPackage.objects.get(id=package)
                             no_of_invoices = package.no_of_invoices
@@ -125,7 +122,7 @@ class ClientRegisterApiView(APIView):
                                 )
                                 new_auth_user.first_name = first_name
                                 new_auth_user.last_name = last_name
-                                sendConfirm(new_auth_user)
+
                                 try:
                                     new_client = Client.objects.create(
                                         user=new_auth_user,
@@ -142,9 +139,24 @@ class ClientRegisterApiView(APIView):
                                         gender=gender,
                                         image=image
                                     )
+                                    try:
+                                        twilio_verification = TwilioVerification(str(phone_number))
+                                        twilio_verification.send_otp()
+                                        try:
+                                            sendConfirm(new_auth_user)
+                                        except:
+                                            return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                            data={"message": "There was a error sending verification "
+                                                                             "email"})
+                                    except:
+                                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                        data={"message": "There was a error sending otp "
+                                                                         "please try to sign up again"})
                                     new_client.save()
                                     serializer = ClientSerializer(new_client)
                                     new_auth_user.save()
+
+
                                     return Response(status=status.HTTP_200_OK,
                                                     data={"client_created": serializer.data})
                                 except:
@@ -153,15 +165,10 @@ class ClientRegisterApiView(APIView):
                                                                      "delivery_person was not created"})
                             except:
                                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                                data={"message": "There was a error creating"
-                                                                 "auth user"})
+                                                data={"message": "User already exists"})
                         except:
                             return Response(status=status.HTTP_404_NOT_FOUND,
                                             data={"message": f"No package with the ID: {package}"})
-                    except:
-                        return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data={"message": "There was a error sending otp"
-                                                         "please try to sign up again"})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={"message": "Error! Make sure you're not missing one of the "
@@ -169,7 +176,7 @@ class ClientRegisterApiView(APIView):
                                       "email, phone_number, password)"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data={"message": "Make sure you're not missing one "
+                        data={"message": "Make sure you're not missing one "
                                   "of the following optional fields: "
                                   "(current_location, address, gender, image) "
                                   "Note: If you want to leave fields blank, then "

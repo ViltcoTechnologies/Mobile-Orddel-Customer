@@ -16,6 +16,9 @@ class OrderProductsSerializer(serializers.ModelSerializer):
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
+    business_address = serializers.CharField(source='business.address')
+    business_name = serializers.CharField(source='business.name')
+
     class Meta:
         model = OrderDetail
         exclude = ('order_products',)

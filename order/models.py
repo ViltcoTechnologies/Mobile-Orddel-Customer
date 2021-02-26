@@ -27,6 +27,12 @@ cart_staging_choices = (
 
 )
 
+profit_choices = (
+    ('percentage', 'Percentage'),
+    ('value', 'Value')
+
+)
+
 
 class OrderBox(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
@@ -45,6 +51,7 @@ class OrderProduct(models.Model):
     supplier = models.CharField(max_length=30, null=True, blank=True)
     unit_purchase_price = models.FloatField(default=0.0)
     profit_margin = models.FloatField(default=0.0)
+    profit_margin_choice = models.CharField(max_length=100, choices=profit_choices, null=True, blank=True)
     unit_sale_price = models.FloatField(default=0.0)
     date_created = models.DateTimeField(auto_now=True)
 
@@ -54,6 +61,7 @@ class OrderProduct(models.Model):
 
 class OrderDetail(models.Model):
     order_box = models.ForeignKey(OrderBox, on_delete=models.SET_NULL, null=True, blank=True)
+    business = models.ForeignKey(ClientBusinessDetail, on_delete=models.SET_NULL, null=True, blank=True)
     order_products = models.ManyToManyField(OrderProduct)
     # Unique Purchase Order Number assigned to client on every order
     purchase_order_no = models.CharField(max_length=100)
@@ -61,7 +69,7 @@ class OrderDetail(models.Model):
     delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
     order_created_datetime = models.DateTimeField(auto_now=True)
     order_delivery_datetime = models.DateField(auto_now=False)
-    shipment_address = models.ForeignKey(ClientShipmentAddress, on_delete=models.SET_NULL, null=True, blank=True)
+    # shipment_address = models.ForeignKey(ClientShipmentAddress, on_delete=models.SET_NULL, null=True, blank=True)
     delivery_notes = models.TextField(max_length=1000, null=True, blank=True)
     comment = models.TextField(max_length=500, null=True, blank=True)
     distance = models.CharField(max_length=100, null=True, blank=True)

@@ -60,6 +60,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to=upload_image_to, null=True, blank=True)
     is_available = models.BooleanField(default=True)
     unit = models.CharField(max_length=300, choices=unit_choices)
+    vat = models.FloatField(default=0.0)
     avg_price = models.FloatField(default=0.0)
     discount = models.IntegerField(default=0)
     currency = models.CharField(max_length=100, choices=CURRENCY_CHOICES)
