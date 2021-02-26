@@ -455,6 +455,10 @@ class ListOrdersAssignedAPIView(APIView):
                 order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
+            elif choice == 'purchased' : 
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
+                serializer = OrderDetailSerializer(order_detail, many=True)
+
             elif choice == 'in_progress':
                 order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
