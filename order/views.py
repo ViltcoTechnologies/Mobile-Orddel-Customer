@@ -262,9 +262,9 @@ class CreateOrderApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "delivery person does not exist"})
 
         try:
-            shipment_obj = ClientShipmentAddress.objects.get(id=shipment_address)
+            business_obj = ClientBusinessDetail.objects.get(id=business)
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "shipment address does not exist"})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "business does not exist"})
         #
         # try:
         #
@@ -292,7 +292,7 @@ class CreateOrderApiView(APIView):
         # print(list_of_order_prods)
         order = OrderDetail.objects.create(
             order_box=order_box_obj,
-            business=business,
+            business=business_obj,
             purchase_order_no=purchase_order_no,
             order_title=order_title,
             delivery_person=delivery_obj,
