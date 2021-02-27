@@ -455,7 +455,7 @@ class ListOrdersAssignedAPIView(APIView):
                 order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
-            elif choice == 'purchased':
+            elif choice == 'purchased' : 
                 order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
@@ -477,15 +477,15 @@ class ListOrdersAssignedAPIView(APIView):
                 if order_detail.order_box.client != None:
                     data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
                 # print(order_detail.order_box.client.first_name)
-                shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
-                data['shipment_address'] = shipment_address.shipment_address
+                # shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
+                # data['shipment_address'] = shipment_address.shipment_address
                 delivery_person = DeliveryPerson.objects.get(id=order_detail.delivery_person.id)
                 data['delivery_person_name'] = delivery_person.first_name + " " + delivery_person.last_name
                 data_list.append(data)
             return Response(status=status.HTTP_200_OK, data={'response': data_list})
 
         except:
-            pass
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'unable to fetch records'})
 
 
 class ConsolidatePurchaseAPIView(APIView):
@@ -563,8 +563,8 @@ class ListClientOrdersAPIView(APIView):
                 if order_detail.order_box.client is not None:
                     data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
                 # print(order_detail.order_box.client.first_name)
-                shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
-                data['shipment_address'] = shipment_address.shipment_address
+                # shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
+                # data['shipment_address'] = shipment_address.shipment_address
                 delivery_person = DeliveryPerson.objects.get(id=order_detail.delivery_person.id)
                 data['delivery_person_name'] = delivery_person.first_name + " " + delivery_person.last_name
                 data_list.append(data)
@@ -578,6 +578,7 @@ class InsertPurchaseDetailsAPIView(APIView):
     def put(self, request):
         try:
             for detail in request.data['purchase_details']:
+                
                 delivery_person = detail['delivery_person_id']
                 product_id = detail['product_id']
                 supplier = detail['supplier']
@@ -585,6 +586,16 @@ class InsertPurchaseDetailsAPIView(APIView):
                 profit_margin = detail['profit_margin']
                 profit_margin_choice = detail['profit_margin_choice']
                 unit_sales_price = detail['unit_sales_price']
+                try:
+                    DeliveryPerson.objects.get(id=delivery_person)
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Delivery person does not exist"})
+
+                try:
+                    Product.objects.get(id=product_id)
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Product does not exist"})
+
 
                 sql = f"""UPDATE 
                             ORDER_ORDERPRODUCT D
