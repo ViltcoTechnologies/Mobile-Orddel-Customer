@@ -455,7 +455,7 @@ class ListOrdersAssignedAPIView(APIView):
                 order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
-            elif choice == 'purchased' : 
+            elif choice == 'purchased' :
                 order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
@@ -474,6 +474,7 @@ class ListOrdersAssignedAPIView(APIView):
             for data in serializer.data:
                 order_detail = OrderDetail.objects.get(id=data['id'])
                 data['no_of_items'] = order_detail.order_products.count()
+                data['total_quantity'] = sum([i.quantity for i in order_detail.order_products.all()])
                 if order_detail.order_box.client != None:
                     data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
                 # print(order_detail.order_box.client.first_name)
@@ -549,6 +550,10 @@ class ListClientOrdersAPIView(APIView):
                 order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
+            elif choice == 'purchased':
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                serializer = OrderDetailSerializer(order_detail, many=True)
+
             elif choice == 'delivered':
                 order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
@@ -560,9 +565,9 @@ class ListClientOrdersAPIView(APIView):
             for data in serializer.data:
                 order_detail = OrderDetail.objects.get(id=data['id'])
                 data['no_of_items'] = order_detail.order_products.count()
+                data['total_quantity'] = sum([i.quantity for i in order_detail.order_products.all()])
                 if order_detail.order_box.client is not None:
                     data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
-                # print(order_detail.order_box.client.first_name)
                 # shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
                 # data['shipment_address'] = shipment_address.shipment_address
                 delivery_person = DeliveryPerson.objects.get(id=order_detail.delivery_person.id)
@@ -578,7 +583,6 @@ class InsertPurchaseDetailsAPIView(APIView):
     def put(self, request):
         try:
             for detail in request.data['purchase_details']:
-                
                 delivery_person = detail['delivery_person_id']
                 product_id = detail['product_id']
                 supplier = detail['supplier']
