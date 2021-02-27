@@ -18,7 +18,7 @@ class OrderProductsSerializer(serializers.ModelSerializer):
 class OrderDetailSerializer(serializers.ModelSerializer):
     business_address = serializers.CharField(source='business.address')
     business_name = serializers.CharField(source='business.name')
-
+    order_delivery_datetime = serializers.DateField(format="%d-%m-%Y", input_formats=['%d-%m-%Y', 'iso-8601'])
     class Meta:
         model = OrderDetail
         exclude = ('order_products',)

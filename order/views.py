@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt import authentication
 from rest_framework.response import Response
 from .models import *
-from datetime import date
+from datetime import datetime
 from django.db.models import Sum
 from .serializers import *
 from django.db import connection
@@ -296,7 +296,7 @@ class CreateOrderApiView(APIView):
                     purchase_order_no=purchase_order_no,
                     order_title=order_title,
                     delivery_person=delivery_obj,
-                    order_delivery_datetime=order_delivery_datetime,
+                    order_delivery_datetime=datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d"),
                     # shipment_address=shipment_obj,
                     delivery_notes=delivery_notes,
                     comment=comment,
