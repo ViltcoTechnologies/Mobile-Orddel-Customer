@@ -50,6 +50,7 @@ class OrderProduct(models.Model):
     total_amount = models.FloatField(default=0.0)
     supplier = models.CharField(max_length=30, null=True, blank=True)
     unit_purchase_price = models.FloatField(default=0.0)
+    portrage_price = models.FloatField(default=0.0)
     profit_margin = models.FloatField(default=0.0)
     profit_margin_choice = models.CharField(max_length=100, choices=profit_choices, null=True, blank=True)
     unit_sale_price = models.FloatField(default=0.0)

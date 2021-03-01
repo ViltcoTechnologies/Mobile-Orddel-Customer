@@ -588,6 +588,7 @@ class InsertPurchaseDetailsAPIView(APIView):
                 product_id = detail['product_id']
                 supplier = detail['supplier']
                 unit_purchase_price = detail['unit_purchase_price']
+                portrage_price = detail['portrage_price']
                 profit_margin = detail['profit_margin']
                 profit_margin_choice = detail['profit_margin_choice']
                 unit_sales_price = detail['unit_sales_price']
@@ -601,13 +602,13 @@ class InsertPurchaseDetailsAPIView(APIView):
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Product does not exist"})
 
-
                 sql = f"""UPDATE 
                             ORDER_ORDERPRODUCT D
                          SET 
                             profit_margin={profit_margin},
                             supplier='{supplier}', 
-                            unit_purchase_price={unit_purchase_price}, 
+                            unit_purchase_price={unit_purchase_price},
+                            portrage_price={portrage_price},
                             unit_sale_price={unit_sales_price},
                             profit_margin_choice='{profit_margin_choice}'
                         FROM 
@@ -618,9 +619,7 @@ class InsertPurchaseDetailsAPIView(APIView):
                 cursor = connection.cursor()
                 cursor.execute(sql)
                 order_details = OrderDetail.objects.filter(delivery_person=delivery_person, status='in_progress')
-                order_details.update(status = 'purchased')
-                # for order in order_details:
-                #     order.status = 'purchased'
+                order_details.update(status='purchased')
 
             return Response(status=status.HTTP_200_OK, data={'response': "Purchase Details submitted successfully",
                                                              'status_code': '200',
