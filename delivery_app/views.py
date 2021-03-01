@@ -37,9 +37,9 @@ class DeliveryPersonDashboardApiView(APIView):
                     total_invoices = delivery_person.package.no_of_invoices
                     remaining_invoices = delivery_person.no_of_invoices
                     used_invoices = total_invoices - remaining_invoices
-                    no_of_pending_orders = OrderDetail.objects.filter(status="pending")
-                    no_of_completed_orders = OrderDetail.objects.filter(status="delivered")
-                    no_of_in_progress_orders = OrderDetail.objects.filter(status="in_progress")
+                    no_of_pending_orders = OrderDetail.objects.filter(status="pending", delivery_person=delivery_person_id)
+                    no_of_completed_orders = OrderDetail.objects.filter(status="delivered", delivery_person=delivery_person_id)
+                    no_of_in_progress_orders = OrderDetail.objects.filter(status="in_progress", delivery_person=delivery_person_id)
                     if no_of_pending_orders:
                         no_of_pending_orders = no_of_pending_orders.count()
                     else:
