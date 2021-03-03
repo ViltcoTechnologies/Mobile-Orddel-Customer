@@ -363,6 +363,7 @@ class ListOrderApiView(APIView):
                     product['avg_price'] = order_prod_obj.product.avg_price
                     product['quantity'] = order_prod_obj.quantity
                     product['total_amount'] = order_prod_obj.total_amount
+                    product['supplier_market'] = order_prod_obj.supplier
                     products_details.append(product)
                 response['order_products'] = products_details
                 order_b_obj = OrderBox.objects.get(id=response['order_box'])
@@ -498,8 +499,6 @@ class ConsolidatePurchaseAPIView(APIView):
                 order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d")
                 if order_delivery_datetime is None:
                     order_delivery_datetime = date.today()
-                    order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime(
-                        "%Y-%m-%d")
 
                 print(order_delivery_datetime)
                 sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price, M.order_delivery_datetime
@@ -613,7 +612,6 @@ class InsertPurchaseDetailsAPIView(APIView):
                     Product.objects.get(id=product_id)
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Product does not exist"})
-
 
                 sql = f"""UPDATE 
                             ORDER_ORDERPRODUCT D

@@ -7,6 +7,7 @@ from delivery_app.models import *
 
 
 class DeliveryNote(models.Model):
+    order = models.ForeignKey(OrderDetail, on_delete=models.CASCADE, null=True, blank=True)
     do_number = models.CharField(max_length=100, null=True, blank=True)
     delivery_note = models.CharField(max_length=500, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
