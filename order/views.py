@@ -538,46 +538,49 @@ class ListClientOrdersAPIView(APIView):
     def get(self, request):
         client = self.request.query_params.get('client_id')
         choice = self.request.query_params.get('choice').lower()
-        try:
-            if choice == 'all':
-                order_detail = OrderDetail.objects.filter(order_box__client=client)
-                serializer = OrderDetailSerializer(order_detail, many=True)
+        # try:
+        if choice == 'all':
+            order_detail = OrderDetail.objects.filter(order_box__client=client)
+            serializer = OrderDetailSerializer(order_detail, many=True)
 
-            elif choice == 'pending':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
-                serializer = OrderDetailSerializer(order_detail, many=True)
+        elif choice == 'pending':
+            order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+            serializer = OrderDetailSerializer(order_detail, many=True)
 
-            elif choice == 'in_progress':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
-                serializer = OrderDetailSerializer(order_detail, many=True)
+        elif choice == 'in_progress':
+            order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+            serializer = OrderDetailSerializer(order_detail, many=True)
 
-            elif choice == 'purchased':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
-                serializer = OrderDetailSerializer(order_detail, many=True)
+        elif choice == 'purchased':
+            order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+            serializer = OrderDetailSerializer(order_detail, many=True)
 
-            elif choice == 'delivered':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
-                serializer = OrderDetailSerializer(order_detail, many=True)
+        elif choice == 'delivered':
+            order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+            serializer = OrderDetailSerializer(order_detail, many=True)
 
-            else:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invalid Option entered'})
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invalid Option entered'})
 
-            data_list = []
-            for data in serializer.data:
-                order_detail = OrderDetail.objects.get(id=data['id'])
-                data['no_of_items'] = order_detail.order_products.count()
-                data['total_quantity'] = sum([i.quantity for i in order_detail.order_products.all()])
-                if order_detail.order_box.client is not None:
-                    data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
-                # shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
-                # data['shipment_address'] = shipment_address.shipment_address
+        data_list = []
+        for data in serializer.data:
+            order_detail = OrderDetail.objects.get(id=data['id'])
+            data['no_of_items'] = order_detail.order_products.count()
+            data['total_quantity'] = sum([i.quantity for i in order_detail.order_products.all()])
+            if order_detail.order_box.client is not None:
+                data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
+            # shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
+            # data['shipment_address'] = shipment_address.shipment_address
+            try:
                 delivery_person = DeliveryPerson.objects.get(id=order_detail.delivery_person.id)
                 data['delivery_person_name'] = delivery_person.first_name + " " + delivery_person.last_name
-                data_list.append(data)
-            return Response(status=status.HTTP_200_OK, data={'response': data_list})
+            except:
+                pass
+            data_list.append(data)
+        return Response(status=status.HTTP_200_OK, data={'response': data_list})
 
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'failed to retrieve records'})
+        # except:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'failed to retrieve records'})
 
 
 class InsertPurchaseDetailsAPIView(APIView):
@@ -588,7 +591,6 @@ class InsertPurchaseDetailsAPIView(APIView):
                 product_id = detail['product_id']
                 supplier = detail['supplier']
                 unit_purchase_price = detail['unit_purchase_price']
-                portrage_price = detail['portrage_price']
                 profit_margin = detail['profit_margin']
                 profit_margin_choice = detail['profit_margin_choice']
                 unit_sales_price = detail['unit_sales_price']
@@ -602,24 +604,26 @@ class InsertPurchaseDetailsAPIView(APIView):
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Product does not exist"})
 
+
                 sql = f"""UPDATE 
                             ORDER_ORDERPRODUCT D
                          SET 
                             profit_margin={profit_margin},
                             supplier='{supplier}', 
-                            unit_purchase_price={unit_purchase_price},
-                            portrage_price={portrage_price},
+                            unit_purchase_price={unit_purchase_price}, 
                             unit_sale_price={unit_sales_price},
                             profit_margin_choice='{profit_margin_choice}'
                         FROM 
                             ORDER_ORDERDETAIL M 
                         WHERE 
-                            M.order_box_id=D.order_box_id AND D.product_id={product_id} AND M.delivery_person_id={delivery_person} ;
+                            M.order_box_id=D.order_box_id AND D.product_id={product_id} AND M.delivery_person_id={delivery_person} AND M.status='in_progress';
                      """
                 cursor = connection.cursor()
                 cursor.execute(sql)
                 order_details = OrderDetail.objects.filter(delivery_person=delivery_person, status='in_progress')
-                order_details.update(status='purchased')
+                order_details.update(status = 'purchased')
+                # for order in order_details:
+                #     order.status = 'purchased'
 
             return Response(status=status.HTTP_200_OK, data={'response': "Purchase Details submitted successfully",
                                                              'status_code': '200',
