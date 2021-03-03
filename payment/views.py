@@ -73,6 +73,34 @@ class GetDeliveryNoteNumberAPIView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "id not provided"})
 
 
-class CreateDeliveryNote(generics.CreateAPIView):
-    queryset = DeliveryNote.objects.all()
-    serializer_class = DeliveryNoteSerializer
+class CreateDeliveryNote(APIView):
+    def post(self, request):
+        try:
+            order_id = request.data['order_id']
+            delivery_note_number = request.data['delivery_note_number']
+            delivery_note = request.data['delivery_note']
+            purchased_products = request.data['purchased_products']
+
+            try:
+                order_detail = OrderDetail.objects.get(id=order_id)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Order with {order_id} does not exist'})
+            # list_of_orderprods = order_detail.order_products.all()
+            for product in purchased_products:
+                try:
+                    order_prod_obj = order_detail.order_products.get(product=product['product_id'])
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": f"product with {product['product_id']}"
+                                                                                         f"does not exist in order"})
+                print(order_prod_obj.purchased_quantity)
+                order_prod_obj.purchased_quantity = product['purchased_qty']
+                order_prod_obj.save()
+
+            DeliveryNote.objects.create(order=order_detail, do_number=delivery_note_number, delivery_note=delivery_note)
+            return Response(status=status.HTTP_200_OK, data={'message': 'Delivery note created'})
+
+        except:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={'message': 'Something went wrong!'})
+
+
+

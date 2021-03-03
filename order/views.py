@@ -274,61 +274,61 @@ class CreateOrderApiView(APIView):
             return Response(status=status.HTTP_409_CONFLICT, data={"error": "record already exists"})
 
         except:
-            try:
-                client_id = order_box_obj.client.id
-                # print(client_id)
-                client = Client.objects.get(id=client_id)
-                # orderdetail = OrderDetail.objects.filter(order_box=order_box).last()
-                # if orderdetail:
-                #     po_number_list = orderdetail.purchase_order_no.split("_")
-                #     po_number = int(po_number_list[2])
-                #     po_number += 1
-                #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
-                # else:
-                #     po_number = 1
-                #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
+            # try:
+            client_id = order_box_obj.client.id
+            # print(client_id)
+            client = Client.objects.get(id=client_id)
+            # orderdetail = OrderDetail.objects.filter(order_box=order_box).last()
+            # if orderdetail:
+            #     po_number_list = orderdetail.purchase_order_no.split("_")
+            #     po_number = int(po_number_list[2])
+            #     po_number += 1
+            #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
+            # else:
+            #     po_number = 1
+            #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
 
-                list_of_order_prods = []
-                list_of_order_prods.extend(order_box_obj.orderproduct_set.all())
-                # print(list_of_order_prods)
-                order = OrderDetail.objects.create(
-                    order_box=order_box_obj,
-                    business=business_obj,
-                    purchase_order_no=purchase_order_no,
-                    order_title=order_title,
-                    delivery_person=delivery_obj,
-                    order_delivery_datetime=datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d"),
-                    # shipment_address=shipment_obj,
-                    delivery_notes=delivery_notes,
-                    comment=comment,
-                    distance=distance,
-                    # total_units_ordered=total_units_ordered,
-                    status=delivery_status,
-                    payment_type=payment_type
-                )
-                for prod in list_of_order_prods:
-                    order.order_products.add(prod.id)
-                # print(client.number_of_order)
-                if client.no_of_invoices != 0:
-                    client.no_of_invoices -= 1
-                client.number_of_order += 1
-                client.save()
-                serializer = OrderDetailSerializer(order)
-                response = serializer.data
-                products_details = []
-                for prod in list_of_order_prods:
-                    product = {}
-                    order_prod_obj = OrderProduct.objects.get(id=prod.id)
-                    product['product_name'] = order_prod_obj.product.name
-                    product['product_unit'] = order_prod_obj.product.unit
-                    product['quantity'] = order_prod_obj.quantity
-                    product['total_amount'] = order_prod_obj.total_amount
-                    products_details.append(product)
-                response['order_products'] = products_details
-                return Response(status=status.HTTP_201_CREATED, data={"order": response})
+            list_of_order_prods = []
+            list_of_order_prods.extend(order_box_obj.orderproduct_set.all())
+            # print(list_of_order_prods)
+            order = OrderDetail.objects.create(
+                order_box=order_box_obj,
+                business=business_obj,
+                purchase_order_no=purchase_order_no,
+                order_title=order_title,
+                delivery_person=delivery_obj,
+                order_delivery_datetime=datetime.strptime(order_delivery_datetime, "%d-%m-%Y %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S.%f%z"),
+                # shipment_address=shipment_obj,
+                delivery_notes=delivery_notes,
+                comment=comment,
+                distance=distance,
+                # total_units_ordered=total_units_ordered,
+                status=delivery_status,
+                payment_type=payment_type
+            )
+            for prod in list_of_order_prods:
+                order.order_products.add(prod.id)
+            # print(client.number_of_order)
+            if client.no_of_invoices != 0:
+                client.no_of_invoices -= 1
+            client.number_of_order += 1
+            client.save()
+            serializer = OrderDetailSerializer(order)
+            response = serializer.data
+            products_details = []
+            for prod in list_of_order_prods:
+                product = {}
+                order_prod_obj = OrderProduct.objects.get(id=prod.id)
+                product['product_name'] = order_prod_obj.product.name
+                product['product_unit'] = order_prod_obj.product.unit
+                product['quantity'] = order_prod_obj.quantity
+                product['total_amount'] = order_prod_obj.total_amount
+                products_details.append(product)
+            response['order_products'] = products_details
+            return Response(status=status.HTTP_201_CREATED, data={"order": response})
 
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "record_creation_failed"})
+            # except:
+            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "record_creation_failed"})
 
 
 class UpdateOrderApiView(generics.UpdateAPIView):
@@ -494,46 +494,46 @@ class ListOrdersAssignedAPIView(APIView):
 class ConsolidatePurchaseAPIView(APIView):
     def get(self, request, id=None):
         if id:
-            try:
-                order_delivery_datetime = self.request.query_params.get('order_delivery_datetime', None)
-                order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d")
-                if order_delivery_datetime is None:
-                    order_delivery_datetime = date.today()
+            # try:
+            order_delivery_datetime = self.request.query_params.get('order_delivery_datetime', None)
+            order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d")
+            if order_delivery_datetime is None:
+                order_delivery_datetime = date.today()
 
-                print(order_delivery_datetime)
-                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price, M.order_delivery_datetime
-                          FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
-                          INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
-                          where M.status='in_progress' and delivery_person_id={id} and M.order_delivery_datetime='{order_delivery_datetime}'
-                          group by M.status,M.delivery_person_id,d.product_id,s.id, s.name,s.unit, M.order_delivery_datetime
-                          order by s.name
-                        """
-                cursor = connection.cursor()
-                cursor.execute(sql)
-                #
-                rows = cursor.fetchall()
-                consolidated_purchases = []
-                for row in rows:
-                    data_dict = {'status': row[0], 'delivery_person_id': row[1], 'product_id': row[2], 'qty': row[3],
-                                 'product_name': row[5], 'unit': row[6], 'avg_price': row[7]}
-                    consolidated_purchases.append(data_dict)
+            print(order_delivery_datetime)
+            sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price, M.order_delivery_datetime
+                      FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
+                      INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
+                      where M.status='in_progress' and delivery_person_id={id} and to_char(M.order_delivery_datetime, 'YYYY-MM-DD') LIKE '{order_delivery_datetime}'
+                      group by M.status,M.delivery_person_id,d.product_id,s.id, s.name,s.unit, M.order_delivery_datetime
+                      order by s.name
+                    """
+            cursor = connection.cursor()
+            cursor.execute(sql)
+            #
+            rows = cursor.fetchall()
+            consolidated_purchases = []
+            for row in rows:
+                data_dict = {'status': row[0], 'delivery_person_id': row[1], 'product_id': row[2], 'qty': row[3],
+                             'product_name': row[5], 'unit': row[6], 'avg_price': row[7]}
+                consolidated_purchases.append(data_dict)
 
-                if consolidated_purchases:
-                    return Response(status=status.HTTP_200_OK, data={'data': consolidated_purchases,
-                                                                     'status_code': 200,
-                                                                     'message': "Successful"
-                                                                     })
-                else:
-                    return Response(status=status.HTTP_200_OK, data={'data': 'No orders found against the given ID or '
-                                                                             'provided date',
-                                                                     'status_code': 200,
-                                                                     'message': "Successful"
-                                                                     })
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={
-                                                                        'status_code': 400,
-                                                                        'message': "Unsuccessful"
-                                                                        })
+            if consolidated_purchases:
+                return Response(status=status.HTTP_200_OK, data={'data': consolidated_purchases,
+                                                                 'status_code': 200,
+                                                                 'message': "Successful"
+                                                                 })
+            else:
+                return Response(status=status.HTTP_200_OK, data={'data': 'No orders found against the given ID or '
+                                                                         'provided date',
+                                                                 'status_code': 200,
+                                                                 'message': "Successful"
+                                                                 })
+            # except:
+            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={
+            #                                                             'status_code': 400,
+            #                                                             'message': "Unsuccessful"
+            #                                                             })
 
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={
