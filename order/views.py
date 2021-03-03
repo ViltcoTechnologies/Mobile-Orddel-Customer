@@ -494,12 +494,20 @@ class ConsolidatePurchaseAPIView(APIView):
     def get(self, request, id=None):
         if id:
             try:
-                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price 
-                        FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
-                        INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
-                        where M.status='in_progress' and delivery_person_id={id}
-                        group by M.status,M.delivery_person_id,d.product_id,s.id, s.name,s.unit 
-                        order by s.name
+                order_delivery_datetime = self.request.query_params.get('order_delivery_datetime', None)
+                order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d")
+                if order_delivery_datetime is None:
+                    order_delivery_datetime = date.today()
+                    order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime(
+                        "%Y-%m-%d")
+
+                print(order_delivery_datetime)
+                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price, M.order_delivery_datetime
+                          FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
+                          INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
+                          where M.status='in_progress' and delivery_person_id={id} and M.order_delivery_datetime='{order_delivery_datetime}'
+                          group by M.status,M.delivery_person_id,d.product_id,s.id, s.name,s.unit, M.order_delivery_datetime
+                          order by s.name
                         """
                 cursor = connection.cursor()
                 cursor.execute(sql)
@@ -517,7 +525,8 @@ class ConsolidatePurchaseAPIView(APIView):
                                                                      'message': "Successful"
                                                                      })
                 else:
-                    return Response(status=status.HTTP_200_OK, data={'data': 'No orders found against the given ID',
+                    return Response(status=status.HTTP_200_OK, data={'data': 'No orders found against the given ID or '
+                                                                             'provided date',
                                                                      'status_code': 200,
                                                                      'message': "Successful"
                                                                      })
@@ -538,49 +547,49 @@ class ListClientOrdersAPIView(APIView):
     def get(self, request):
         client = self.request.query_params.get('client_id')
         choice = self.request.query_params.get('choice').lower()
-        # try:
-        if choice == 'all':
-            order_detail = OrderDetail.objects.filter(order_box__client=client)
-            serializer = OrderDetailSerializer(order_detail, many=True)
+        try:
+            if choice == 'all':
+                order_detail = OrderDetail.objects.filter(order_box__client=client)
+                serializer = OrderDetailSerializer(order_detail, many=True)
 
-        elif choice == 'pending':
-            order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
-            serializer = OrderDetailSerializer(order_detail, many=True)
+            elif choice == 'pending':
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                serializer = OrderDetailSerializer(order_detail, many=True)
 
-        elif choice == 'in_progress':
-            order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
-            serializer = OrderDetailSerializer(order_detail, many=True)
+            elif choice == 'in_progress':
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                serializer = OrderDetailSerializer(order_detail, many=True)
 
-        elif choice == 'purchased':
-            order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
-            serializer = OrderDetailSerializer(order_detail, many=True)
+            elif choice == 'purchased':
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                serializer = OrderDetailSerializer(order_detail, many=True)
 
-        elif choice == 'delivered':
-            order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
-            serializer = OrderDetailSerializer(order_detail, many=True)
+            elif choice == 'delivered':
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                serializer = OrderDetailSerializer(order_detail, many=True)
 
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invalid Option entered'})
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invalid Option entered'})
 
-        data_list = []
-        for data in serializer.data:
-            order_detail = OrderDetail.objects.get(id=data['id'])
-            data['no_of_items'] = order_detail.order_products.count()
-            data['total_quantity'] = sum([i.quantity for i in order_detail.order_products.all()])
-            if order_detail.order_box.client is not None:
-                data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
-            # shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
-            # data['shipment_address'] = shipment_address.shipment_address
-            try:
-                delivery_person = DeliveryPerson.objects.get(id=order_detail.delivery_person.id)
-                data['delivery_person_name'] = delivery_person.first_name + " " + delivery_person.last_name
-            except:
-                pass
-            data_list.append(data)
-        return Response(status=status.HTTP_200_OK, data={'response': data_list})
+            data_list = []
+            for data in serializer.data:
+                order_detail = OrderDetail.objects.get(id=data['id'])
+                data['no_of_items'] = order_detail.order_products.count()
+                data['total_quantity'] = sum([i.quantity for i in order_detail.order_products.all()])
+                if order_detail.order_box.client is not None:
+                    data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
+                # shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
+                # data['shipment_address'] = shipment_address.shipment_address
+                try:
+                    delivery_person = DeliveryPerson.objects.get(id=order_detail.delivery_person.id)
+                    data['delivery_person_name'] = delivery_person.first_name + " " + delivery_person.last_name
+                except:
+                    pass
+                data_list.append(data)
+            return Response(status=status.HTTP_200_OK, data={'response': data_list})
 
-        # except:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'failed to retrieve records'})
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'failed to retrieve records'})
 
 
 class InsertPurchaseDetailsAPIView(APIView):
@@ -591,6 +600,7 @@ class InsertPurchaseDetailsAPIView(APIView):
                 product_id = detail['product_id']
                 supplier = detail['supplier']
                 unit_purchase_price = detail['unit_purchase_price']
+                portrage_price = detail['portrage_price']
                 profit_margin = detail['profit_margin']
                 profit_margin_choice = detail['profit_margin_choice']
                 unit_sales_price = detail['unit_sales_price']
@@ -621,9 +631,7 @@ class InsertPurchaseDetailsAPIView(APIView):
                 cursor = connection.cursor()
                 cursor.execute(sql)
                 order_details = OrderDetail.objects.filter(delivery_person=delivery_person, status='in_progress')
-                order_details.update(status = 'purchased')
-                # for order in order_details:
-                #     order.status = 'purchased'
+                order_details.update(status='purchased')
 
             return Response(status=status.HTTP_200_OK, data={'response': "Purchase Details submitted successfully",
                                                              'status_code': '200',

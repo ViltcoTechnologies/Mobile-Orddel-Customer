@@ -183,6 +183,108 @@ class ClientRegisterApiView(APIView):
                                   "send null or empty"})
 
 
+class ClientRegisterV2ApiView(APIView):
+    def post(self, request):
+        try:
+            # optional parameters
+            current_location = request.data['current_location']
+            address = request.data['address']
+            gender = request.data['gender']
+            image = request.data['image']
+            try:
+                # required parameters
+                first_name = request.data['first_name']
+                last_name = request.data['last_name']
+                email = request.data['email']
+                username = request.data['email']
+                phone_number = request.data['phone_number']
+                password = request.data['password']
+                otp_status = request.data['otp_status']
+                admin_approval_status = 'pending'
+                package = request.data['package']
+                if first_name == ""\
+                        or last_name == ""\
+                        or email == ""\
+                        or phone_number == ""\
+                        or otp_status == ""\
+                        or password == "":
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data={"message": "following required fields can't "
+                                          "be empty: (first_name, last_name, email, otp_status"
+                                          "phone_number, password)"})
+                try:
+                    saved_data = Client.objects.get(phone_number=phone_number)
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data={"message": "Phone Number already registered!"})
+                except:
+                        try:
+                            package = ClientPackage.objects.get(id=package)
+                            no_of_invoices = package.no_of_invoices
+                            try:
+                                new_auth_user = User.objects.create_user(
+                                    email,
+                                    email,
+                                    password
+                                )
+                                new_auth_user.first_name = first_name
+                                new_auth_user.last_name = last_name
+
+                                try:
+                                    new_client = Client.objects.create(
+                                        user=new_auth_user,
+                                        package=package,
+                                        otp_status=otp_status,
+                                        first_name=first_name,
+                                        last_name=last_name,
+                                        username=username,
+                                        admin_approval_status=admin_approval_status,
+                                        email=email,
+                                        no_of_invoices=no_of_invoices,
+                                        current_location=current_location,
+                                        phone_number=phone_number,
+                                        address=address,
+                                        gender=gender,
+                                        image=image
+                                    )
+                                    try:
+                                        sendConfirm(new_auth_user)
+                                    except:
+                                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                        data={"message": "There was a error sending verification "
+                                                                             "email"})
+
+                                    new_client.save()
+                                    serializer = ClientSerializer(new_client)
+                                    new_auth_user.save()
+
+
+                                    return Response(status=status.HTTP_200_OK,
+                                                    data={"client_created": serializer.data})
+                                except:
+                                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                    data={"message": "there was a error creating "
+                                                                     "delivery_person was not created"})
+                            except:
+                                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                data={"message": "User already exists"})
+                        except:
+                            return Response(status=status.HTTP_404_NOT_FOUND,
+                                            data={"message": f"No package with the ID: {package}"})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "Error! Make sure you're not missing one of the "
+                                      "following required fields: (first_name, last_name, otp_status"
+                                      "email, phone_number, password)"})
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                        data={"message": "Make sure you're not missing one "
+                                  "of the following optional fields: "
+                                  "(current_location, address, gender, image) "
+                                  "Note: If you want to leave fields blank, then "
+                                  "send null or empty"})
+
+
+
 class UpdateClientApiView(APIView):
 
     def put(self, request):

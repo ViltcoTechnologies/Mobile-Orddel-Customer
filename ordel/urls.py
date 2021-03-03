@@ -18,8 +18,10 @@ urlpatterns = [
 
     # verifications
     path('email/', include(mail_urls)),
+    path('send_otp/', SendOTPAPIView.as_view()),
     path('resend_otp/', ResendOtpApiView.as_view()),
     path('verify_otp/', VerifyPhoneNumberApiView.as_view()),
+    path('verify_otp_v2/', VerifyPhoneNumberV2ApiView.as_view()),
 
     # Reset Password URLs
     path('reset_password/', auth_views.PasswordResetView.as_view(), name="reset_password"),
@@ -34,7 +36,10 @@ urlpatterns = [
     path('order/', include("order.urls")),
     path('payment/', include("payment.urls")),
     path('product/', include("products.urls")),
-    path('admin_app/', include("admin_dashboard.urls"))
+    path('admin_app/', include("admin_dashboard.urls")),
+
+    # Check Existing Email and Phone Number
+    path('check_existing_email_phone/', CheckEmailPhoneNumberAPIView.as_view())
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

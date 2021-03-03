@@ -8,6 +8,7 @@ app_name = 'client_app'
 urlpatterns = [
     # CRUD of Clients
     path('client_registration/', ClientRegisterApiView.as_view(), name='create_client'),
+    path('client_registration_v2/', ClientRegisterV2ApiView.as_view(), name='create_client'),
     path('clients_list/', ListClientsApiView.as_view(), name='list_clients'),
     path('clients_list/<id>/', ListClientsApiView.as_view(), name='list_clients'),
     path('update_client/', UpdateClientApiView.as_view(), name='update_client'),
