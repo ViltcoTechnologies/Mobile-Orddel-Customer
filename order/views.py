@@ -361,6 +361,7 @@ class ListOrderApiView(APIView):
                     product['product_name'] = order_prod_obj.product.name
                     product['product_unit'] = order_prod_obj.product.unit
                     product['avg_price'] = order_prod_obj.product.avg_price
+                    product['unit_sales_price'] = order_prod_obj.unit_sale_price
                     product['quantity'] = order_prod_obj.quantity
                     product['total_amount'] = order_prod_obj.total_amount
                     product['supplier_market'] = order_prod_obj.supplier

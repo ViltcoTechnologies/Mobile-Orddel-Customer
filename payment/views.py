@@ -91,7 +91,7 @@ class CreateDeliveryNote(APIView):
                     order_prod_obj = order_detail.order_products.get(product=product['product_id'])
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": f"product with {product['product_id']}"
-                                                                                         f"does not exist in order"})
+                                                                                            f"does not exist in order"})
                 print(order_prod_obj.purchased_quantity)
                 order_prod_obj.purchased_quantity = product['purchased_qty']
                 order_prod_obj.save()
