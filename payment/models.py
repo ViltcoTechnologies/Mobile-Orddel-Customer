@@ -17,16 +17,17 @@ class DeliveryNote(models.Model):
 
 
 class Invoice(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.ForeignKey(OrderDetail, on_delete=models.SET_NULL, null=True, blank=True)
     inv_number = models.CharField(max_length=100, null=True, blank=True)
-    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
-    delivery_note = models.ForeignKey(DeliveryNote, on_delete=models.SET_NULL, null=True, blank=True)
-    subtotal = models.FloatField(default=0.0)
-    portrage_price = models.FloatField(default=0.0)
-    profit = models.FloatField(default=0.0)
-    total = models.FloatField(default=0.0)
+    total_amount = models.FloatField(default=0.0)
     date_created = models.DateTimeField(auto_now=True)
+    # client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
+    # delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
+    # delivery_note = models.ForeignKey(DeliveryNote, on_delete=models.SET_NULL, null=True, blank=True)
+    # subtotal = models.FloatField(default=0.0)
+    # portrage_price = models.FloatField(default=0.0)
+    # profit = models.FloatField(default=0.0)
+    # total = models.FloatField(default=0.0)
     # sales_price = models.FloatField(default=0.0)
 
     def __str__(self):

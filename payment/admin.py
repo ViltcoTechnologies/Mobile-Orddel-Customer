@@ -11,7 +11,7 @@ admin.site.register(DeliveryNote, DeliveryNoteAdmin)
 
 
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'order', 'inv_number', 'subtotal', 'portrage_price', 'profit', 'total', 'date_created')
+    list_display = ('id', 'order', 'inv_number', 'date_created')
     list_display_links = ('id', 'order', 'inv_number')
 
 
