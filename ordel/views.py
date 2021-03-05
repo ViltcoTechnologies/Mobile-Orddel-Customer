@@ -265,3 +265,26 @@ class ChangePasswordView(generics.UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetEmailAndPhoneApiView(APIView):
+    def post(self, request):
+        try:
+            username = request.data['username']
+            user_type = request.data['user_type']
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'username and/or user_type not provided'})
+        if user_type == 'client':
+            try:
+                client = Client.objects.get(username=username)
+                data = {'email': client.email, 'phone': client.phone_number}
+                return Response(status=status.HTTP_200_OK, data={'data': data})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'user not found'})
+        elif user_type == 'delivery_person':
+            try:
+                delivery_person = DeliveryPerson.objects.get(username=username)
+                data = {'email': delivery_person.email, 'phone': delivery_person.phone_number}
+                return Response(status=status.HTTP_200_OK, data={'data': data})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'user not found'})
