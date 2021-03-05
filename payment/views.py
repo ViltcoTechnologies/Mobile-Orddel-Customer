@@ -39,6 +39,22 @@ class ListCreateInvoice(generics.ListCreateAPIView):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
 
+    def create(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        serializer = InvoiceSerializer(data=request.data)
+        if serializer.is_valid(self):
+            data = serializer.validated_data
+            try:
+                print(data["order"])
+                invoice = Invoice.objects.get(order=data["order"])
+                print(invoice)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Invoice already exists"})
+
+            except:
+                serializer.save()
+                return Response(status=status.HTTP_201_CREATED, data={"response": serializer.data})
+
 
 class RetrieveUpdateDestroyInvoice(generics.RetrieveUpdateDestroyAPIView):
     queryset = Invoice.objects.all()

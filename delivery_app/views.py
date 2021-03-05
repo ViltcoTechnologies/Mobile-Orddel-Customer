@@ -218,8 +218,8 @@ class ListDeliveryPersonApiView(APIView):
 
 # Delivery Person Update API
 class UpdateDeliveryPersonApiView(APIView):
-    permission_classes = [permissions.IsAuthenticated, ]
-    authentication_classes = (authentication.JWTAuthentication,)
+    # permission_classes = [permissions.IsAuthenticated, ]
+    # authentication_classes = (authentication.JWTAuthentication,)
 
     def get(self, request):
         return Response(status=status.HTTP_200_OK)
@@ -231,13 +231,13 @@ class UpdateDeliveryPersonApiView(APIView):
             last_name = request.data['last_name']
             phone_number = request.data['phone_number']
             address = request.data['address']
-            current_location = request.data['current_location']
-            no_of_orders = request.data['no_of_orders']
-            buying_capacity = request.data['buying_capacity']
-            total_amount_shopped = request.data['total_amount_shopped']
-            gender = request.data['gender']
-            image = request.data['image']
-            approval_status = request.data['approval_status']
+            # current_location = request.data['current_location']
+            # no_of_orders = request.data['no_of_orders']
+            # buying_capacity = request.data['buying_capacity']
+            # total_amount_shopped = request.data['total_amount_shopped']
+            # gender = request.data['gender']
+            # image = request.data['image']
+            # approval_status = request.data['approval_status']
             try:
                 # required parameters
                 email = request.data['email']
@@ -254,14 +254,14 @@ class UpdateDeliveryPersonApiView(APIView):
                             first_name=first_name,
                             last_name=last_name,
                             phone_number=phone_number,
-                            address=address,
-                            current_location=current_location,
-                            no_of_orders=no_of_orders,
-                            buying_capacity=buying_capacity,
-                            total_amount_shopped=total_amount_shopped,
-                            gender=gender,
-                            image=image,
-                            approval_status=approval_status
+                            address=address
+                            # current_location=current_location,
+                            # no_of_orders=no_of_orders,
+                            # buying_capacity=buying_capacity,
+                            # total_amount_shopped=total_amount_shopped,
+                            # gender=gender,
+                            # image=image,
+                            # approval_status=approval_status
                         )
                         try:
                             saved_delivery_person.user.first_name = first_name
