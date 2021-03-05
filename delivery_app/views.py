@@ -896,43 +896,45 @@ class DeliveryPersonLogin(TokenObtainPairView):
         # print(request.data)
         try:
             username = request.data['username']
-            try:
-                _ = request.data['password']
-                try:
-                    serializer_class = MyTokenObtainPairSerializer(data=request.data)
-                    if serializer_class.is_valid(self):
-                        print("here")
-                        user = User.objects.get(username=username)
-                        delivery_person = DeliveryPerson.objects.get(username=username)
-                        is_active = user.is_active
-                        otp_status = delivery_person.otp_status
-                        approval_status = delivery_person.admin_approval_status
-                        print(is_active)
-                        print(otp_status)
-                        print(approval_status)
-                        if is_active and otp_status and approval_status == 'approved':
-                            return Response(status=status.HTTP_200_OK, data={"delivery_person": delivery_person.id, "data": serializer_class.validated_data})
-                        else:
-                            return Response(status=status.HTTP_401_UNAUTHORIZED, data={"data": "delivery person not authorized"})
-
-                    else:
-                        print("invalid username and password")
-
-                except:
-                    user = User.objects.get(username=username)
-                    is_active = user.is_active
-                    if not is_active:
-                        return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data={"message": "The account is not verified via email"})
-                    else:
-                        return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data={"message": "username or password not correct"})
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={"message": "Password is required!"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"message": "Username is required!"})
+        try:
+            _ = request.data['password']
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Password is required!"})
+
+        try:
+            serializer_class = MyTokenObtainPairSerializer(data=request.data)
+            if serializer_class.is_valid(self):
+                print("here")
+                user = User.objects.get(username=username)
+                delivery_person = DeliveryPerson.objects.get(username=username)
+                is_active = user.is_active
+                otp_status = delivery_person.otp_status
+                approval_status = delivery_person.admin_approval_status
+                print(is_active)
+                print(otp_status)
+                print(approval_status)
+                if is_active and otp_status and approval_status == 'approved':
+                    return Response(status=status.HTTP_200_OK, data={"delivery_person": delivery_person.id, "data": serializer_class.validated_data})
+                else:
+                    return Response(status=status.HTTP_401_UNAUTHORIZED, data={"data": "delivery person not authorized"})
+
+            else:
+                print("invalid username and password")
+
+        except:
+            user = User.objects.get(username=username)
+            is_active = user.is_active
+            if not is_active:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "The account is not verified via email"})
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "username or password not correct"})
+
+
 
 
 # ------------------------------------------------------------------------------------------------------------------------

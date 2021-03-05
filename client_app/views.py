@@ -822,42 +822,42 @@ class ClientLogin(TokenObtainPairView):
         # print(request.data)
         try:
             username = request.data['username']
-            try:
-                _ = request.data['password']
-                try:
-                    serializer_class = MyTokenObtainPairSerializer(data=request.data)
-                    if serializer_class.is_valid(self):
-                        user = User.objects.get(username=username)
-                        client = Client.objects.get(username=username)
-                        is_active = user.is_active
-                        otp_status = client.otp_status
-                        approval_status = client.admin_approval_status
-                        if is_active and otp_status and approval_status == 'approved':
-
-                            return Response(status=status.HTTP_200_OK, data={"client_id": client.id,
-                                                                             "data": serializer_class.validated_data})
-                        else:
-                            return Response(status=status.HTTP_401_UNAUTHORIZED,
-                                            data={"data": "client user not authorized"})
-
-                    else:
-                        print("invalid username and password")
-
-                except:
-                    user = User.objects.get(username=username)
-                    is_active = user.is_active
-                    if not is_active:
-                        return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data={"message": "The account is not verified via email"})
-                    else:
-                        return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data={"message": "username or password not correct"})
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={"message": "Password is required!"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"message": "Username is required!"})
+        try:
+            _ = request.data['password']
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={"message": "Password is required!"})
+        try:
+            serializer_class = MyTokenObtainPairSerializer(data=request.data)
+            if serializer_class.is_valid(self):
+                user = User.objects.get(username=username)
+                client = Client.objects.get(username=username)
+                is_active = user.is_active
+                otp_status = client.otp_status
+                approval_status = client.admin_approval_status
+                if is_active and otp_status and approval_status == 'approved':
+
+                    return Response(status=status.HTTP_200_OK, data={"client_id": client.id,
+                                                                     "data": serializer_class.validated_data})
+                else:
+                    return Response(status=status.HTTP_401_UNAUTHORIZED,
+                                    data={"data": "client user not authorized"})
+
+            else:
+                print("invalid username and password")
+
+        except:
+            user = User.objects.get(username=username)
+            is_active = user.is_active
+            if not is_active:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "The account is not verified via email"})
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "username or password not correct"})
 
 
 # ------------------------------------------------------------------------------------------------------------------------

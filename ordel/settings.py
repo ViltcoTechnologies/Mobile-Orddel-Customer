@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_rest_passwordreset',
 
     # Django Apps
     'order',
@@ -245,3 +246,6 @@ AWS_DEFAULT_ACL = None
 TWILIO_ACCOUNT_SID = "AC8d6c1e71edeb9459705b7320568df7ca"
 TWILIO_AUTH_TOKEN = "4c992942b54cc4c0b88cf857cad5c200"
 SERVICE_SID = "VA98a469ee1743df522f3d0a89df50556c"
+
+
+# Reset Password Configuration
