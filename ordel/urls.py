@@ -23,6 +23,7 @@ urlpatterns = [
     path('verify_otp/', VerifyPhoneNumberApiView.as_view()),
     path('verify_otp_v2/', VerifyPhoneNumberV2ApiView.as_view()),
     path('get_email_phone/', GetEmailAndPhoneApiView.as_view()),
+    path('change_password_phone/', ChangePasswordViaPhoneNumber.as_view()),
 
     # Reset Password URLs
     path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),

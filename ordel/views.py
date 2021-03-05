@@ -288,3 +288,16 @@ class GetEmailAndPhoneApiView(APIView):
                 return Response(status=status.HTTP_200_OK, data={'data': data})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'user not found'})
+
+
+class ChangePasswordViaPhoneNumber(APIView):
+    def post(self, request):
+        username = request.data['username']
+        new_password = request.data['password']
+        try:
+            user = User.objects.get(username=username)
+            user.set_password(new_password)
+            user.save()
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User not found'})
+
