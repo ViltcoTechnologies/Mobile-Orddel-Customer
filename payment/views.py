@@ -87,6 +87,9 @@ class CreateDeliveryNote(APIView):
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Order with {order_id} does not exist'})
             # list_of_orderprods = order_detail.order_products.all()
+            order_prod_list = order_detail.order_products.all()
+            for order_prod in order_prod_list:
+                order_prod.purchased_quantity = order_prod.quantity
             for product in purchased_products:
                 try:
                     order_prod_obj = order_detail.order_products.get(product=product['product_id'])
