@@ -56,7 +56,11 @@ class ClientDashboardApiView(APIView):
                     data = {
                         # "client_image": client_image,
                         "client_name": client_name,
-                        "client_package": client_package,
+                        "client_first_name": client.first_name, 
+                        "client_last_name": client.last_name, 
+                        "client_phone": client.phone_number,
+                        "client_user_name": client.username, 
+                        "client_package": client_package.capitalize(),
                         "total_invoices": total_invoices,
                         "remaining_invoices": remaining_invoices,
                         "used_invoices": used_invoices,
