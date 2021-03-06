@@ -106,6 +106,7 @@ class CreateDeliveryNote(APIView):
             order_prod_list = order_detail.order_products.all()
             for order_prod in order_prod_list:
                 order_prod.purchased_quantity = order_prod.quantity
+                order_prod.save()
             for product in purchased_products:
                 try:
                     order_prod_obj = order_detail.order_products.get(product=product['product_id'])
@@ -136,9 +137,6 @@ class GenerateInvoiceAPIView(APIView):
                 response = serializer.data
                 order_prods = []
                 order_prods.extend(order_detail.order_products.all())
-                for order_prod in order_prods:
-                    order_prod.purchased_quantity = order_prod.quantity
-                    order_prod.save()
                 products_details = []
                 total_purchased_qty = 0
                 total_vat = 0
@@ -154,13 +152,18 @@ class GenerateInvoiceAPIView(APIView):
                     product['purchased_qty'] = order_prod_obj.purchased_quantity
                     if product['purchased_qty'] != 0:
                         total_purchased_qty += product['purchased_qty']
-                        product['unit_sales_price'] = order_prod_obj.unit_sale_price
-                        product['vat_amount'] = order_prod_obj.product.vat * order_prod_obj.unit_sale_price
+                        product['unit_sales_price'] = float("{:.2f}".format(order_prod_obj.unit_sale_price))
+                        product['vat_amount'] = float("{:.2f}".format(order_prod_obj.product.vat * order_prod_obj.unit_sale_price))
                         total_vat += product['vat_amount']
                     # product['total_amount'] = order_prod_obj.total_amount
-                        product['amount'] = product['vat_amount'] + product['unit_sales_price']
+                        product['amount'] = float("{:.2f}".format(product['vat_amount'] + product['unit_sales_price']))
                         total_amount += product['amount']
                         product['supplier_market'] = order_prod_obj.supplier
+                    else:
+                        product['unit_sales_price'] = ""
+                        product['vat_amount'] = ""
+                        product['amount'] = ""
+                        product['supplier_market'] = ""
                     products_details.append(product)
                 response['order_products'] = products_details
                 order_b_obj = OrderBox.objects.get(id=response['order_box'])
@@ -168,9 +171,9 @@ class GenerateInvoiceAPIView(APIView):
                     response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
                 delivery_note_obj = DeliveryNote.objects.get(order=order_detail.id)
                 response['delivery_note'] = delivery_note_obj.delivery_note
-                response['total_qty'] = total_purchased_qty
-                response['total_vat'] = total_vat
-                response['total_amount'] = total_amount
+                response['total_qty'] = float("{:.2f}".format(total_purchased_qty))
+                response['total_vat'] = float("{:.2f}".format(total_vat))
+                response['total_amount'] = float("{:.2f}".format(total_amount))
                 delivery_person_obj = DeliveryPerson.objects.get(id=response['delivery_person'])
                 response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
                 response['delivery_person_address'] = delivery_person_obj.address
