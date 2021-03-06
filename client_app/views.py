@@ -299,11 +299,11 @@ class UpdateClientApiView(APIView):
             Client.objects.filter(user_id = saved_data.id).update(
                     first_name=request.data["first_name"],
                     last_name=request.data["last_name"],
-                    phone_number=request.data["phone_number"],
-                    address=request.data["address"],
-                    current_location=request.data["current_location"],
-                    gender=request.data["gender"],
-                    image=request.data["image"]
+                    phone_number=request.data["phone_number"]
+                    # address=request.data["address"],
+                    # current_location=request.data["current_location"],
+                    # gender=request.data["gender"],
+                    # image=request.data["image"]
             )
             saved_data.save()
             data_to_pass = Client.objects.get(username=saved_data.username)

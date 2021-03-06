@@ -222,80 +222,104 @@ class ListDeliveryPersonApiView(APIView):
 
 
 # Delivery Person Update API
+# class UpdateDeliveryPersonApiView(APIView):
+#     # permission_classes = [permissions.IsAuthenticated, ]
+#     # authentication_classes = (authentication.JWTAuthentication,)
+
+#     def get(self, request):
+#         return Response(status=status.HTTP_200_OK)
+
+#     def put(self, request, id=None):
+#         try:
+#             # optional parameters
+#             first_name = request.data['first_name']
+#             last_name = request.data['last_name']
+#             phone_number = request.data['phone_number']
+#             address = request.data['address']
+#             # current_location = request.data['current_location']
+#             # no_of_orders = request.data['no_of_orders']
+#             # buying_capacity = request.data['buying_capacity']
+#             # total_amount_shopped = request.data['total_amount_shopped']
+#             # gender = request.data['gender']
+#             # image = request.data['image']                        except:
+#                             return Response(status=status.HTTP_400_BAD_REQUEST,
+#                                             data="Error updating auth-user data")
+#             # approval_status = request.data['approval_status']
+#             try:
+#                 # required parameters
+#                 email = request.data['email']
+#                 if email == "":
+#                     return Response(status=status.HTTP_400_BAD_REQUEST,
+#                                     data="Ooops! email can't be empty")
+#                 try:
+#                     saved_delivery_person = DeliveryPerson.objects.filter(email=email)
+#                     if not saved_delivery_person:
+#                         return Response(status=status.HTTP_404_NOT_FOUND,
+#                                         data=f"delivery_person with email: '{email}' not found")
+#                     try:
+#                         updated_delivery_person = saved_delivery_person.update(
+#                             first_name=first_name,
+#                             last_name=last_name,
+#                             phone_number=phone_number,
+#                             address=address
+#                             # current_location=current_location,
+#                             # no_of_orders=no_of_orders,
+#                             # buying_capacity=buying_capacity,
+#                             # total_amount_shopped=total_amount_shopped,
+#                             # gender=gender,
+#                             # image=image,
+#                             # approval_status=approval_status
+#                         )
+#                         try:
+#                             saved_delivery_person.user.first_name = first_name
+#                             saved_delivery_person.user.last_name = last_name
+#                             serializer = DeliveryPersonSerializer(updated_delivery_person, many=True)
+#                             return Response(status=status.HTTP_200_OK,
+#                                             data={"updated_admin_user": serializer.data})
+#                         except:
+#                             return Response(status=status.HTTP_400_BAD_REQUEST,
+#                                             data="Error updating auth-user data")
+#                     except:
+#                         return Response(status=status.HTTP_400_BAD_REQUEST,
+#                                         data="Error updating admin_user Data")
+#                 except:
+#                     return Response(status=status.HTTP_404_NOT_FOUND,
+#                                     data="Error finding auth user data")
+#             except:
+#                 return Response(status=status.HTTP_400_BAD_REQUEST,
+#                                 data="Oops! Make sure you're not missing a required"
+#                                      "field (email) ")
+#         except:
+#             return Response(status=status.HTTP_400_BAD_REQUEST,
+#                             data="Oops! Make sure following fields are not missing "
+#                                  "(first_name, last_name, phone_number, buying_capacity "
+#                                  "address, gender, image) Note: If you want to "
+#                                  "leave fields blank, then send null or empty"
+#                                  "and for approval_status send either 'True' or 'False'")
+
+
 class UpdateDeliveryPersonApiView(APIView):
-    # permission_classes = [permissions.IsAuthenticated, ]
-    # authentication_classes = (authentication.JWTAuthentication,)
 
-    def get(self, request):
-        return Response(status=status.HTTP_200_OK)
-
-    def put(self, request, id=None):
+    def put(self, request):
         try:
-            # optional parameters
-            first_name = request.data['first_name']
-            last_name = request.data['last_name']
-            phone_number = request.data['phone_number']
-            address = request.data['address']
-            # current_location = request.data['current_location']
-            # no_of_orders = request.data['no_of_orders']
-            # buying_capacity = request.data['buying_capacity']
-            # total_amount_shopped = request.data['total_amount_shopped']
-            # gender = request.data['gender']
-            # image = request.data['image']
-            # approval_status = request.data['approval_status']
-            try:
-                # required parameters
-                email = request.data['email']
-                if email == "":
-                    return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data="Ooops! email can't be empty")
-                try:
-                    saved_delivery_person = DeliveryPerson.objects.filter(email=email)
-                    if not saved_delivery_person:
-                        return Response(status=status.HTTP_404_NOT_FOUND,
-                                        data=f"delivery_person with email: '{email}' not found")
-                    try:
-                        updated_delivery_person = saved_delivery_person.update(
-                            first_name=first_name,
-                            last_name=last_name,
-                            phone_number=phone_number,
-                            address=address
-                            # current_location=current_location,
-                            # no_of_orders=no_of_orders,
-                            # buying_capacity=buying_capacity,
-                            # total_amount_shopped=total_amount_shopped,
-                            # gender=gender,
-                            # image=image,
-                            # approval_status=approval_status
-                        )
-                        try:
-                            saved_delivery_person.user.first_name = first_name
-                            saved_delivery_person.user.last_name = last_name
-                            serializer = DeliveryPersonSerializer(updated_delivery_person, many=True)
-                            return Response(status=status.HTTP_200_OK,
-                                            data={"updated_admin_user": serializer.data})
-                        except:
-                            return Response(status=status.HTTP_400_BAD_REQUEST,
-                                            data="Error updating auth-user data")
-                    except:
-                        return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data="Error updating admin_user Data")
-                except:
-                    return Response(status=status.HTTP_404_NOT_FOUND,
-                                    data="Error finding auth user data")
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data="Oops! Make sure you're not missing a required"
-                                     "field (email) ")
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data="Oops! Make sure following fields are not missing "
-                                 "(first_name, last_name, phone_number, buying_capacity "
-                                 "address, gender, image) Note: If you want to "
-                                 "leave fields blank, then send null or empty"
-                                 "and for approval_status send either 'True' or 'False'")
-
-
+            saved_data = User.objects.get(email = request.data['email'])
+            saved_data.first_name = request.data['first_name']
+            saved_data.last_name = request.data['last_name']
+            DeliveryPerson.objects.filter(user_id = saved_data.id).update(
+                    first_name=request.data["first_name"],
+                    last_name=request.data["last_name"],
+                    phone_number=request.data["phone_number"],
+                    address=request.data["address"]
+                    # current_location=request.data["current_location"],
+                    # gender=request.data["gender"],
+                    # image=request.data["image"]
+            )
+            saved_data.save()
+            data_to_pass = DeliveryPerson.objects.get(username=saved_data.username)
+            serializer = DeliveryPersonSerializer(data_to_pass)
+            return Response(status=status.HTTP_200_OK, data={"updated_details": serializer.data})
+        except AssertionError as err:
+            return Response(status=status.HTTP_404_NOT_FOUND, data=err)
 # Delivery Person Delete API
 class DeleteDeliveryPersonApiView(APIView):
 
