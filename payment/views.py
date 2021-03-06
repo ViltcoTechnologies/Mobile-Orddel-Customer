@@ -13,21 +13,21 @@ class GetInvNumberAPIView(APIView):
 
     def get(self, request, id=None):
         if id:
-            # try:
-            invoice = Invoice.objects.filter(order=id).last()
-            orderdetail = OrderDetail.objects.get(id=id)
-            order_id = orderdetail.id
-            if invoice:
-                inv_number_list = invoice.inv_number.split("_")
-                inv_number = int(inv_number_list[3])
-                inv_number += 1
-                invoice_order_no = f"Inv#{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
-            else:
-                inv_number = 1
-                invoice_order_no = f"Inv#{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
+            try:
+                invoice = Invoice.objects.filter(order=id).last()
+                orderdetail = OrderDetail.objects.get(id=id)
+                order_id = orderdetail.id
+                if invoice:
+                    inv_number_list = invoice.inv_number.split("_")
+                    inv_number = int(inv_number_list[3])
+                    inv_number += 1
+                    invoice_order_no = f"Inv#{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
+                else:
+                    inv_number = 1
+                    invoice_order_no = f"Inv#{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
 
-            # except:
-            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "order not found"})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "order not found"})
 
             return Response(status=status.HTTP_200_OK, data={"invoice_number": invoice_order_no})
 
