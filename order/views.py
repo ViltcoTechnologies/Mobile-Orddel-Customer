@@ -621,7 +621,7 @@ class InsertPurchaseDetailsAPIView(APIView):
 
                 sql = f"""UPDATE 
                             ORDER_ORDERPRODUCT D
-                         SET 
+                            SET 
                             profit_margin={profit_margin},
                             supplier='{supplier}', 
                             unit_purchase_price={unit_purchase_price}, 
@@ -632,11 +632,12 @@ class InsertPurchaseDetailsAPIView(APIView):
                             ORDER_ORDERDETAIL M 
                         WHERE 
                             M.order_box_id=D.order_box_id AND D.product_id={product_id} AND M.delivery_person_id={delivery_person} AND M.status='in_progress' AND to_char(M.order_delivery_datetime, 'YYYY-MM-DD') LIKE '{delivery_date}';
-                     """
+                        """
                 cursor = connection.cursor()
                 cursor.execute(sql)
-                order_details = OrderDetail.objects.filter(delivery_person=delivery_person, status='in_progress')
-                order_details.update(status='purchased')
+            order_details = OrderDetail.objects.filter(delivery_person=delivery_person, status='in_progress', order_delivery_datetime__date=delivery_date)
+            print(order_details)
+            order_details.update(status='purchased')
 
             return Response(status=status.HTTP_200_OK, data={'response': "Purchase Details submitted successfully",
                                                             'status_code': '200',
