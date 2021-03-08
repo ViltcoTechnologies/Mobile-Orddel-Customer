@@ -595,6 +595,8 @@ class ListClientOrdersAPIView(APIView):
 class InsertPurchaseDetailsAPIView(APIView):
     def put(self, request):
         try:
+            delivery_date = request.data["delivery_date"]
+            delivery_date = datetime.strptime(delivery_date, "%d-%m-%Y").date().strftime("%Y-%m-%d")
             for detail in request.data['purchase_details']:
                 delivery_person = detail['delivery_person_id']
                 product_id = detail['product_id']
@@ -621,11 +623,12 @@ class InsertPurchaseDetailsAPIView(APIView):
                             supplier='{supplier}', 
                             unit_purchase_price={unit_purchase_price}, 
                             unit_sale_price={unit_sales_price},
+                            portrage_price={portrage_price},
                             profit_margin_choice='{profit_margin_choice}'
                         FROM 
                             ORDER_ORDERDETAIL M 
                         WHERE 
-                            M.order_box_id=D.order_box_id AND D.product_id={product_id} AND M.delivery_person_id={delivery_person} AND M.status='in_progress';
+                            M.order_box_id=D.order_box_id AND D.product_id={product_id} AND M.delivery_person_id={delivery_person} AND M.status='in_progress' AND to_char(M.order_delivery_datetime, 'YYYY-MM-DD') LIKE '{delivery_date}';
                      """
                 cursor = connection.cursor()
                 cursor.execute(sql)

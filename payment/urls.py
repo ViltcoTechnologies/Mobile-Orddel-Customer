@@ -11,6 +11,8 @@ urlpatterns = [
     path('get_delivery_note_number/<id>/', GetDeliveryNoteNumberAPIView.as_view()),
     path('add_delivery_note/', CreateDeliveryNote.as_view()),
     path('generate_invoice/<id>/', GenerateInvoiceAPIView.as_view()),
+    path('view_invoice/<id>/', ViewInvoiceApiView.as_view()),
+
 
 
 ]
