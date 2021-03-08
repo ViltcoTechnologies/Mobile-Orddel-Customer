@@ -193,58 +193,56 @@ class GenerateInvoiceAPIView(APIView):
 class ViewInvoiceApiView(APIView):
     def get(self, request, id=None):
         if id:
+            # try:
             try:
-                try:
-                    invoice = Invoice.objects.get(order=id)
-                except:
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invoice does not exist'})
-                serializer = InvoiceSerializer(invoice)
-                response = serializer.data
-                order_prods = []
-                order_prods.extend(invoice.order.order_products.all())
-                products_details = []
-                total_purchased_qty = 0
-                total_vat = 0
-                total_amount = 0
-                for prod in order_prods:
-                    product = {}
-                    order_prod_obj = OrderProduct.objects.get(id=prod.id)
-                    product['product_id'] = order_prod_obj.product.id
-                    product['product_name'] = order_prod_obj.product.name
-                    product['product_unit'] = order_prod_obj.product.unit
-                    product['avg_price'] = order_prod_obj.product.avg_price
-                    product['ordered_quantity'] = order_prod_obj.quantity
-                    product['purchased_qty'] = order_prod_obj.purchased_quantity
-                    if product['purchased_qty'] != 0:
-                        total_purchased_qty += product['purchased_qty']
-                        product['unit_sales_price'] = order_prod_obj.unit_sale_price
-                        product['vat_amount'] = order_prod_obj.product.vat * order_prod_obj.unit_sale_price
-                        total_vat += product['vat_amount']
-                        # product['total_amount'] = order_prod_obj.total_amount
-                        product['amount'] = product['vat_amount'] + product['unit_sales_price']
-                        total_amount += product['amount']
-                        product['supplier_market'] = order_prod_obj.supplier
-                    products_details.append(product)
-                response['order_products'] = products_details
-                order_b_obj = OrderBox.objects.get(id=response['order_box'])
-                if order_b_obj.client != None:
-                    response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
-                delivery_note_obj = DeliveryNote.objects.get(order=invoice.order)
-                response['delivery_note'] = delivery_note_obj.delivery_note
-                response['total_qty'] = total_purchased_qty
-                response['total_vat'] = total_vat
-                response['total_amount'] = total_amount
-                delivery_person_obj = DeliveryPerson.objects.get(id=response['delivery_person'])
-                response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
-                response['delivery_person_address'] = delivery_person_obj.address
-                # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
-                # response['shipment_address_detail'] = shipment_address.shipment_address
-                if response['status'] == 'in_progress':
-                    response['status'] = 'in progress'
-                return Response(status=status.HTTP_200_OK, data={"order": response})
-
+                invoice = Invoice.objects.get(order=id)
             except:
-                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"message": "Something went wrong"})
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invoice does not exist'})
+            serializer = InvoiceSerializer(invoice)
+            response = serializer.data
+            order_prods = []
+            order_prods.extend(invoice.order.order_products.all())
+            products_details = []
+            total_purchased_qty = 0
+            total_vat = 0
+            total_amount = 0
+            for prod in order_prods:
+                product = {}
+                order_prod_obj = OrderProduct.objects.get(id=prod.id)
+                product['product_id'] = order_prod_obj.product.id
+                product['product_name'] = order_prod_obj.product.name
+                product['product_unit'] = order_prod_obj.product.unit
+                product['avg_price'] = order_prod_obj.product.avg_price
+                product['ordered_quantity'] = order_prod_obj.quantity
+                product['purchased_qty'] = order_prod_obj.purchased_quantity
+                if product['purchased_qty'] != 0:
+                    total_purchased_qty += product['purchased_qty']
+                    product['unit_sales_price'] = float("{:.2f}".format(order_prod_obj.unit_sale_price))
+                    product['vat_amount'] = float("{:.2f}".format(order_prod_obj.product.vat * order_prod_obj.unit_sale_price))
+                    total_vat += product['vat_amount']
+                    # product['total_amount'] = order_prod_obj.total_amount
+                    product['amount'] = float("{:.2f}".format(product['vat_amount'] + product['unit_sales_price']))
+                    total_amount += product['amount']
+                    product['supplier_market'] = order_prod_obj.supplier
+                products_details.append(product)
+            response['order_products'] = products_details
+            order_b_obj = OrderBox.objects.get(id=invoice.order.order_box.id)
+            if order_b_obj.client != None:
+                response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
+            delivery_note_obj = DeliveryNote.objects.get(order=invoice.order)
+            response['delivery_note'] = delivery_note_obj.delivery_note
+            response['total_qty'] = float("{:.2f}".format(total_purchased_qty))
+            response['total_vat'] = float("{:.2f}".format(total_vat))
+            response['total_amount'] = float("{:.2f}".format(total_amount))
+            delivery_person_obj = DeliveryPerson.objects.get(id=invoice.order.delivery_person.id)
+            response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
+            response['delivery_person_address'] = delivery_person_obj.address
+            # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
+            # response['shipment_address_detail'] = shipment_address.shipment_address
+            return Response(status=status.HTTP_200_OK, data={"order": response})
+
+            # except:
+            #     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data={"message": "Something went wrong"})
 
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Order ID not entered"})
