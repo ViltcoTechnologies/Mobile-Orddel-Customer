@@ -237,6 +237,9 @@ class ViewInvoiceApiView(APIView):
             delivery_person_obj = DeliveryPerson.objects.get(id=invoice.order.delivery_person.id)
             response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
             response['delivery_person_address'] = delivery_person_obj.address
+            response['business_address'] = invoice.order.business.address
+            response['purchase_order_no'] = invoice.order.purchase_order_no
+            response['order_delivery_datetime'] = invoice.order.order_delivery_datetime.strftime('%d-%m-%Y %H:%M')
             # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
             # response['shipment_address_detail'] = shipment_address.shipment_address
             return Response(status=status.HTTP_200_OK, data={"order": response})
