@@ -220,36 +220,16 @@ class DeleteOrderBoxProductsApiView(APIView):
 
 class CreateOrderApiView(APIView):
 
-    # def generate_ordernum(self):
-    #     letters_and_digits = string.ascii_letters + string.digits
-    #     rand_alphanum = ''.join((random.choice(letters_and_digits) for i in range(16)))
-    #     return rand_alphanum
-
     def post(self, request):
-
-        # while True:
-        #     try:
-        #         purchase_ordernum = self.generate_ordernum()
-        #         order = OrderDetail.objects.get(purchase_order_no=purchase_ordernum)
-        #         if not order:
-        #             break
-        #
-        #     except:
-        #         break
-
-
-
         order_box = request.data['order_box']
         purchase_order_no = request.data['purchase_order_no']
         order_title = request.data['order_title']
         delivery_person = request.data['delivery_person']
         order_delivery_datetime = request.data['order_delivery_datetime']
-        # shipment_address = request.data['shipment_address']
         business = request.data['business_id']
         delivery_notes = request.data['delivery_notes']
         comment = request.data['comment']
         distance = request.data['distance']
-        # total_units_ordered = request.data['total_units_ordered']
         delivery_status = request.data['status'].lower()
         payment_type = request.data['payment_type'].lower()
         try:
