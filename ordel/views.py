@@ -298,6 +298,7 @@ class ChangePasswordViaPhoneNumber(APIView):
             user = User.objects.get(username=username)
             user.set_password(new_password)
             user.save()
+            return Response(status=status.HTTP_200_OK, data = {'message': 'Password Updated successfully'})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User not found'})
 

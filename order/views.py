@@ -495,46 +495,49 @@ class ListOrdersAssignedAPIView(APIView):
 class ConsolidatePurchaseAPIView(APIView):
     def get(self, request, id=None):
         if id:
-            # try:
-            order_delivery_datetime = self.request.query_params.get('order_delivery_datetime', None)
-            order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d")
-            if order_delivery_datetime is None:
-                order_delivery_datetime = date.today()
+            try:
+                order_delivery_datetime = self.request.query_params.get('order_delivery_datetime', None)
+                print(order_delivery_datetime)
+                if order_delivery_datetime is None:
+                    order_delivery_datetime = date.today()
+                else:
+                    order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d")
 
-            print(order_delivery_datetime)
-            sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price, M.order_delivery_datetime
-                      FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
-                      INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
-                      where M.status='in_progress' and delivery_person_id={id} and to_char(M.order_delivery_datetime, 'YYYY-MM-DD') LIKE '{order_delivery_datetime}'
-                      group by M.status,M.delivery_person_id,d.product_id,s.id, s.name,s.unit, M.order_delivery_datetime
-                      order by s.name
-                    """
-            cursor = connection.cursor()
-            cursor.execute(sql)
-            #
-            rows = cursor.fetchall()
-            consolidated_purchases = []
-            for row in rows:
-                data_dict = {'status': row[0], 'delivery_person_id': row[1], 'product_id': row[2], 'qty': row[3],
-                             'product_name': row[5], 'unit': row[6], 'avg_price': row[7]}
-                consolidated_purchases.append(data_dict)
 
-            if consolidated_purchases:
-                return Response(status=status.HTTP_200_OK, data={'data': consolidated_purchases,
-                                                                 'status_code': 200,
-                                                                 'message': "Successful"
-                                                                 })
-            else:
-                return Response(status=status.HTTP_200_OK, data={'data': 'No orders found against the given ID or '
-                                                                         'provided date',
-                                                                 'status_code': 200,
-                                                                 'message': "Successful"
-                                                                 })
-            # except:
-            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={
-            #                                                             'status_code': 400,
-            #                                                             'message': "Unsuccessful"
-            #                                                             })
+                print(order_delivery_datetime)
+                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price, M.order_delivery_datetime
+                        FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
+                        INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
+                        where M.status='in_progress' and delivery_person_id={id} and to_char(M.order_delivery_datetime, 'YYYY-MM-DD') LIKE '{order_delivery_datetime}'
+                        group by M.status,M.delivery_person_id,d.product_id,s.id, s.name,s.unit, M.order_delivery_datetime
+                        order by s.name
+                        """
+                cursor = connection.cursor()
+                cursor.execute(sql)
+                #
+                rows = cursor.fetchall()
+                consolidated_purchases = []
+                for row in rows:
+                    data_dict = {'status': row[0], 'delivery_person_id': row[1], 'product_id': row[2], 'qty': row[3],
+                                'product_name': row[5], 'unit': row[6], 'avg_price': row[7]}
+                    consolidated_purchases.append(data_dict)
+
+                if consolidated_purchases:
+                    return Response(status=status.HTTP_200_OK, data={'data': consolidated_purchases,
+                                                                    'status_code': 200,
+                                                                    'message': "Successful"
+                                                                    })
+                else:
+                    return Response(status=status.HTTP_200_OK, data={'data': 'No orders found against the given ID or '
+                                                                            'provided date',
+                                                                    'status_code': 200,
+                                                                    'message': "Successful"
+                                                                    })
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={
+                                                                        'status_code': 400,
+                                                                        'message': "Unsuccessful"
+                                                                        })
 
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={
@@ -636,9 +639,9 @@ class InsertPurchaseDetailsAPIView(APIView):
                 order_details.update(status='purchased')
 
             return Response(status=status.HTTP_200_OK, data={'response': "Purchase Details submitted successfully",
-                                                             'status_code': '200',
-                                                             'message': 'Successful'
-                                                             })
+                                                            'status_code': '200',
+                                                            'message': 'Successful'
+                                                            })
 
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'response': 'Unable to submit purchase details',

@@ -7,6 +7,5 @@ class ChangePasswordSerializer(serializers.Serializer):
     """
     Serializer for password change endpoint.
     """
-    username = serializers.CharField(required=True)
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
