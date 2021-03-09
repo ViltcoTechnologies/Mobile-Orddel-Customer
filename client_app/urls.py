@@ -13,6 +13,7 @@ urlpatterns = [
     path('clients_list/<id>/', ListClientsApiView.as_view(), name='list_clients'),
     path('update_client/', UpdateClientApiView.as_view(), name='update_client'),
     path('delete_client/<id>/', DeleteClientApiView.as_view(), name='delete_client'),
+    path('upload_client_logo/', ClientLogoUploadAPIView.as_view(), name='upload_client_logo'),
 
     # CRUD of Business Details
     path('insert_business/', BusinessDetailInsertApiView.as_view(), name='insert_business_details'),

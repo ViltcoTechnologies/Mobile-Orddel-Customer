@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from rest_framework import status, generics, permissions
+from rest_framework.decorators import action
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt import authentication
 from django_email_verification import sendConfirm
 from rest_framework.response import Response
+from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from client_app.models import *
 from order.models import *
 from admin_dashboard.models import *
@@ -342,6 +345,22 @@ class ListClientsApiView(APIView):
             return Response(status=status.HTTP_200_OK, data={"client": data_to_pass.data})
         except Exception as e:
             return Response(status=status.HTTP_404_NOT_FOUND, data={"No Clients Found"})
+
+
+class ClientLogoUploadAPIView(APIView):
+    serializer_class = ClientSerializer
+    parser_classes = (FormParser, MultiPartParser, JSONParser)
+
+    def post(self, request):
+        # print(request.data['client_id'])
+        serializer = ClientImageSerializer(data=request.data)
+        if serializer.is_valid():
+            client = Client.objects.get(id=request.data['client_id'])
+
+            serializer.save(client, data=serializer.validated_data, partial=True)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # CRUD operations of Business Detail

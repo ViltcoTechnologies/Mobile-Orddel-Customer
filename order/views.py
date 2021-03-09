@@ -539,6 +539,10 @@ class ListClientOrdersAPIView(APIView):
                 order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
+            elif choice == 'rejected':
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                serializer = OrderDetailSerializer(order_detail, many=True)
+
             elif choice == 'in_progress':
                 order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
