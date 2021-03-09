@@ -351,13 +351,21 @@ class ClientLogoUploadAPIView(APIView):
     serializer_class = ClientSerializer
     parser_classes = (FormParser, MultiPartParser, JSONParser)
 
+    def get(self, request, id=None):
+        if id:
+            client = Client.objects.get(id=id)
+            serializer_class = ClientSerializer(client)
+
+            return Response(status=status.HTTP_200_OK, data={"image": serializer_class.data['image']})
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
     def post(self, request):
         # print(request.data['client_id'])
         serializer = ClientImageSerializer(data=request.data)
         if serializer.is_valid():
-            client = Client.objects.get(id=request.data['client_id'])
-
-            serializer.save(client, data=serializer.validated_data, partial=True)
+            client = Client.objects.get(id=serializer.validated_data['id'])
+            serializer.update(client, serializer.validated_data)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

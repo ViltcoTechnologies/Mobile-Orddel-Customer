@@ -9,20 +9,21 @@ class ClientSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ClientImageSerializer(serializers.Serializer):
-    client_id = serializers.IntegerField(required=True)
+class ClientImageSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=True)
     image = serializers.ImageField(required=True)
 
-    def create(self, validated_data):
-        return Client.objects.create(**validated_data)
+    class Meta:
+        model = Client
+        fields = ("id", "image")
 
     def update(self, instance, validated_data):
-        instance.id = validated_data.get('client_id', instance.email)
-        instance.image = validated_data.get('image', instance.content)
+        instance.id = validated_data.get("id", instance.id)
+        instance.image = validated_data.get("image", instance.image)
         instance.save()
-
-        Client.objects.filter(id=instance.id).update(image=instance.image)
         return instance
+
+
 
 
 class BusinessDetailSerializer(serializers.ModelSerializer):
