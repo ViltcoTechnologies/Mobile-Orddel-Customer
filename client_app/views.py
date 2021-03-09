@@ -438,12 +438,14 @@ class UpdateBusinessApiView(APIView):
             business_name = request.data['business_name']
             business_nature = request.data['business_nature']
             business_type = request.data['business_type']
+            business_address = request.data['address']
             # business_logo = request.data['business_logo']
 
             business_detail = ClientBusinessDetail.objects.filter(id=business_id).update(
                 name=business_name,
                 nature=business_nature,
                 type=business_type,
+                address=business_address
                 # logo=business_logo
             )
             print("Business Detail id :", business_detail)
