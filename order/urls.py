@@ -22,6 +22,7 @@ urlpatterns = [
 
     # CRUD of Order
     path('create_order/', CreateOrderApiView.as_view(), name='create_order'),
+    # path('update_order/', UpdateOrder.as_view(), name='update_order'),
     path('update_order/', UpdateOrderApiView.as_view(), name='update_order'),
     path('list_order/', ListOrderApiView.as_view(), name='list_order'),
     path('list_order/<id>/', ListOrderApiView.as_view(), name='list_order/<id>/'),

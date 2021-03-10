@@ -311,9 +311,37 @@ class CreateOrderApiView(APIView):
             #     return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "record_creation_failed"})
 
 
-class UpdateOrderApiView(generics.UpdateAPIView):
+class UpdateOrder(generics.UpdateAPIView):
     queryset = OrderDetail.objects.all()
     serializer_class = OrderDetailSerializer
+
+
+class UpdateOrderApiView(APIView):
+    def post(self, request):
+        order_id = request.data['order_id']
+        delivery_person = request.data['delivery_person']
+        business = request.data['business']
+        try:
+            order_detail = OrderDetail.objects.get(id=order_id)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Order Not found'})
+
+        try:
+            delivery_person = DeliveryPerson.objects.get(id=delivery_person)
+
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery Person Not found'})
+
+        try:
+            business = ClientBusinessDetail.objects.get(id=business)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Business Not found'})
+
+        order_detail.delivery_person = delivery_person
+        order_detail.business = business
+        order_detail.save()
+
+        return Response(status=status.HTTP_200_OK, data={'message': 'Order Updated'})
 
 
 class ListOrderApiView(APIView):
