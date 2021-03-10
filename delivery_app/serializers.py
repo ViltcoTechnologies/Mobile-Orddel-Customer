@@ -15,6 +15,21 @@ class DeliveryPersonSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class DeliveryPersonImageSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=True)
+    image = serializers.ImageField(required=True)
+
+    class Meta:
+        model = DeliveryPerson
+        fields = ("id", "image")
+
+    def update(self, instance, validated_data):
+        instance.id = validated_data.get("id", instance.id)
+        instance.image = validated_data.get("image", instance.image)
+        instance.save()
+        return instance
+
+
 class DeliveryPersonPackageLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeliveryPerson

@@ -8,6 +8,7 @@ from rest_framework import status
 from client_app.models import *
 from order.models import *
 from admin_dashboard.models import *
+from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from .serializers import *
 from admin_dashboard.serializers import *
 from django_email_verification import sendConfirm
@@ -344,6 +345,29 @@ class DeleteDeliveryPersonApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"Error Msg": "ID missing from URL"})
 
+
+class DeliveryPersonLogoUploadAPIView(APIView):
+    serializer_class = DeliveryPersonSerializer
+    parser_classes = (FormParser, MultiPartParser, JSONParser)
+
+    def get(self, request, id=None):
+        if id:
+            delivery_person = DeliveryPerson.objects.get(id=id)
+            serializer_class = DeliveryPersonSerializer(delivery_person)
+
+            return Response(status=status.HTTP_200_OK, data={"image": serializer_class.data['image']})
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request):
+        # print(request.data['client_id'])
+        serializer = DeliveryPersonImageSerializer(data=request.data)
+        if serializer.is_valid():
+            delivery_person = DeliveryPerson.objects.get(id=serializer.validated_data['id'])
+            serializer.update(delivery_person, serializer.validated_data)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # ------------------------------------------------------------------------------------------------------------------------
 

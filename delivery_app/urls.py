@@ -11,6 +11,9 @@ urlpatterns = [
     path('delivery_person_list/<id>/', ListDeliveryPersonApiView.as_view()),
     path('update_delivery_person/', UpdateDeliveryPersonApiView.as_view()),
     path('delete_delivery_person/<id>/', DeleteDeliveryPersonApiView.as_view()),
+    path('upload_delivery_person_logo/', DeliveryPersonLogoUploadAPIView.as_view(), name='upload_client_logo'),
+    path('get_delivery_person_logo/<id>/', DeliveryPersonLogoUploadAPIView.as_view(), name='get_client_logo'),
+
 
     # ------------------------------------------------------------------------------------------------------------------
 
