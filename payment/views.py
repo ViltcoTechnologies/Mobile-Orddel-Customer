@@ -2,10 +2,13 @@ from django.shortcuts import render
 from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import JsonResponse
 from datetime import date
 from .models import *
 from .serializers import *
 from order.serializers import OrderDetailSerializer
+from django.views.generic import View as view
+from .utils import *
 # Create your views here.
 
 
@@ -256,7 +259,7 @@ def prepare_invoice(invoice_id):
         try:
             invoice = Invoice.objects.get(order=invoice_id)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invoice does not exist'})
+            raise Exception
         serializer = InvoiceSerializer(invoice)
         response = serializer.data
         order_prods = []
@@ -302,10 +305,32 @@ def prepare_invoice(invoice_id):
         # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
         # response['shipment_address_detail'] = shipment_address.shipment_address
 
-        return render(template_name="invoice_template.html", context=response)
+        return response
 
 
-class DownloadPDFAPIView(APIView):
+class GeneratePDFInvoiceAPIView(APIView):
 
-    def get(self, request):
-        prepare_invoice()
+    def get(self, request, id=None):
+        if id:
+            response = prepare_invoice(invoice_id=id)
+            order_detail = OrderDetail.objects.get(id=response['order'])
+            response["client_logo"] = order_detail.order_box.client.image
+            response["delivery_person_logo"] = order_detail.delivery_person.image
+
+            template = get_template("invoice_template.html")
+            context = {
+                "response": response
+            }
+            html = template.render(context)
+            pdf = render_to_pdf("invoice_template.html", context)
+            if pdf:
+                response = HttpResponse(pdf, content_type='application/pdf')
+                filename = "Invoice_%s.pdf" %("12132132")
+                content = "inline; filename='%s'" %(filename)
+                download = request.GET.get("download")
+                if download:
+                    content = "attachment; filename='%s'" %(filename)
+                response['Content-Disposition'] = content
+                return response
+
+            return HttpResponse("Not found")
