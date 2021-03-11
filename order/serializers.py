@@ -16,8 +16,8 @@ class OrderProductsSerializer(serializers.ModelSerializer):
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
-    business_address = serializers.CharField(source='business.address')
-    business_name = serializers.CharField(source='business.name')
+    business_address = serializers.CharField(source='business.address', read_only=True)
+    business_name = serializers.CharField(source='business.name', read_only=True)
     order_delivery_datetime = serializers.DateTimeField(format="%d-%m-%Y %H:%M", input_formats=['%d-%m-%Y %H:%M:%S.%f%z', 'iso-8601'])
     class Meta:
         model = OrderDetail

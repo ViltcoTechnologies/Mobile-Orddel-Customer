@@ -42,7 +42,7 @@ class ClientDashboardApiView(APIView):
                     remaining_invoices = client.no_of_invoices
                     used_invoices = total_invoices - remaining_invoices
                     no_of_pending_orders = OrderDetail.objects.filter(status="pending", order_box__client=client_id)
-                    no_of_completed_orders = OrderDetail.objects.filter(status="completed", order_box__client=client_id)
+                    no_of_completed_orders = OrderDetail.objects.filter(status="delivered", order_box__client=client_id)
                     no_of_in_progress_orders = OrderDetail.objects.filter(status="in_progress", order_box__client=client_id)
                     if no_of_pending_orders:
                         no_of_pending_orders = no_of_pending_orders.count()
@@ -362,9 +362,11 @@ class ClientLogoUploadAPIView(APIView):
 
     def post(self, request):
         # print(request.data['client_id'])
+        print(request.data['image'])
         serializer = ClientImageSerializer(data=request.data)
         if serializer.is_valid():
             client = Client.objects.get(id=serializer.validated_data['id'])
+            # print(serializer.validated_data['image'])
             serializer.update(client, serializer.validated_data)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         else:

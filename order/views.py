@@ -315,6 +315,8 @@ class UpdateOrder(generics.UpdateAPIView):
     queryset = OrderDetail.objects.all()
     serializer_class = OrderDetailSerializer
 
+    print(serializer_class.data)
+
 
 class UpdateOrderApiView(APIView):
     def post(self, request):
@@ -339,6 +341,7 @@ class UpdateOrderApiView(APIView):
 
         order_detail.delivery_person = delivery_person
         order_detail.business = business
+        order_detail.status = 'pending'
         order_detail.save()
 
         return Response(status=status.HTTP_200_OK, data={'message': 'Order Updated'})
