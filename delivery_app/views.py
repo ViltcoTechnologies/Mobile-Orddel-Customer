@@ -998,52 +998,59 @@ class DeliveryPersonLogin(TokenObtainPairView):
 class UpdateDeliveryPersonOrderApiView(APIView):
 
     def post(self, request):
-        try:
-            order_id = request.data['order_id']
-            delivery_person_action = request.data['delivery_person_action'].lower()
-            order_detail = OrderDetail.objects.get(id=order_id)
-            if delivery_person_action == "accepted":
-                # Create Accepted Order Entry in Delivery Person
-                order_detail.status = 'in_progress'
-
-            elif delivery_person_action == "rejected":
-                # transfer order to other delivery person
-                order_detail.status = 'rejected'
-
-            elif delivery_person_action == "purchased":
-                order_detail.status = 'purchased'
-
-            elif delivery_person_action == "pending":
-                order_detail.status = 'pending'
-
-            elif delivery_person_action == "delivered":
-                order_detail.status = 'delivered'
-
+        # try:
+        order_id = request.data['order_id']
+        delivery_person_action = request.data['delivery_person_action'].lower()
+        order_detail = OrderDetail.objects.get(id=order_id)
+        if delivery_person_action == "accepted":
+            # Create Accepted Order Entry in Delivery Person
+            delivery_person = order_detail.delivery_person
+            delivery_person_obj = DeliveryPerson.objects.get(id=delivery_person.id)
+            if delivery_person_obj.no_of_invoices != 0:
+                delivery_person_obj.no_of_invoices -= 1
+                delivery_person_obj.save()
             else:
-                return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={
-                                    "status": "HTTP_400_BAD_REQUEST",
-                                    "message": "Unsuccessful",
-                                    "detail": "Wrong choice entered for update order status",
-                                    "action": delivery_person_action
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data={'message': 'Cant accept, Invoices are empty'})
+            order_detail.status = 'in_progress'
 
-                                })
-            order_detail.save()
+        elif delivery_person_action == "rejected":
+            # transfer order to other delivery person
+            order_detail.status = 'rejected'
 
-            return Response(status=status.HTTP_200_OK,
-                            data={
-                                "status": "HTTP_200_OK",
-                                "message": "Successful",
-                                "action": delivery_person_action
+        elif delivery_person_action == "purchased":
+            order_detail.status = 'purchased'
 
-                            })
-        except:
+        elif delivery_person_action == "pending":
+            order_detail.status = 'pending'
+
+        elif delivery_person_action == "delivered":
+            order_detail.status = 'delivered'
+
+        else:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={
                                 "status": "HTTP_400_BAD_REQUEST",
                                 "message": "Unsuccessful",
-                                "details": "Something went wrong, please check the data entered"
+                                "detail": "Wrong choice entered for update order status",
+                                "action": delivery_person_action
 
                             })
+        order_detail.save()
+
+        return Response(status=status.HTTP_200_OK,
+                        data={
+                            "status": "HTTP_200_OK",
+                            "message": "Successful",
+                            "action": delivery_person_action
+
+                        })
+        # except:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST,
+        #                     data={
+        #                         "status": "HTTP_400_BAD_REQUEST",
+        #                         "message": "Unsuccessful",
+        #                         "details": "Something went wrong, please check the data entered"
+        #
+        #                     })
 
 # ------------------------------------------------------------------------------------------------------------------------
