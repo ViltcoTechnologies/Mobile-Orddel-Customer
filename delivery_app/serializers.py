@@ -5,7 +5,7 @@ from .models import *
 
 class DeliveryPersonPackageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DeliveryPerson
+        model = DeliveryPersonPackage
         fields = "__all__"
 
 
