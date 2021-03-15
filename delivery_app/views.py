@@ -979,7 +979,10 @@ class DeliveryPersonLogin(TokenObtainPairView):
                 print("invalid username and password")
 
         except:
-            user = User.objects.get(username=username)
+            try:
+                user = User.objects.get(username=username)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User does not exist'})
             is_active = user.is_active
             if not is_active:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
