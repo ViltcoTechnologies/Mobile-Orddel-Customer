@@ -104,6 +104,8 @@ class ClientRegisterApiView(APIView):
                 password = request.data['password']
                 admin_approval_status = 'pending'
                 package = request.data['package']
+                preferred_delivery_person = request.data['preferred_delivery_person']
+
                 if first_name == ""\
                         or last_name == ""\
                         or email == ""\
@@ -133,6 +135,7 @@ class ClientRegisterApiView(APIView):
                                 try:
                                     new_client = Client.objects.create(
                                         user=new_auth_user,
+                                        preferred_delivery_person=preferred_delivery_person,
                                         package=package,
                                         first_name=first_name,
                                         last_name=last_name,
@@ -162,7 +165,6 @@ class ClientRegisterApiView(APIView):
                                     new_client.save()
                                     serializer = ClientSerializer(new_client)
                                     new_auth_user.save()
-
 
                                     return Response(status=status.HTTP_200_OK,
                                                     data={"client_created": serializer.data})

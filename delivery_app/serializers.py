@@ -7,6 +7,7 @@ class DeliveryPersonPackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeliveryPersonPackage
         fields = "__all__"
+        order_by = ['id']
 
 
 class DeliveryPersonSerializer(serializers.ModelSerializer):

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from . import *
+from delivery_app.models import *
 
 
 # Choices menu
@@ -52,6 +53,7 @@ class ClientPackage(models.Model):
 # Client registered
 class Client(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    preferred_delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
     package = models.ForeignKey(ClientPackage, on_delete=models.SET_NULL, null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
