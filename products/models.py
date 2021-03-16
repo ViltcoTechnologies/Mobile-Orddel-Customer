@@ -81,14 +81,14 @@ class Product(models.Model):
 #         return str(self.id)
 
 
-class Review(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
-    rating = models.IntegerField(validators=[
-            MaxValueValidator(5),
-            MinValueValidator(1)
-        ])
-    comment = models.TextField()
+# class Review(models.Model):
+#     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
+#     rating = models.IntegerField(validators=[
+#             MaxValueValidator(5),
+#             MinValueValidator(1)
+#         ])
+#     comment = models.TextField()
 
-    def __str__(self):
-        return str(self.rating)
+#     def __str__(self):
+#         return str(self.rating)

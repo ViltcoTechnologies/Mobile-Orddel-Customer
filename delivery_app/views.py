@@ -803,7 +803,7 @@ class ListPackagesApiView(APIView):
                                 data={'Error': 'package not found'})
         else:
             try:
-                package = DeliveryPersonPackage.objects.all()
+                package = DeliveryPersonPackage.objects.all().order_by('id')
                 data_to_pass = DeliveryPersonPackageSerializer(package, many=True)
                 return Response(status=status.HTTP_200_OK,
                                 data={"all_package": data_to_pass.data})

@@ -16,6 +16,12 @@ admin_approval_choices = (
     ('cancelled', 'Cancelled')
 )
 
+package_activation_choices = (
+    ('inactive', 'Inactive'),
+    ('active', 'Active')
+
+)
+
 
 class DeliveryPersonPackage(models.Model):
     name = models.CharField(max_length=200)

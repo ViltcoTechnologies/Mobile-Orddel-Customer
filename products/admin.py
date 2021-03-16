@@ -19,9 +19,9 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 
 
-class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('id', 'client', 'product', 'rating', 'comment')
-    list_display_links = ('product',)
+# class ReviewAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'client', 'product', 'rating', 'comment')
+#     list_display_links = ('product',)
 
 
-admin.site.register(Review, ReviewAdmin)
+# admin.site.register(Review, ReviewAdmin)
