@@ -14,3 +14,24 @@ class DeliveryNoteSerializer(serializers.ModelSerializer):
         model = DeliveryNote
         fields = "__all__"
 
+
+class CreatePaymentMethodSerializer(serializers.Serializer):
+    card_number = serializers.IntegerField(write_only=True)
+    cvc = serializers.IntegerField(write_only=True)
+    expiry_date = serializers.DateField(format="%m/%Y", input_formats=['%m/%Y'], write_only=True)
+
+
+class SaveStripInfoSerializer(serializers.Serializer):
+    card_number = serializers.IntegerField(write_only=True)
+    cvc = serializers.IntegerField(write_only=True)
+    expiry_date = serializers.DateField(format="%m/%Y", input_formats=['%m/%Y'], write_only=True)
+    id = serializers.IntegerField(write_only=True)
+    user_type = serializers.CharField(write_only=True)
+
+
+class MakePaymentSerializer(serializers.Serializer):
+    user_id = serializers.CharField(write_only=True)
+    user_type = serializers.CharField(write_only=True)
+    amount = serializers.IntegerField(write_only=True)
+    package_id = serializers.IntegerField(write_only=True)
+

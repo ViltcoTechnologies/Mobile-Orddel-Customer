@@ -44,3 +44,19 @@ class ItemUnitPrice(models.Model):
         return str(self.id)
 
 
+class ClientPaymentDetails(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    customer_id = models.CharField(max_length=100)
+    payment_method_id = models.CharField(max_length=100)
+
+    def __str__(self):
+        return str(self.id)
+
+
+class DeliveryPaymentDetails(models.Model):
+    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.CASCADE)
+    customer_id = models.CharField(max_length=50)
+    payment_method_id = models.CharField(max_length=50)
+
+    def __str__(self):
+        return str(self.id)

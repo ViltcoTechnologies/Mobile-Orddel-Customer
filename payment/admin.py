@@ -24,3 +24,19 @@ class ItemUnitPriceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ItemUnitPrice, ItemUnitPriceAdmin)
+
+
+class ClientPaymentDetailAdmin(admin.ModelAdmin):
+    list_display = ('id', 'client', 'customer_id', 'payment_method_id')
+    list_display_links = ('id', 'client')
+
+
+admin.site.register(ClientPaymentDetails, ClientPaymentDetailAdmin)
+
+
+class DeliveryPaymentDetailsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'delivery_person', 'customer_id', 'payment_method_id')
+    list_display_links = ('id', 'delivery_person')
+
+
+admin.site.register(DeliveryPaymentDetails, DeliveryPaymentDetailsAdmin)

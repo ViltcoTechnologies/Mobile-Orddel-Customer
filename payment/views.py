@@ -1,7 +1,9 @@
 from django.shortcuts import render
+from django.conf import settings
 from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from datetime import date
 from .models import *
@@ -9,6 +11,9 @@ from .serializers import *
 from order.serializers import OrderDetailSerializer
 from django.views.generic import View as view
 from .utils import *
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
 # Create your views here.
 
 
@@ -16,21 +21,21 @@ class GetInvNumberAPIView(APIView):
 
     def get(self, request, id=None):
         if id:
-            # try:
-            invoice = Invoice.objects.filter(order=id).last()
-            orderdetail = OrderDetail.objects.get(id=id)
-            order_id = orderdetail.id
-            if invoice:
-                inv_number_list = invoice.inv_number.split("_")
-                inv_number = int(inv_number_list[2])
-                inv_number += 1
-                invoice_order_no = f"Inv#{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
-            else:
-                inv_number = 1
-                invoice_order_no = f"Inv#{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
+            try:
+                invoice = Invoice.objects.filter(order=id).last()
+                orderdetail = OrderDetail.objects.get(id=id)
+                order_id = orderdetail.id
+                if invoice:
+                    inv_number_list = invoice.inv_number.split("_")
+                    inv_number = int(inv_number_list[2])
+                    inv_number += 1
+                    invoice_order_no = f"Inv#{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
+                else:
+                    inv_number = 1
+                    invoice_order_no = f"Inv#{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
 
-            # except:
-            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "order not found"})
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "order not found"})
 
             return Response(status=status.HTTP_200_OK, data={"invoice_number": invoice_order_no})
 
@@ -334,3 +339,187 @@ class GeneratePDFInvoiceAPIView(APIView):
                 return response
 
             return HttpResponse("Not found")
+
+
+class CreatePaymentMethod(APIView):
+    serializer_class = CreatePaymentMethodSerializer
+
+    def post(self, request):
+        serializer_class = CreatePaymentMethodSerializer(data=request.data)
+        if serializer_class.is_valid():
+            card_number = serializer_class.validated_data['card_number']
+            cvc = serializer_class.validated_data['cvc']
+            expiry_date = serializer_class.validated_data['expiry_date']
+            print(expiry_date.month)
+
+            response = stripe.PaymentMethod.create(
+                type="card",
+                card={
+                    "number": card_number,
+                    "exp_month": expiry_date.month,
+                    "exp_year": expiry_date.year,
+                    "cvc": cvc,
+                    },
+                )
+
+            return Response(status=status.HTTP_200_OK, data=response)
+
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer_class.errors)
+
+
+class SaveStripeInfo(APIView):
+    serializer_class = SaveStripInfoSerializer
+
+    def post(self, request):
+        serializer_class = SaveStripInfoSerializer(data=request.data)
+
+        if serializer_class.is_valid():
+            card_number = serializer_class.validated_data['card_number']
+            cvc = serializer_class.validated_data['cvc']
+            expiry_date = serializer_class.validated_data['expiry_date']
+            id = serializer_class.validated_data['id']
+            user_type = serializer_class.validated_data['user_type']
+            extra_msg = 'Payment details saved and customer created'
+            email = ''
+            client = None
+            delivery_person = None
+            if user_type == 'client':
+                try:
+                    client = Client.objects.get(id=id)
+                    email = client.username
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={
+                                                                        'message': 'Client does not exist'
+                                                                                })
+            elif user_type == 'delivery_person':
+                try:
+                    delivery_person = DeliveryPerson.objects.get(id=id)
+                    email = delivery_person.username
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={
+                                                                            'message': 'Delivery Person does not exist'
+                                                                              })
+
+            customer_data = stripe.Customer.list(email=email).data
+
+            if len(customer_data) == 0:
+                response = stripe.PaymentMethod.create(
+                    type="card",
+                    card={
+                        "number": card_number,
+                        "exp_month": expiry_date.month,
+                        "exp_year": expiry_date.year,
+                        "cvc": cvc,
+                    },
+                )
+                payment_method_id = response['id']
+                customer = stripe.Customer.create(
+                    email=email, payment_method=payment_method_id)
+            else:
+                customer = customer_data[0]
+                response = stripe.PaymentMethod.list(
+                    customer=customer,
+                    type="card",
+                )
+                payment_method_id = response['data'][0]['id']
+                print(payment_method_id)
+                print(customer)
+                extra_msg = "Customer and payment details already existed."
+
+            if client:
+                obj, created = ClientPaymentDetails.objects.get_or_create(
+                    client=client,
+                    customer_id=customer['id'],
+                    payment_method_id=payment_method_id
+                )
+            elif delivery_person:
+                obj, created = DeliveryPaymentDetails.objects.get_or_create(
+                    delivery_person=delivery_person,
+                    customer_id=customer['id'],
+                    payment_method_id=payment_method_id
+                )
+
+            return Response(status=status.HTTP_200_OK,
+                            data={
+                                    'message': 'Success',
+                                    'data': {
+                                        'customer_id': customer.id,
+                                        'extra_msg': extra_msg
+                                        }
+                                  })
+
+        return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Something went wrong !'})
+
+
+class PaymentAPIView(APIView):
+    serializer_class = MakePaymentSerializer
+
+    def post(self, request):
+        serializer_class = MakePaymentSerializer(data=request.data)
+
+        if serializer_class.is_valid():
+            user_id = serializer_class.validated_data['user_id']
+            user_type = serializer_class.validated_data['user_type']
+            package_id = serializer_class.validated_data['package_id']
+
+            if user_type == 'client':
+                try:
+                    obj = Client.objects.get(id=user_id)
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client does'
+                                                                                         'not exist'})
+                try:
+                    package_obj = ClientPackage.objects.get(id=package_id)
+                    amount = package_obj.price
+
+                except:
+                    return Response(status=status.HTTP_200_OK, data={'message': 'Package does not exist'})
+                try:
+                    client_payment_details = ClientPaymentDetails.objects.get(client=user_id)
+                    customer = client_payment_details.customer_id
+                    payment_method_id = client_payment_details.payment_method_id
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client Payment'
+                                                                                         'details does '
+                                                                                         'not exist'})
+            elif user_type == 'delivery_person':
+                try:
+                    obj = DeliveryPerson.objects.get(id=user_id)
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery Person '
+                                                                                         'does not exist'})
+                try:
+                    package_obj = DeliveryPersonPackage.objects.get(id=package_id)
+                    amount = package_obj.price
+
+                except:
+                    return Response(status=status.HTTP_200_OK, data={'message': 'Package does not exist'})
+
+                try:
+                    delivery_person_payment_details = DeliveryPaymentDetails.objects.get(client=user_id)
+                    customer = delivery_person_payment_details.customer_id
+                    payment_method_id = delivery_person_payment_details.payment_method_id
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery Person Payment'
+                                                                                         'details does '
+                                                                                         'not exist'})
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invalid choice'})
+
+            response = stripe.PaymentIntent.create(
+                customer=customer,
+                payment_method=payment_method_id,
+                currency='EUR',
+                amount=amount,
+                confirm=True)
+            if response['status'] == 'succeeded':
+                obj.no_of_invoices += package_obj.no_of_invoices
+                obj.save()
+            return Response(status=status.HTTP_200_OK, data={"message": "Payment Succeeded"
+                                                                        "and invoices added",
+                                                             "total_invoices": obj.no_of_invoices
+                                                            })
+
+        return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer_class.errors)
+

@@ -15,6 +15,11 @@ admin_approval_choices = (
     ('unapproved', 'Unapproved'),
     ('cancelled', 'Cancelled')
 )
+package_activation_choices = (
+    ('inactive', 'Inactive'),
+    ('active', 'Active')
+
+)
 
 package_activation_choices = (
     ('inactive', 'Inactive'),
