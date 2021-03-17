@@ -16,6 +16,7 @@ urlpatterns = [
     # path('create_payment_method/', CreatePaymentMethod.as_view()),
     path('save_stripe_info/', SaveStripeInfo.as_view()),
     path('make_payment/', PaymentAPIView.as_view()),
+    path('show_card/', ShowCardAPIView.as_view()),
 
 
 

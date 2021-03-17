@@ -32,6 +32,5 @@ class SaveStripInfoSerializer(serializers.Serializer):
 class MakePaymentSerializer(serializers.Serializer):
     user_id = serializers.CharField(write_only=True)
     user_type = serializers.CharField(write_only=True)
-    amount = serializers.IntegerField(write_only=True)
     package_id = serializers.IntegerField(write_only=True)
 

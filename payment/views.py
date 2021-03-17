@@ -523,3 +523,35 @@ class PaymentAPIView(APIView):
 
         return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer_class.errors)
 
+
+class ShowCardAPIView(APIView):
+    def get(self, request, id=None):
+        if id:
+            user_type = self.request.query_params.get('user_type')
+            if user_type == 'client':
+                client_payment_details = ClientPaymentDetails.objects.get(client=id)
+                response = stripe.PaymentMethod.list(
+                    customer=client_payment_details.customer_id,
+                    type="card",
+                )
+                card_brand = response['data'][0]['card']['brand']
+                last4 = response['data'][0]['card']['last4']
+
+                return Response(status=status.HTTP_200_OK, data={'card_brand': card_brand,
+                                                                 'last4': last4
+                                                                 })
+
+            elif user_type == 'delivery_person':
+                delivery_payment_details = DeliveryPaymentDetails.objects.get(delivery_person=id)
+                response = stripe.PaymentMethod.list(
+                    customer=delivery_payment_details.customer_id,
+                    type="card",
+                )
+                card_brand = response['data'][0]['card']['brand']
+                last4 = response['data'][0]['card']['last4']
+
+                return Response(status=status.HTTP_200_OK, data={'card_brand': card_brand,
+                                                                 'last4': last4
+                                                                 })
+            else:
+                return Response(status=status.HTTP_200_OK, data={'error': 'Invalid Choice !'})
