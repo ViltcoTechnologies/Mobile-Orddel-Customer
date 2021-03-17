@@ -542,12 +542,21 @@ class ShowCardAPIView(APIView):
                 card_brand = response['data'][0]['card']['brand']
                 last4 = response['data'][0]['card']['last4']
 
-                return Response(status=status.HTTP_200_OK, data={'card_brand': card_brand,
-                                                                 'last4': last4
-                                                                 })
+                return Response(status=status.HTTP_200_OK, data={
+                                                                'message': 'Success',
+                                                                'card': {
+                                                                        'card_brand': card_brand,
+                                                                        'last4': last4
+                                                                        }
+                                                                })
 
             elif user_type == 'delivery_person':
-                delivery_payment_details = DeliveryPaymentDetails.objects.get(delivery_person=id)
+                try:
+                    delivery_payment_details = DeliveryPaymentDetails.objects.get(delivery_person=id)
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery Person Payment '
+                                                                                         'details does not exist'})
+
                 response = stripe.PaymentMethod.list(
                     customer=delivery_payment_details.customer_id,
                     type="card",
@@ -555,8 +564,12 @@ class ShowCardAPIView(APIView):
                 card_brand = response['data'][0]['card']['brand']
                 last4 = response['data'][0]['card']['last4']
 
-                return Response(status=status.HTTP_200_OK, data={'card_brand': card_brand,
-                                                                 'last4': last4
-                                                                 })
+                return Response(status=status.HTTP_200_OK, data={
+                                                                'message': 'Success',
+                                                                'card': {
+                                                                        'card_brand': card_brand,
+                                                                        'last4': last4
+                                                                        }
+                                                                })
             else:
                 return Response(status=status.HTTP_200_OK, data={'error': 'Invalid Choice !'})
