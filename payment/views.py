@@ -237,6 +237,7 @@ class ViewInvoiceApiView(APIView):
             order_b_obj = OrderBox.objects.get(id=invoice.order.order_box.id)
             if order_b_obj.client != None:
                 response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
+                response['client_id'] = order_b_obj.client.id
             delivery_note_obj = DeliveryNote.objects.get(order=invoice.order)
             response['delivery_note'] = delivery_note_obj.delivery_note
             response['total_qty'] = float("{:.2f}".format(total_purchased_qty))
@@ -471,7 +472,7 @@ class PaymentAPIView(APIView):
                                                                                          'not exist'})
                 try:
                     package_obj = ClientPackage.objects.get(id=package_id)
-                    amount = package_obj.price
+                    amount = package_obj.price * 100
 
                 except:
                     return Response(status=status.HTTP_200_OK, data={'message': 'Package does not exist'})
@@ -491,13 +492,13 @@ class PaymentAPIView(APIView):
                                                                                          'does not exist'})
                 try:
                     package_obj = DeliveryPersonPackage.objects.get(id=package_id)
-                    amount = package_obj.price
+                    amount = package_obj.price * 100
 
                 except:
                     return Response(status=status.HTTP_200_OK, data={'message': 'Package does not exist'})
 
                 try:
-                    delivery_person_payment_details = DeliveryPaymentDetails.objects.get(client=user_id)
+                    delivery_person_payment_details = DeliveryPaymentDetails.objects.get(delivery_person=user_id)
                     customer = delivery_person_payment_details.customer_id
                     payment_method_id = delivery_person_payment_details.payment_method_id
                 except:
@@ -529,7 +530,10 @@ class ShowCardAPIView(APIView):
         if id:
             user_type = self.request.query_params.get('user_type')
             if user_type == 'client':
-                client_payment_details = ClientPaymentDetails.objects.get(client=id)
+                try:
+                    client_payment_details = ClientPaymentDetails.objects.get(client=id)
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client Payment details does not exist'})
                 response = stripe.PaymentMethod.list(
                     customer=client_payment_details.customer_id,
                     type="card",
