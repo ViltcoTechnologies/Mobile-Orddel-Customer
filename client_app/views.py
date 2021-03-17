@@ -39,6 +39,11 @@ class ClientDashboardApiView(APIView):
                     client_name = f"{client.first_name} {client.last_name}"
                     client_package = client.package.name
                     total_invoices = client.package.no_of_invoices
+                    preferred_delivery_person = client.preferred_delivery_person
+                    print(preferred_delivery_person.first_name)
+                    preferred_delivery_person_name = f"{preferred_delivery_person.first_name} {preferred_delivery_person.last_name}"
+                    preferred_delivery_person_address = client.preferred_delivery_person.address
+                    print(preferred_delivery_person_address)
                     remaining_invoices = client.no_of_invoices
                     used_invoices = total_invoices - remaining_invoices
                     no_of_pending_orders = OrderDetail.objects.filter(status="pending", order_box__client=client_id)
@@ -69,14 +74,17 @@ class ClientDashboardApiView(APIView):
                         "used_invoices": used_invoices,
                         "no_of_pending_orders": no_of_pending_orders,
                         "no_of_completed_orders": no_of_completed_orders,
-                        "no_of_in_progress_orders": no_of_in_progress_orders
+                        "no_of_in_progress_orders": no_of_in_progress_orders,
+                        "preferred_delivery_person": preferred_delivery_person.id,
+                        "preferred_delivery_person_name": preferred_delivery_person_name,
+                        "preferred_delivery_person_address": preferred_delivery_person_address
                     }
                     return Response(status=status.HTTP_200_OK,
                                     data={"client_dashboard": data})
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={"message": "There was a error fetching data "
-                                                     "from the database"})
+                                                    "from the database"})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={"message": "Incorrect Client ID"})

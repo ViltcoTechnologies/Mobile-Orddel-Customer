@@ -387,6 +387,7 @@ class ListOrderApiView(APIView):
             order_b_obj = OrderBox.objects.get(id=response['order_box'])
             if order_b_obj.client != None:
                 response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
+                response['client_id'] = order_b_obj.client.id
             delivery_person_obj = DeliveryPerson.objects.get(id=response['delivery_person'])
             response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
             # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
