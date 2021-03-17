@@ -508,12 +508,11 @@ class PaymentAPIView(APIView):
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invalid choice'})
 
-            print(int(amount)*100)
             response = stripe.PaymentIntent.create(
                 customer=customer,
                 payment_method=payment_method_id,
                 currency='EUR',
-                amount=int(amount)*100,
+                amount=int(float(amount)*100),
                 confirm=True)
             if response['status'] == 'succeeded':
                 obj.no_of_invoices += package_obj.no_of_invoices
