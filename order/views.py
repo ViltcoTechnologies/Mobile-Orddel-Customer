@@ -297,6 +297,7 @@ class CreateOrderApiView(APIView):
             # print(client.number_of_order)
             if client.no_of_invoices != 0:
                 client.no_of_invoices -= 1
+                client.used_invoices += 1
             client.number_of_order += 1
             client.save()
             serializer = OrderDetailSerializer(order)
@@ -329,6 +330,7 @@ class UpdateOrderApiView(APIView):
         order_id = request.data['order_id']
         delivery_person = request.data['delivery_person']
         business = request.data['business']
+        delivery_datetime = request.data['delivery_datetime']
         try:
             order_detail = OrderDetail.objects.get(id=order_id)
         except:
@@ -347,6 +349,7 @@ class UpdateOrderApiView(APIView):
 
         order_detail.delivery_person = delivery_person
         order_detail.business = business
+        order_detail.order_delivery_datetime = datetime.strptime(delivery_datetime, "%d-%m-%Y %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S.%f%z")
         order_detail.status = 'pending'
         order_detail.save()
 

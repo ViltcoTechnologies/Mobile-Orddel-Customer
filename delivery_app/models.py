@@ -57,6 +57,7 @@ class DeliveryPerson(models.Model):
     gender = models.CharField(max_length=300, choices=gender_choices, blank=True, null=True)
     image = models.ImageField(upload_to=f"delivery_person/photos/", null=True, blank=True)
     no_of_invoices = models.IntegerField(default=0)
+    used_invoices = models.IntegerField(default=0)
     date_created = models.DateTimeField(auto_now=True, null=True, blank=True)
     otp_status = models.BooleanField(default=False)
     admin_approval_status = models.CharField(max_length=300, choices=admin_approval_choices)

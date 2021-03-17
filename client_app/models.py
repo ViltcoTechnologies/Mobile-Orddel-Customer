@@ -67,6 +67,7 @@ class Client(models.Model):
     number_of_order = models.IntegerField(default=0)
     total_amount_shopped = models.IntegerField(default=0)
     no_of_invoices = models.IntegerField(default=0)
+    used_invoices = models.IntegerField(default=0)
     otp_status = models.BooleanField(default=False)
     admin_approval_status = models.CharField(max_length=100, choices=admin_approval_choices)
     approval_read_status = models.BooleanField(default=False)

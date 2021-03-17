@@ -45,7 +45,8 @@ class ClientDashboardApiView(APIView):
                     preferred_delivery_person_address = client.preferred_delivery_person.address
                     print(preferred_delivery_person_address)
                     remaining_invoices = client.no_of_invoices
-                    used_invoices = total_invoices - remaining_invoices
+                    # used_invoices = total_invoices - remaining_invoices
+                    used_invoices = client.used_invoices
                     no_of_pending_orders = OrderDetail.objects.filter(status="pending", order_box__client=client_id)
                     no_of_completed_orders = OrderDetail.objects.filter(status="delivered", order_box__client=client_id)
                     no_of_in_progress_orders = OrderDetail.objects.filter(status="in_progress", order_box__client=client_id)

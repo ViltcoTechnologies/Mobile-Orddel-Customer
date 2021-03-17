@@ -37,9 +37,10 @@ class DeliveryPersonDashboardApiView(APIView):
                     delivery_person_package = delivery_person.package.name
                     total_invoices = delivery_person.package.no_of_invoices
                     remaining_invoices = delivery_person.no_of_invoices
-                    used_invoices = total_invoices - remaining_invoices
-                    if used_invoices < 0:
-                        used_invoices = 0
+                    # used_invoices = total_invoices - remaining_invoices
+                    # if used_invoices < 0:
+                    #     used_invoices = 0
+                    used_invoices = delivery_person.used_invoices
                     no_of_pending_orders = OrderDetail.objects.filter(status="pending", delivery_person=delivery_person_id)
                     no_of_completed_orders = OrderDetail.objects.filter(status="delivered", delivery_person=delivery_person_id)
                     no_of_in_progress_orders = OrderDetail.objects.filter(status="in_progress", delivery_person=delivery_person_id)
@@ -1013,6 +1014,7 @@ class UpdateDeliveryPersonOrderApiView(APIView):
                 delivery_person_obj = DeliveryPerson.objects.get(id=delivery_person.id)
                 if delivery_person_obj.no_of_invoices != 0:
                     delivery_person_obj.no_of_invoices -= 1
+                    delivery_person_obj.used_invoices += 1
                     delivery_person_obj.save()
                 else:
                     return Response(status=status.HTTP_401_UNAUTHORIZED, data={'message': 'Cant accept, Invoices are empty'})
