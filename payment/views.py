@@ -515,6 +515,7 @@ class PaymentAPIView(APIView):
                 amount=int(float(amount)*100),
                 confirm=True)
             if response['status'] == 'succeeded':
+                obj.package = package_obj
                 obj.no_of_invoices += package_obj.no_of_invoices
                 obj.save()
             return Response(status=status.HTTP_200_OK, data={"message": "Payment Succeeded "
