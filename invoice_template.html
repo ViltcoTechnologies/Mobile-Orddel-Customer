@@ -6,14 +6,23 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <style>
         @page {
-            size: 60mm 200mm;
+            size: 65mm 200mm;
+            margin: auto auto;
+            top: 50%;
         }
+        .container {
+        }
+
+
     </style>
 </head>
 <body>
     <div class="container">
         <center>
-
+            <br><br>
+            <div class="logo">
+                <img src="index.jpeg" height="40" width="40"/>
+            </div>
             <div class="header">
                 <h1>Invoice</h1>
             </div>
@@ -28,17 +37,19 @@
             <div class="row">
                 <div class="delivery_person" >
                     <span>
-                        <p>Delivery Person: {{response.delivery_person_name}} &nbsp &nbsp Customer: {{response.client}}</p>
+                        <p><b>Client: {{response.client}}</b></p>
+                        <p><b>Delivery Address: {{response.delivery_person_address}}</b></p>
                     </span>
                 </div>
 
                 <div class="delivery_address_datetime" style="flex-direction: row">
-                    <p>Delivery Datetime: {{response.order_delivery_datetime}} &nbsp &nbsp &nbsp Delivery Address: {{response.delivery_person_address}}</p>
+                    <p><b>Delivery Person: {{response.delivery_person_name}}</b></p>
+                    <p><b>Delivery Date & Time: {{response.order_delivery_datetime}}</b></p>
                 </div>
 
-
-                <div class="ordered_products">
-                    <table>
+                <hr>
+                <div class="ordered_products" style="margin-left: 50px; margin-right: 50px;">
+                    <table cellpadding="1">
                         <thead>
                             <th>Product</th>
                             <th>Quantity</th>
@@ -83,5 +94,6 @@
 
             </div>
         </center>
+    </div>
 </body>
 </html>
