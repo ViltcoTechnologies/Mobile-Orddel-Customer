@@ -244,6 +244,7 @@ class ViewInvoiceApiView(APIView):
             response['total_vat'] = float("{:.2f}".format(total_vat))
             response['total_amount'] = float("{:.2f}".format(total_amount))
             delivery_person_obj = DeliveryPerson.objects.get(id=invoice.order.delivery_person.id)
+            response['delivery_person_id'] = delivery_person_obj.id
             response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
             response['delivery_person_address'] = delivery_person_obj.address
             response['business_address'] = invoice.order.business.address
