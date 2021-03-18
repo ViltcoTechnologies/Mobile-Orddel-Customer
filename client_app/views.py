@@ -142,9 +142,13 @@ class ClientRegisterApiView(APIView):
                                 new_auth_user.last_name = last_name
 
                                 try:
+                                    try:
+                                        delivery_person = DeliveryPerson.objects.get(id=preferred_delivery_person)
+                                    except:
+                                        return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'Delivery Person does not exist'})
                                     new_client = Client.objects.create(
                                         user=new_auth_user,
-                                        preferred_delivery_person=preferred_delivery_person,
+                                        preferred_delivery_person=delivery_person,
                                         package=package,
                                         first_name=first_name,
                                         last_name=last_name,
@@ -180,7 +184,7 @@ class ClientRegisterApiView(APIView):
                                 except:
                                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                                     data={"message": "there was a error creating "
-                                                                     "delivery_person was not created"})
+                                                                     "client "})
                             except:
                                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                                 data={"message": "User already exists"})
