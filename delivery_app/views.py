@@ -221,6 +221,7 @@ class RegisterDeliveryPersonApiViewV2(APIView):
                 username = request.data['email']
                 phone_number = request.data['phone_number']
                 password = request.data['password']
+                otp_status = request.data['otp_status']
                 admin_approval_status = 'pending'
                 package = request.data['package']
                 if first_name == ""\
@@ -256,6 +257,7 @@ class RegisterDeliveryPersonApiViewV2(APIView):
                                     package=package,
                                     first_name=first_name,
                                     last_name=last_name,
+                                    otp_status=otp_status,
                                     username=username,
                                     admin_approval_status=admin_approval_status,
                                     email=email,
