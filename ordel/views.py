@@ -210,22 +210,19 @@ class CheckEmailAPIView(APIView):
                                                                                      'required'})
             try:
                 client = Client.objects.get(username=email)
-                return Response(status=status.HTTP_200_OK, data={'message': f'User with username '
-                                                                            f'{client.username} '
+                return Response(status=status.HTTP_200_OK, data={'message': f'This email '
                                                                             f'already exists as '
                                                                             f'a client'})
             except:
                 try:
                     delivery_person = DeliveryPerson.objects.get(username=email)
-                    return Response(status=status.HTTP_200_OK, data={'message': f'User with username '
-                                                                                f'{delivery_person.username} '
+                    return Response(status=status.HTTP_200_OK, data={'message': f'This email '
                                                                                 f'already exists as a '
                                                                                 f'delivery person'})
                 except:
                     try:
                         admin_user = AdminUser.objects.get(username=email)
-                        return Response(status=status.HTTP_200_OK, data={'message': f'User with username '
-                                                                                    f'{admin_user.username} '
+                        return Response(status=status.HTTP_200_OK, data={'message': f'This email '
                                                                                     f'already exists'})
                     except:
                         return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User does not exist'})
@@ -242,22 +239,19 @@ class CheckPhoneAPIView(APIView):
                                                                                      'required'})
             try:
                 client = Client.objects.get(phone_number=phone)
-                return Response(status=status.HTTP_200_OK, data={'message': f'User with phone number '
-                                                                            f'{client.phone_number} '
+                return Response(status=status.HTTP_200_OK, data={'message': f'This phone number '
                                                                             f'already exists as '
                                                                             f'a client'})
             except:
                 try:
                     delivery_person = DeliveryPerson.objects.get(phone_number=phone)
-                    return Response(status=status.HTTP_200_OK, data={'message': f'User with phone number '
-                                                                                f'{delivery_person.phone_number} '
+                    return Response(status=status.HTTP_200_OK, data={'message': f'This phone number '
                                                                                 f'already exists as a '
                                                                                 f'delivery person'})
                 except:
                     try:
                         admin_user = AdminUser.objects.get(phone_number=phone)
-                        return Response(status=status.HTTP_200_OK, data={'message': f'User with phone number '
-                                                                                    f'{admin_user.phone_number} '
+                        return Response(status=status.HTTP_200_OK, data={'message': f'This phone number '
                                                                                     f'already exists'})
                     except:
                         return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'User does not exist'})

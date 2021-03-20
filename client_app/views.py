@@ -902,7 +902,7 @@ class ClientLogin(TokenObtainPairView):
                                                                      "data": serializer_class.validated_data})
                 else:
                     return Response(status=status.HTTP_401_UNAUTHORIZED,
-                                    data={"data": "client user not authorized"})
+                                    data={"data": "Client user not authorized"})
 
             else:
                 print("invalid username and password")
