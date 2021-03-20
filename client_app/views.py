@@ -908,14 +908,17 @@ class ClientLogin(TokenObtainPairView):
                 print("invalid username and password")
 
         except:
-            user = User.objects.get(username=username)
+            try:
+                user = User.objects.get(username=username)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User or Password is not correct'})
             is_active = user.is_active
             if not is_active:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={"message": "The account is not verified via email"})
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={"message": "username or password not correct"})
+                                data={"message": "Username or Password is not correct"})
 
 
 # ------------------------------------------------------------------------------------------------------------------------
