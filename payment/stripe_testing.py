@@ -17,3 +17,10 @@ print(response)
 #   currency="gbp",
 #   payment_method_types=["card"],
 # )
+
+response = s.Subscription.create(
+  customer="cus_J8uG0Z40cyJa7U",
+  items=[
+    {"price": "price_1IWcSI2x6R10KRrh5aZYfN3y"},
+  ],
+)

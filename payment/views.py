@@ -306,7 +306,8 @@ def prepare_invoice(invoice_id):
         response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
         response['delivery_person_address'] = delivery_person_obj.address
         response['business_address'] = invoice.order.business.address
-        response['purchase_order_no'] = invoice.order.purchase_order_no
+        response['purchase_order_no'] = invoice.order.purchase_order_no[3:]
+        response['inv_number'] = response['inv_number'][4:]
         response['order_delivery_datetime'] = invoice.order.order_delivery_datetime.strftime('%d-%m-%Y %H:%M')
         # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
         # response['shipment_address_detail'] = shipment_address.shipment_address

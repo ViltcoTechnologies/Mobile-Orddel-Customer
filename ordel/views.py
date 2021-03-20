@@ -143,63 +143,126 @@ class SendOTPAPIView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send OTP'})
 
 
-class CheckEmailPhoneNumberAPIView(APIView):
+# class CheckEmailPhoneNumberAPIView(APIView):
+#
+#     def post(self, request):
+#         try:
+#             email = request.data['email']
+#             phone_number = request.data['phone_number']
+#             if email == "" or phone_number == "":
+#                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Email and phone number '
+#                                                                                      'should not be empty'})
+#
+#             try:
+#                 messages = {}
+#                 client = Client.objects.get(email=email)
+#                 if client.email == email:
+#                     messages['msg_email'] = f'User with email {client} already exists as a client'
+#                 if client.phone_number == phone_number:
+#                     messages['msg_phone'] = f'User with phone number {client.phone_number} already exists as a client'
+#
+#                 return Response(status=status.HTTP_200_OK, data={'response': messages,
+#                                                                  'status': 'Successful',
+#                                                                  'HTTP status code': 200
+#                                                                  })
+#
+#             except:
+#                 try:
+#                     messages = {}
+#                     delivery_person = DeliveryPerson.objects.get(email=email)
+#                     if delivery_person.email == email:
+#                         messages['msg_email'] = f'User with email {delivery_person} already exists as a delivery person'
+#                     if delivery_person.phone_number == phone_number:
+#                         messages['msg_phone'] = f'User with phone number {delivery_person.phone_number} already exists as a delivery person'
+#
+#                     return Response(status=status.HTTP_200_OK, data={'response': messages,
+#                                                                      'status': 'Successful',
+#                                                                      'HTTP status code': 200
+#                                                                      })
+#                 except:
+#                     try:
+#                         messages = {}
+#                         admin_user = AdminUser.objects.get(email=email)
+#                         if admin_user.email == email:
+#                             messages['msg_email'] = f'User with email {admin_user} already exists'
+#                         if admin_user.phone_number == phone_number:
+#                             messages['msg_phone'] = f'User with phone number {admin_user.phone_number} already exists'
+#
+#                         return Response(status=status.HTTP_200_OK, data={'response': messages,
+#                                                                          'status': 'Successful',
+#                                                                          'HTTP status code': 200
+#                                                                          })
+#
+#                     except:
+#                         return Response(status=status.HTTP_400_BAD_REQUEST, data={'response': 'User does not exist',
+#                                                                                   'status': 'Unsuccessful',
+#                                                                                   'HTTP status code': 400
+#                                                                                   })
+#         except:
+#             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Something went wrong!'})
 
+class CheckEmailAPIView(APIView):
     def post(self, request):
         try:
             email = request.data['email']
-            phone_number = request.data['phone_number']
-            if email == "" or phone_number == "":
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Email and phone number '
-                                                                                     'should not be empty'})
-
+            if email == "":
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Email field is '
+                                                                                     'required'})
             try:
-                messages = {}
-                client = Client.objects.get(email=email)
-                if client.email == email:
-                    messages['msg_email'] = f'User with email {client} already exists as a client'
-                if client.phone_number == phone_number:
-                    messages['msg_phone'] = f'User with phone number {client.phone_number} already exists as a client'
-
-                return Response(status=status.HTTP_200_OK, data={'response': messages,
-                                                                 'status': 'Successful',
-                                                                 'HTTP status code': 200
-                                                                 })
-
+                client = Client.objects.get(username=email)
+                return Response(status=status.HTTP_200_OK, data={'message': f'User with username '
+                                                                            f'{client.username} '
+                                                                            f'already exists as '
+                                                                            f'a client'})
             except:
                 try:
-                    messages = {}
-                    delivery_person = DeliveryPerson.objects.get(email=email)
-                    if delivery_person.email == email:
-                        messages['msg_email'] = f'User with email {delivery_person} already exists as a client'
-                    if delivery_person.phone_number == phone_number:
-                        messages['msg_phone'] = f'User with phone number {delivery_person.phone_number} already exists as a client'
-
-                    return Response(status=status.HTTP_200_OK, data={'response': messages,
-                                                                     'status': 'Successful',
-                                                                     'HTTP status code': 200
-                                                                     })
+                    delivery_person = DeliveryPerson.objects.get(username=email)
+                    return Response(status=status.HTTP_200_OK, data={'message': f'User with username '
+                                                                                f'{delivery_person.username} '
+                                                                                f'already exists as a '
+                                                                                f'delivery person'})
                 except:
                     try:
-                        messages = {}
-                        admin_user = AdminUser.objects.get(email=email)
-                        if admin_user.email == email:
-                            messages['msg_email'] = f'User with email {admin_user} already exists'
-                        if admin_user.phone_number == phone_number:
-                            messages['msg_phone'] = f'User with phone number {admin_user.phone_number} already exists'
-
-                        return Response(status=status.HTTP_200_OK, data={'response': messages,
-                                                                         'status': 'Successful',
-                                                                         'HTTP status code': 200
-                                                                         })
-
+                        admin_user = AdminUser.objects.get(username=email)
+                        return Response(status=status.HTTP_200_OK, data={'message': f'User with username '
+                                                                                    f'{admin_user.username} '
+                                                                                    f'already exists'})
                     except:
-                        return Response(status=status.HTTP_400_BAD_REQUEST, data={'response': 'User does not exist',
-                                                                                  'status': 'Unsuccessful',
-                                                                                  'HTTP status code': 400
-                                                                                  })
+                        return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User does not exist'})
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Something went wrong!'})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Something went wrong'})
+
+
+class CheckPhoneAPIView(APIView):
+    def post(self, request):
+        try:
+            phone = request.data['phone']
+            if phone == "":
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Email field is '
+                                                                                     'required'})
+            try:
+                client = Client.objects.get(phone_number=phone)
+                return Response(status=status.HTTP_200_OK, data={'message': f'User with phone number '
+                                                                            f'{client.phone_number} '
+                                                                            f'already exists as '
+                                                                            f'a client'})
+            except:
+                try:
+                    delivery_person = DeliveryPerson.objects.get(phone_number=phone)
+                    return Response(status=status.HTTP_200_OK, data={'message': f'User with phone number '
+                                                                                f'{delivery_person.phone_number} '
+                                                                                f'already exists as a '
+                                                                                f'delivery person'})
+                except:
+                    try:
+                        admin_user = AdminUser.objects.get(phone_number=phone)
+                        return Response(status=status.HTTP_200_OK, data={'message': f'User with phone number '
+                                                                                    f'{admin_user.phone_number} '
+                                                                                    f'already exists'})
+                    except:
+                        return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'User does not exist'})
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Something went wrong'})
 
 
 # Password Reset Funtionality

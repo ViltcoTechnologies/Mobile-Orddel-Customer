@@ -7,6 +7,7 @@ app_name = 'delivery_app'
 urlpatterns = [
     # Delivery Person API Routes
     path('delivery_person_registration/', RegisterDeliveryPersonApiView.as_view()),
+    path('delivery_person_registration_v2/', RegisterDeliveryPersonApiViewV2.as_view()),
     path('delivery_person_list/', ListDeliveryPersonApiView.as_view()),
     path('delivery_person_list/<id>/', ListDeliveryPersonApiView.as_view()),
     path('update_delivery_person/', UpdateDeliveryPersonApiView.as_view()),

@@ -10,87 +10,98 @@
             margin: auto auto;
             top: 50%;
         }
-        .container {
+        *{
+            font-size: 0.96rem;
         }
-
-
+        .detail-text {
+            font-size: 0.93rem;
+            margin: 0;
+            padding-left: 10px;
+        }
+        .top-detail {
+            width: 100%;
+            display: flex;
+            justify-content: spaced-between;
+            padding-bottom: 2rem;
+        }
+        .left-align {
+            text-align: left;
+        }
+        .right-align {
+            text-align: left;
+        }
+        td {
+            border: 0.5px solid black;
+            border-collapse: collapse;
+            padding: 0.5rem 0rem 0.2rem 0rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <center>
-            <br><br>
-            <div class="logo">
-                <img src="index.jpeg" height="40" width="40"/>
-            </div>
-            <div class="header">
-                <h1>Invoice</h1>
-            </div>
-            <div class="invoice_number">
-                <h2>{{response.inv_number}}</h2>
-            </div>
-
-            <div class="order_number">
-                <h2>{{response.purchase_order_no}}</h2>
-            </div>
-
             <div class="row">
-                <div class="delivery_person" >
-                    <span>
-                        <p><b>Client: {{response.client}}</b></p>
-                        <p><b>Delivery Address: {{response.delivery_person_address}}</b></p>
-                    </span>
+
+                <br><br>
+                <div class="logo">
+                    <img src="index.jpeg" height="40" width="40"/>
+                </div>
+                <div class="header">
+                    <h1>ORDDEL</h1>
+                </div>
+                <div class="top-detail">
+                    <div class="left-align">
+                        <p class="detail-text">Client: {{response.client}}</p>
+                        <p class="detail-text">Delivery Address: {{response.delivery_person_address}}</p>
+                        <p class="detail-text">Delivery Date & Time: {{response.order_delivery_datetime}}</p>
+                        <!-- {{response.delivery_person_address}} -->
+                    </div>
+                    <div class="right-align">
+                        <p class="detail-text">Invoice No. {{response.inv_number}}</p>
+                        <p class="detail-text">PO No. {{response.purchase_order_no}}</p>
+                        <p class="detail-text">Delivery Person: {{response.delivery_person_name}}</p>
+                        <!--{{response.delivery_person_name}}-->
+                    </div>
                 </div>
 
-                <div class="delivery_address_datetime" style="flex-direction: row">
-                    <p><b>Delivery Person: {{response.delivery_person_name}}</b></p>
-                    <p><b>Delivery Date & Time: {{response.order_delivery_datetime}}</b></p>
-                </div>
+                    <hr>
+                    <div class="ordered_products" style="margin-left: 50px; margin-right: 50px;">
+                        <table cellpadding="1">
+                            <thead>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>VAT</th>
+                                <th>Amount</th>
+                            </thead>
 
-                <hr>
-                <div class="ordered_products" style="margin-left: 50px; margin-right: 50px;">
-                    <table cellpadding="1">
-                        <thead>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>VAT</th>
-                            <th>Amount</th>
-                        </thead>
-
-                        {% for order_prod in response.order_products %}
-                        <tbody>
-                            <tr>
-                                <td>{{order_prod.product_name}}</td>
-                                <td>{{order_prod.purchased_qty}}</td>
-                                <td>{{order_prod.unit_sales_price}}</td>
-                                <td>{{order_prod.vat_amount}}</td>
-                                <td>{{order_prod.amount}}</td>
-
-                            </tr>
-
-
-                        </tbody>
-                        {% endfor %}
-                        <tfoot>
-                            <tr>
+                            {% for order_prod in response.order_products %}
+                            <tbody>
                                 <tr>
-                                    <td><h4>Total</h4></td>
-                                    <td>{{response.total_qty}}</td>
-                                    <td></td>
-                                    <td>{{response.total_vat}}</td>
-                                    <td>{{response.total_amount}}</td>
+                                    <td>{{order_prod.product_name}}</td>
+                                    <td>{{order_prod.purchased_qty}}</td>
+                                    <td>{{order_prod.unit_sales_price}}</td>
+                                    <td>{{order_prod.vat_amount}}</td>
+                                    <td>{{order_prod.amount}}</td>
 
                                 </tr>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
 
 
-                <div class="customer" style="text-align: center;">
-
-                </div>
+                            </tbody>
+                            {% endfor %}
+                            <tfoot>
+                                <tr>
+                                    <tr>
+                                        <td><h4>Total</h4></td>
+                                        <td>{{response.total_qty}}</td>
+                                        <td></td>
+                                        <td>{{response.total_vat}}</td>
+                                        <td>{{response.total_amount}}</td>
+                                    </tr>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
 
             </div>
         </center>

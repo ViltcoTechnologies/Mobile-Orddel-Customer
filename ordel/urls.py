@@ -43,7 +43,8 @@ urlpatterns = [
     path('admin_app/', include("admin_dashboard.urls")),
 
     # Check Existing Email and Phone Number
-    path('check_existing_email_phone/', CheckEmailPhoneNumberAPIView.as_view())
+    path('check_existing_email/', CheckEmailAPIView.as_view()),
+    path('check_existing_phone/', CheckPhoneAPIView.as_view())
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

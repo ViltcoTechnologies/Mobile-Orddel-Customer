@@ -200,6 +200,113 @@ class RegisterDeliveryPersonApiView(APIView):
                                  "send null or empty")
 
 
+class RegisterDeliveryPersonApiViewV2(APIView):
+
+    def get(self, request, id=None):
+        return Response(status=status.HTTP_200_OK)
+
+    def post(self, request, id=None):
+        try:
+            # optional parameters
+            buying_capacity = request.data['buying_capacity']
+            address = request.data['address']
+            gender = request.data['gender']
+            image = request.data['image']
+            current_location = request.data['current_location']
+            try:
+                # required parameters
+                first_name = request.data['first_name']
+                last_name = request.data['last_name']
+                email = request.data['email']
+                username = request.data['email']
+                phone_number = request.data['phone_number']
+                password = request.data['password']
+                admin_approval_status = 'pending'
+                package = request.data['package']
+                if first_name == ""\
+                        or last_name == ""\
+                        or email == ""\
+                        or phone_number == ""\
+                        or password == "":
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data="Ooops! following required fields can't "
+                                         "be empty: (first_name, last_name, email, "
+                                         "phone_number, password)")
+                try:
+                    saved_data = DeliveryPerson.objects.get(phone_number=phone_number)
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                    data="Phone Number already registered!")
+                except:
+
+                    try:
+                        package = DeliveryPersonPackage.objects.get(id=package)
+                        no_of_invoices = package.no_of_invoices
+                        try:
+                            new_auth_user = User.objects.create_user(
+                                email,
+                                email,
+                                password
+                            )
+                            new_auth_user.first_name = first_name
+                            new_auth_user.last_name = last_name
+                            sendConfirm(new_auth_user)
+                            try:
+                                new_delivery_person = DeliveryPerson.objects.create(
+                                    user=new_auth_user,
+                                    package=package,
+                                    first_name=first_name,
+                                    last_name=last_name,
+                                    username=username,
+                                    admin_approval_status=admin_approval_status,
+                                    email=email,
+                                    current_location=current_location,
+                                    buying_capacity=buying_capacity,
+                                    phone_number=phone_number,
+                                    address=address,
+                                    gender=gender,
+                                    image=image,
+                                    no_of_invoices=no_of_invoices,
+                                )
+
+                                try:
+                                    sendConfirm(new_auth_user)
+                                except:
+                                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                    data={"message": "There was an error sending verification "
+                                                                     "email"})
+
+                                new_delivery_person.save()
+                                serializer = DeliveryPersonSerializer(new_delivery_person)
+                                new_auth_user.save()
+
+                                return Response(status=status.HTTP_200_OK,
+                                                data={"delivery_person_created": serializer.data})
+                            except:
+                                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                data={"message": "there was an error "
+                                                                 "creating delivery person"})
+                        except:
+                            return Response(status=status.HTTP_400_BAD_REQUEST,
+                                            data={"message": "User already exists"})
+                    except:
+                        return Response(status=status.HTTP_404_NOT_FOUND,
+                                        data={"message": f"No package with the ID: {package}"})
+
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "Make sure you're not missing one of the "
+                                      "following required fields: (first_name, last_name, "
+                                      "email, phone_number, password)"})
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data="Error! Make sure you're not missing one "
+                                 "of the following optional fields: "
+                                 "(buying_capacity, address, gender,"
+                                 "current_location, image) "
+                                 "Note: If you want to leave fields blank, then "
+                                 "send null or empty")
+
+
 # Delivery Person List API
 class ListDeliveryPersonApiView(APIView):
 

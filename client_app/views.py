@@ -224,6 +224,8 @@ class ClientRegisterV2ApiView(APIView):
                 otp_status = request.data['otp_status']
                 admin_approval_status = 'pending'
                 package = request.data['package']
+                preferred_delivery_person = request.data['preferred_delivery_person']
+
                 if first_name == ""\
                         or last_name == ""\
                         or email == ""\
@@ -250,10 +252,16 @@ class ClientRegisterV2ApiView(APIView):
                                 )
                                 new_auth_user.first_name = first_name
                                 new_auth_user.last_name = last_name
+                                try:
+                                    delivery_person = DeliveryPerson.objects.get(id=preferred_delivery_person)
+                                except:
+                                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                    data={'error': 'Delivery Person does not exist'})
 
                                 try:
                                     new_client = Client.objects.create(
                                         user=new_auth_user,
+                                        preferred_delivery_person=delivery_person,
                                         package=package,
                                         otp_status=otp_status,
                                         first_name=first_name,
