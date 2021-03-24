@@ -30,7 +30,15 @@
         .right-align {
             text-align: left;
         }
+        /*
         td {
+            border: 0.5px solid black;
+            border-collapse: collapse;
+            padding: 0.5rem 0rem 0.2rem 0rem;
+        }
+        */
+
+         th {
             border: 0.5px solid black;
             border-collapse: collapse;
             padding: 0.5rem 0rem 0.2rem 0rem;
@@ -49,24 +57,33 @@
                 <div class="header">
                     <h1>ORDDEL</h1>
                 </div>
-                <div class="top-detail">
-                    <div class="left-align">
-                        <p class="detail-text">Client: {{response.client}}</p>
-                        <p class="detail-text">Delivery Address: {{response.delivery_person_address}}</p>
-                        <p class="detail-text">Delivery Date & Time: {{response.order_delivery_datetime}}</p>
-                        <!-- {{response.delivery_person_address}} -->
+<!--                -->
+<!--                <div class="top-detail">-->
+<!--                    <div class="left-align">-->
+<!--                        <p class="detail-text">Client: {{response.client}}</p>-->
+<!--                        <p class="detail-text">Delivery Address: {{response.delivery_person_address}}</p>-->
+<!--                        <p class="detail-text">Delivery Date & Time: {{response.order_delivery_datetime}}</p>-->
+<!--                        &lt;!&ndash; {{response.delivery_person_address}} &ndash;&gt;-->
+<!--                    </div>-->
+<!--                    <div class="right-align">-->
+<!--                        <p class="detail-text">Invoice No. {{response.inv_number}}</p>-->
+<!--                        <p class="detail-text">PO No. {{response.purchase_order_no}}</p>-->
+<!--                        <p class="detail-text">Delivery Person: {{response.delivery_person_name}}</p>-->
+<!--                        &lt;!&ndash;{{response.delivery_person_name}}&ndash;&gt;-->
+<!--                    </div>-->
+<!--                </div>-->
+                    <div class="top-detail">
+                        <table>
+                            <tbody>
+                                <tr><td>Client: {{response.client}}</td> <td>Invoice No. {{response.inv_number}}</td></tr>
+                                <tr><td>Delivery Address: {{response.delivery_person_address}}</td> <td>PO No. {{response.purchase_order_no}}</td></tr>
+                                <tr><td>Delivery Date & Time: {{response.order_delivery_datetime}}</td> <td>Delivery Person: {{response.delivery_person_name}}</td></tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="right-align">
-                        <p class="detail-text">Invoice No. {{response.inv_number}}</p>
-                        <p class="detail-text">PO No. {{response.purchase_order_no}}</p>
-                        <p class="detail-text">Delivery Person: {{response.delivery_person_name}}</p>
-                        <!--{{response.delivery_person_name}}-->
-                    </div>
-                </div>
-
-                    <hr>
+                    <br>
                     <div class="ordered_products" style="margin-left: 50px; margin-right: 50px;">
-                        <table cellpadding="1">
+                        <table cellpadding="3">
                             <thead>
                                 <th>Product</th>
                                 <th>Quantity</th>
@@ -89,18 +106,15 @@
 
                             </tbody>
                             {% endfor %}
-                            <tfoot>
-                                <tr>
-                                    <tr>
-                                        <td><h4>Total</h4></td>
-                                        <td>{{response.total_qty}}</td>
-                                        <td></td>
-                                        <td>{{response.total_vat}}</td>
-                                        <td>{{response.total_amount}}</td>
-                                    </tr>
-                                </tr>
-                            </tfoot>
+
                         </table>
+                        <br>
+                        <br>
+                        <div class="total">
+                            <h4>Total Packages: {{response.total_qty}}</h4>
+                            <h4>Total Amount: {{response.total_amount}}</h4>
+
+                        </div>
                     </div>
 
             </div>

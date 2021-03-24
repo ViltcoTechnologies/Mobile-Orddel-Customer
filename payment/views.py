@@ -301,7 +301,7 @@ def prepare_invoice(invoice_id):
             response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
         delivery_note_obj = DeliveryNote.objects.get(order=invoice.order)
         response['delivery_note'] = delivery_note_obj.delivery_note
-        response['total_qty'] = float("{:.2f}".format(total_purchased_qty))
+        response['total_qty'] = total_purchased_qty
         response['total_vat'] = float("{:.2f}".format(total_vat))
         response['total_amount'] = float("{:.2f}".format(total_amount))
         delivery_person_obj = DeliveryPerson.objects.get(id=invoice.order.delivery_person.id)
