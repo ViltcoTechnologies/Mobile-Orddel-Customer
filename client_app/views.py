@@ -6,6 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt import authentication
 from django_email_verification import sendConfirm
 from rest_framework.response import Response
+import datetime
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from client_app.models import *
 from order.models import *
@@ -162,6 +163,8 @@ class ClientRegisterApiView(APIView):
                                         gender=gender,
                                         image=image
                                     )
+                                    # Create Initial Package Log
+
                                     try:
                                         twilio_verification = TwilioVerification(str(phone_number))
                                         twilio_verification.send_otp()
@@ -277,6 +280,18 @@ class ClientRegisterV2ApiView(APIView):
                                         image=image
                                     )
                                     try:
+                                        ClientPackageLog.objects.create(
+                                            client=new_client,
+                                            package=package,
+                                            date_expiry=datetime.datetime.now() + datetime.timedelta(
+                                                package.validity_in_days),
+                                            status='active'
+
+                                        )
+                                    except:
+                                        return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to create Client '
+                                                                                                             'Package Log'})
+                                    try:
                                         sendConfirm(new_auth_user)
                                     except:
                                         return Response(status=status.HTTP_400_BAD_REQUEST,
@@ -312,7 +327,6 @@ class ClientRegisterV2ApiView(APIView):
                                   "(current_location, address, gender, image) "
                                   "Note: If you want to leave fields blank, then "
                                   "send null or empty"})
-
 
 
 class UpdateClientApiView(APIView):
@@ -620,7 +634,7 @@ class BankDetailsCreateApiView(APIView):
             data_to_pass = BankDetailsSerializer(bank_record)
             return Response(status=status.HTTP_200_OK, data={"bank_details_created": data_to_pass.data})
         except Exception as e:
-            return Response(status = status.HTTP_400_BAD_REQUEST, data={"Exception" : e})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"Exception" : e})
 
 
 class BankDetailsUpdateApiView(APIView):

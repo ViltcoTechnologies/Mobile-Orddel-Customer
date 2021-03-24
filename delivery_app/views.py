@@ -14,7 +14,8 @@ from admin_dashboard.serializers import *
 from django_email_verification import sendConfirm
 from django.core.mail import send_mail
 from ordel.verificaton import TwilioVerification
-
+import datetime
+from datetime import date
 # Token Obtain pair
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -269,7 +270,18 @@ class RegisterDeliveryPersonApiViewV2(APIView):
                                     image=image,
                                     no_of_invoices=no_of_invoices,
                                 )
-
+                                try:
+                                    DeliveryPersonPackageLog.objects.create(
+                                        delivery_person=new_delivery_person,
+                                        package=package,
+                                        date_expiry=datetime.datetime.now() + datetime.timedelta(
+                                            package.validity_in_days),
+                                        status='active'
+                                    )
+                                except:
+                                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                    data={'message': 'Unable to create Delivery '
+                                                                     'Person Package Log'})
                                 try:
                                     sendConfirm(new_auth_user)
                                 except:
@@ -1043,7 +1055,6 @@ class PendingApprovalListApiView(APIView):
 
 
 # ------------------------------------------------------------------------------------------------------------------------
-
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
@@ -1104,10 +1115,7 @@ class DeliveryPersonLogin(TokenObtainPairView):
                                 data={"message": "username or password not correct"})
 
 
-
-
 # ------------------------------------------------------------------------------------------------------------------------
-
 
 # Order notification
 class UpdateDeliveryPersonOrderApiView(APIView):
@@ -1121,12 +1129,23 @@ class UpdateDeliveryPersonOrderApiView(APIView):
                 # Create Accepted Order Entry in Delivery Person
                 delivery_person = order_detail.delivery_person
                 delivery_person_obj = DeliveryPerson.objects.get(id=delivery_person.id)
+                delivery_person_package = DeliveryPersonPackageLog.objects.filter(delivery_person=delivery_person_obj).last()
+
+                if delivery_person_package.date_expiry <= date.today():
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Your package has been expired '
+                                                                                         'Kindly renew it to use our '
+                                                                                         'services'})
+                else:
+                    pass
+
                 if delivery_person_obj.no_of_invoices != 0:
                     delivery_person_obj.no_of_invoices -= 1
                     delivery_person_obj.used_invoices += 1
                     delivery_person_obj.save()
+
                 else:
                     return Response(status=status.HTTP_401_UNAUTHORIZED, data={'message': 'Cant accept, Invoices are empty'})
+
                 order_detail.status = 'in_progress'
 
             elif delivery_person_action == "rejected":

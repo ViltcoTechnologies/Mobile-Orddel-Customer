@@ -81,9 +81,10 @@ class ClientPackageLog(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     package = models.ForeignKey(ClientPackage, on_delete=models.SET_NULL, null=True, blank=True)
     date_activated = models.DateField(auto_now=True)
+    date_expiry = models.DateField(auto_now=False)
     status = models.CharField(max_length=100, choices=package_activation_choices)
 
-    def __str__(self):
+    def __int__(self):
         return self.id
 
 

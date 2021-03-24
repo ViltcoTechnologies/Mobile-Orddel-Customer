@@ -21,12 +21,6 @@ package_activation_choices = (
 
 )
 
-package_activation_choices = (
-    ('inactive', 'Inactive'),
-    ('active', 'Active')
-
-)
-
 
 class DeliveryPersonPackage(models.Model):
     name = models.CharField(max_length=200)
@@ -72,6 +66,7 @@ class DeliveryPersonPackageLog(models.Model):
     delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.CASCADE)
     package = models.ForeignKey(DeliveryPersonPackage, on_delete=models.SET_NULL, null=True, blank=True)
     date_activated = models.DateField(auto_now=True)
+    date_expiry = models.DateField(auto_now=False)
     status = models.CharField(max_length=100, choices=package_activation_choices)
 
     def __str__(self):

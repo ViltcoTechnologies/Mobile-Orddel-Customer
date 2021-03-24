@@ -21,7 +21,8 @@ class TwilioVerification:
             .services(service_sid) \
             .verifications \
             .create(to=self.phone_number,
-                    channel='sms',)
+                    channel='sms',) \
+
 
     def update_status(self):
         verification = client.verify \

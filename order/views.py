@@ -258,64 +258,57 @@ class CreateOrderApiView(APIView):
             return Response(status=status.HTTP_409_CONFLICT, data={"error": "record already exists"})
 
         except:
-            # try:
-            client_id = order_box_obj.client.id
-            # print(client_id)
-            client = Client.objects.get(id=client_id)
-            if client.no_of_invoices <= 0:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Cant order, Client invoices are empty'})
-            # orderdetail = OrderDetail.objects.filter(order_box=order_box).last()
-            # if orderdetail:
-            #     po_number_list = orderdetail.purchase_order_no.split("_")
-            #     po_number = int(po_number_list[2])
-            #     po_number += 1
-            #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
-            # else:
-            #     po_number = 1
-            #     purchase_order_no = f"PO#{str(client.id).zfill(5)}_{date.today().strftime('%m%d%y')}_{str(po_number).zfill(5)}"
+            try:
+                client_id = order_box_obj.client.id
+                client = Client.objects.get(id=client_id)
+                client_package_log = ClientPackageLog.objects.filter(client=client).last()
+                if client.no_of_invoices <= 0:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Cant order, Client invoices are empty'})
 
-            list_of_order_prods = []
-            list_of_order_prods.extend(order_box_obj.orderproduct_set.all())
-            # print(list_of_order_prods)
-            order = OrderDetail.objects.create(
-                order_box=order_box_obj,
-                business=business_obj,
-                purchase_order_no=purchase_order_no,
-                order_title=order_title,
-                delivery_person=delivery_obj,
-                order_delivery_datetime=datetime.strptime(order_delivery_datetime, "%d-%m-%Y %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S.%f%z"),
-                # shipment_address=shipment_obj,
-                delivery_notes=delivery_notes,
-                comment=comment,
-                distance=distance,
-                # total_units_ordered=total_units_ordered,
-                status=delivery_status,
-                payment_type=payment_type
-            )
-            for prod in list_of_order_prods:
-                order.order_products.add(prod.id)
-            # print(client.number_of_order)
-            if client.no_of_invoices != 0:
-                client.no_of_invoices -= 1
-                client.used_invoices += 1
-            client.number_of_order += 1
-            client.save()
-            serializer = OrderDetailSerializer(order)
-            response = serializer.data
-            products_details = []
-            for prod in list_of_order_prods:
-                product = {}
-                order_prod_obj = OrderProduct.objects.get(id=prod.id)
-                product['product_name'] = order_prod_obj.product.name
-                product['product_unit'] = order_prod_obj.product.unit
-                product['quantity'] = order_prod_obj.quantity
-                product['total_amount'] = order_prod_obj.total_amount
-                products_details.append(product)
-            response['order_products'] = products_details
-            return Response(status=status.HTTP_201_CREATED, data={"order": response})
+                if client_package_log.date_expiry <= date.today():
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Your package has been expired '
+                                                                                         'Kindly renew it to use our '
+                                                                                         'services'})
 
-            # except:
-            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "record_creation_failed"})
+                list_of_order_prods = []
+                list_of_order_prods.extend(order_box_obj.orderproduct_set.all())
+                order = OrderDetail.objects.create(
+                    order_box=order_box_obj,
+                    business=business_obj,
+                    purchase_order_no=purchase_order_no,
+                    order_title=order_title,
+                    delivery_person=delivery_obj,
+                    order_delivery_datetime=datetime.strptime(order_delivery_datetime, "%d-%m-%Y %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S.%f%z"),
+                    delivery_notes=delivery_notes,
+                    comment=comment,
+                    distance=distance,
+                    status=delivery_status,
+                    payment_type=payment_type
+                )
+                for prod in list_of_order_prods:
+                    order.order_products.add(prod.id)
+                # print(client.number_of_order)
+                if client.no_of_invoices != 0:
+                    client.no_of_invoices -= 1
+                    client.used_invoices += 1
+                client.number_of_order += 1
+                client.save()
+                serializer = OrderDetailSerializer(order)
+                response = serializer.data
+                products_details = []
+                for prod in list_of_order_prods:
+                    product = {}
+                    order_prod_obj = OrderProduct.objects.get(id=prod.id)
+                    product['product_name'] = order_prod_obj.product.name
+                    product['product_unit'] = order_prod_obj.product.unit
+                    product['quantity'] = order_prod_obj.quantity
+                    product['total_amount'] = order_prod_obj.total_amount
+                    products_details.append(product)
+                response['order_products'] = products_details
+                return Response(status=status.HTTP_201_CREATED, data={"order": response})
+
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "record_creation_failed"})
 
 
 class UpdateOrder(generics.UpdateAPIView):

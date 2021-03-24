@@ -12,6 +12,7 @@ from order.serializers import OrderDetailSerializer
 from django.views.generic import View as view
 from .utils import *
 import stripe
+import datetime
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Create your views here.
@@ -520,6 +521,22 @@ class PaymentAPIView(APIView):
                 obj.package = package_obj
                 obj.no_of_invoices += package_obj.no_of_invoices
                 obj.save()
+                if user_type == 'client':
+                    ClientPackageLog.objects.create(
+                        client=obj,
+                        package=package_obj,
+                        date_expiry=datetime.datetime.now() + datetime.timedelta(package_obj.validity_in_days),
+                        status='active'
+
+                    )
+                elif user_type == 'delivery_person':
+                    DeliveryPersonPackageLog.objects.create(
+                        delivery_person=obj,
+                        package=package_obj,
+                        date_expiry=datetime.datetime.now() + datetime.timedelta(package_obj.validity_in_days),
+                        status='active'
+
+                    )
             return Response(status=status.HTTP_200_OK, data={"message": "Payment Succeeded "
                                                                         "and invoices added",
                                                              "total_invoices": obj.no_of_invoices
