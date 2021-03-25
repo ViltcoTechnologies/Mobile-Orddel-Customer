@@ -19,7 +19,8 @@ unit_choices = (
     ('ml', 'ML'),
     ('l', 'L'),
     ('item', 'Item'),
-    ('box', 'Box')
+    ('box', 'Box'),
+    ('bag', 'Bag')
 )
 
 
