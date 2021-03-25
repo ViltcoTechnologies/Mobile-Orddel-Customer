@@ -230,7 +230,7 @@ class ViewInvoiceApiView(APIView):
                     product['vat_amount'] = float("{:.2f}".format(order_prod_obj.product.vat * order_prod_obj.unit_sale_price))
                     total_vat += product['vat_amount']
                     # product['total_amount'] = order_prod_obj.total_amount
-                    product['amount'] = float("{:.2f}".format(product['vat_amount'] + product['unit_sales_price']))
+                    product['amount'] = float("{:.2f}".format(product['vat_amount'] + product['unit_sales_price'])) * product['purchased_qty']
                     total_amount += product['amount']
                     product['supplier_market'] = order_prod_obj.supplier
                 products_details.append(product)
@@ -291,7 +291,7 @@ def prepare_invoice(invoice_id):
                 product['vat_amount'] = float("{:.2f}".format(order_prod_obj.product.vat * order_prod_obj.unit_sale_price))
                 total_vat += product['vat_amount']
                 # product['total_amount'] = order_prod_obj.total_amount
-                product['amount'] = float("{:.2f}".format(product['vat_amount'] + product['unit_sales_price']))
+                product['amount'] = float("{:.2f}".format(product['vat_amount'] + product['unit_sales_price'])) * product['purchased_qty']
                 total_amount += product['amount']
                 product['supplier_market'] = order_prod_obj.supplier
             products_details.append(product)
