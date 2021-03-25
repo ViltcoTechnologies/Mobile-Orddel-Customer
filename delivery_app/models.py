@@ -70,7 +70,7 @@ class DeliveryPersonPackageLog(models.Model):
     status = models.CharField(max_length=100, choices=package_activation_choices)
 
     def __str__(self):
-        return str(self.package)
+        return str(self.id)
 
 
 # Client can have multiple businesses

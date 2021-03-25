@@ -114,12 +114,10 @@ class VerifyPhoneNumberV2ApiView(APIView):
                     return Response(status=status.HTTP_200_OK,
                                     data={"message": "Verification successful"})
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={"message": "The verification was not "
-                                                 "successful"})
+                                data={"message": "The verification code is invalid"})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={"message": "Twilio server is down, "
-                                                 "please try again later"})
+                                data={"message": "The verification code is invalid"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"message": "you're missing one of the following "

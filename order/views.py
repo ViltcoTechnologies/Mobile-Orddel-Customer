@@ -264,11 +264,12 @@ class CreateOrderApiView(APIView):
                 client_package_log = ClientPackageLog.objects.filter(client=client).last()
                 if client.no_of_invoices <= 0:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Cant order, Client invoices are empty'})
-
-                if client_package_log.date_expiry <= date.today():
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Your package has been expired '
-                                                                                         'Kindly renew it to use our '
-                                                                                         'services'})
+                
+                if client_package_log:
+                    if client_package_log.date_expiry <= date.today():
+                        return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Your package has been expired, '
+                                                                                            'Kindly renew it to use our '
+                                                                                            'services'})
 
                 list_of_order_prods = []
                 list_of_order_prods.extend(order_box_obj.orderproduct_set.all())
