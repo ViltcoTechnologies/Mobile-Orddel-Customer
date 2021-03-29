@@ -323,9 +323,8 @@ class GeneratePDFInvoiceAPIView(APIView):
         if id:
             response = prepare_invoice(invoice_id=id)
             order_detail = OrderDetail.objects.get(id=response['order'])
-            response["client_logo"] = order_detail.order_box.client.image
-            response["delivery_person_logo"] = order_detail.delivery_person.image
-
+            response["client_logo"] = order_detail.order_box.client.image.url
+            response["delivery_person_logo"] = order_detail.delivery_person.image.url
             template = get_template("invoice_template.html")
             context = {
                 "response": response
