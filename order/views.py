@@ -522,11 +522,11 @@ class ConsolidatePurchaseAPIView(APIView):
                     order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d")
 
                 print(order_delivery_datetime)
-                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price, M.order_delivery_datetime
+                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price
                         FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
                         INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
                         where M.status='in_progress' and delivery_person_id={id} and to_char(M.order_delivery_datetime, 'YYYY-MM-DD') LIKE '{order_delivery_datetime}'
-                        group by M.status,M.delivery_person_id,d.product_id,s.id, s.name,s.unit, M.order_delivery_datetime
+                        group by M.status,M.delivery_person_id,d.product_id,s.id, s.name,s.unit
                         order by s.name
                         """
                 cursor = connection.cursor()

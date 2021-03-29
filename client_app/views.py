@@ -390,7 +390,10 @@ class ClientLogoUploadAPIView(APIView):
 
     def get(self, request, id=None):
         if id:
-            client = Client.objects.get(id=id)
+            try:
+                client = Client.objects.get(id=id)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client does not exist'})
             serializer_class = ClientSerializer(client)
 
             return Response(status=status.HTTP_200_OK, data={"image": serializer_class.data['image']})
