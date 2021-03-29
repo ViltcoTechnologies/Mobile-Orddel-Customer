@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework_tracking',
     'storages',
     'django_email_verification',
+    'fcm_django',
 
     # Extensions
     'django_extensions',
@@ -113,6 +114,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 25
 }
+
+FCM_DJANGO_SETTINGS = {
+    "FCM_SERVER_KEY": "AAAAEdSwBq8:APA91bG85e6LgqIu7vUsEmGyjwcv61AW7-d3jYDK5YjYkzzrvaLS8kUtvGeYdRS4uiB_4rEkZ77g4nhJcU3OJjfkZrN3dOPjF-PankIW2UVVI0jgnFavtGZpPA8dki2BrSBEOYKlGady"
+}
+
 
 AUTHENTICATION_BACKENDS = [
     # AxesBackend should be the first backend in the AUTHENTICATION_BACKENDS list.

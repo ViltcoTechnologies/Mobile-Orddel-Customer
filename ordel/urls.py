@@ -3,6 +3,10 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django_email_verification import urls as mail_urls
 from ordel.views import *
+from fcm_django.api.rest_framework import FCMDeviceAuthorizedViewSet
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+router.register(r'', FCMDeviceAuthorizedViewSet)
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -12,10 +16,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('devices/', include(router.urls)),
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
     # verifications
     path('email/', include(mail_urls)),
     path('send_otp/', SendOTPAPIView.as_view()),
@@ -47,7 +51,6 @@ urlpatterns = [
     path('check_existing_phone/', CheckPhoneAPIView.as_view())
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
 
 
 

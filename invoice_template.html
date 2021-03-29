@@ -57,21 +57,7 @@
                 <div class="header">
                     <h1>ORDDEL</h1>
                 </div>
-<!--                -->
-<!--                <div class="top-detail">-->
-<!--                    <div class="left-align">-->
-<!--                        <p class="detail-text">Client: {{response.client}}</p>-->
-<!--                        <p class="detail-text">Delivery Address: {{response.delivery_person_address}}</p>-->
-<!--                        <p class="detail-text">Delivery Date & Time: {{response.order_delivery_datetime}}</p>-->
-<!--                        &lt;!&ndash; {{response.delivery_person_address}} &ndash;&gt;-->
-<!--                    </div>-->
-<!--                    <div class="right-align">-->
-<!--                        <p class="detail-text">Invoice No. {{response.inv_number}}</p>-->
-<!--                        <p class="detail-text">PO No. {{response.purchase_order_no}}</p>-->
-<!--                        <p class="detail-text">Delivery Person: {{response.delivery_person_name}}</p>-->
-<!--                        &lt;!&ndash;{{response.delivery_person_name}}&ndash;&gt;-->
-<!--                    </div>-->
-<!--                </div>-->
+
                     <div class="top-detail">
                         <table>
                             <tbody>
@@ -97,9 +83,9 @@
                                 <tr>
                                     <td>{{order_prod.product_name}}</td>
                                     <td>{{order_prod.purchased_qty}}</td>
-                                    <td>{{order_prod.unit_sales_price}}</td>
-                                    <td>{{order_prod.vat_amount}}</td>
-                                    <td>{{order_prod.amount}}</td>
+                                    <td>{{order_prod.unit_sales_price}} &euro;</td>
+                                    <td>{{order_prod.vat_amount}} &euro;</td>
+                                    <td>{{order_prod.amount}} &euro;</td>
 
                                 </tr>
 
@@ -112,7 +98,7 @@
                         <br>
                         <div class="total">
                             <h4>Total Packages: {{response.total_qty}}</h4>
-                            <h4>Total Amount: {{response.total_amount}}</h4>
+                            <h4>Total Amount: {{response.total_amount}} &euro;</h4>
 
                         </div>
                     </div>

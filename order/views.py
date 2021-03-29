@@ -521,7 +521,6 @@ class ConsolidatePurchaseAPIView(APIView):
                 else:
                     order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d")
 
-
                 print(order_delivery_datetime)
                 sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price, M.order_delivery_datetime
                         FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
@@ -535,16 +534,19 @@ class ConsolidatePurchaseAPIView(APIView):
                 #
                 rows = cursor.fetchall()
                 consolidated_purchases = []
+                total_packages = 0
                 for row in rows:
                     data_dict = {'status': row[0], 'delivery_person_id': row[1], 'product_id': row[2], 'qty': row[3],
                                 'product_name': row[5], 'unit': row[6], 'avg_price': row[7]}
+                    total_packages += row[3]
                     consolidated_purchases.append(data_dict)
 
                 if consolidated_purchases:
                     return Response(status=status.HTTP_200_OK, data={'data': consolidated_purchases,
-                                                                    'status_code': 200,
-                                                                    'message': "Successful"
-                                                                    })
+                                                                     'total_packages': total_packages,
+                                                                     'status_code': 200,
+                                                                     'message': "Successful"
+                                                                     })
                 else:
                     return Response(status=status.HTTP_200_OK, data={'data': 'No orders found against the given ID or '
                                                                             'provided date',
