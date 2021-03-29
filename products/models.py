@@ -20,7 +20,8 @@ unit_choices = (
     ('l', 'L'),
     ('item', 'Item'),
     ('box', 'Box'),
-    ('bag', 'Bag')
+    ('bag', 'Bag'),
+    ('pcs', 'Pcs')
 )
 
 
