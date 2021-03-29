@@ -603,6 +603,7 @@ class ListClientOrdersAPIView(APIView):
                 order_detail = OrderDetail.objects.get(id=data['id'])
                 data['no_of_items'] = order_detail.order_products.count()
                 data['total_quantity'] = sum([i.quantity for i in order_detail.order_products.all()])
+                data['total_purchased_quantity'] = sum([i.purchased_quantity for i in order_detail.order_products.all()])
                 if order_detail.order_box.client is not None:
                     data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
                 # shipment_address = ClientShipmentAddress.objects.get(id=order_detail.shipment_address.id)
