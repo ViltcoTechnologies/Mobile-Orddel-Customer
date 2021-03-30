@@ -639,11 +639,12 @@ class BusinessDetailInsertApiView(APIView):
             business_nature = request.data['business_nature']
             business_type = request.data['business_type']
             business_logo = request.data['business_logo']
-
+            business_address = request.data['business_address']
             delivery_person = DeliveryPerson.objects.get(username=username)
             business_detail = DeliveryPersonBusinessDetail.objects.create(
                 delivery_person=delivery_person,
                 name=business_name,
+                address=business_address,
                 nature=business_nature,
                 type=business_type,
                 logo=business_logo
@@ -706,10 +707,12 @@ class UpdateBusinessApiView(APIView):
             business_nature = request.data['business_nature']
             business_type = request.data['business_type']
             business_logo = request.data['business_logo']
+            business_address = request.data['business_address']
 
             business_detail = DeliveryPersonBusinessDetail.objects.filter(id=business_id).update(
                 name=business_name,
                 nature=business_nature,
+                address=business_address,
                 type=business_type,
                 logo=business_logo
             )

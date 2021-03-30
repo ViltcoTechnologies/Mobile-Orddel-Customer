@@ -77,6 +77,7 @@ class DeliveryPersonPackageLog(models.Model):
 class DeliveryPersonBusinessDetail(models.Model):
     delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=200, null=True, blank=True)
+    address = models.CharField(max_length=200, null=True, blank=True)
     nature = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=100, null=True, blank=True)
     logo = models.ImageField(upload_to=f"business/logo/", null=True)
