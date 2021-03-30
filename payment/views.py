@@ -407,15 +407,22 @@ class SaveStripeInfo(APIView):
             customer_data = stripe.Customer.list(email=email).data
 
             if len(customer_data) == 0:
-                response = stripe.PaymentMethod.create(
-                    type="card",
-                    card={
-                        "number": card_number,
-                        "exp_month": expiry_date.month,
-                        "exp_year": expiry_date.year,
-                        "cvc": cvc,
-                    },
-                )
+                try:
+                    response = stripe.PaymentMethod.create(
+                        type="card",
+                        card={
+                            "number": card_number,
+                            "exp_month": expiry_date.month,
+                            "exp_year": expiry_date.year,
+                            "cvc": cvc,
+                        },
+                    )
+                except stripe.error.CardError as e:
+                    return Response(status=e.http_status, data={
+                                                                'code': e.code,
+                                                                'param': e.param,
+                                                                'message': e.user_message
+                                                                })
                 payment_method_id = response['id']
                 customer = stripe.Customer.create(
                     email=email, payment_method=payment_method_id)
