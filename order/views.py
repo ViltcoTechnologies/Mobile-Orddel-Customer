@@ -9,7 +9,7 @@ from datetime import date
 from django.db.models import Sum
 from .serializers import *
 from django.db import connection
-import json
+from django.core.exceptions import ObjectDoesNotExist
 import random
 import string
 
@@ -58,6 +58,24 @@ class ListOrderBoxApiView(APIView):
             return Response(status=status.HTTP_200_OK, data={"order_box": data_to_pass.data})
         except Exception as e:
             return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "No Order-box(es) Found"})
+
+
+class GetOrderBoxApiView(APIView):
+    def get(self, request, id=None):
+        try:
+            if id:
+                order_box = OrderBox.objects.filter(client=id).last()
+
+                try:
+                    OrderDetail.objects.get(order_box=order_box)
+                    return Response(status=status.HTTP_200_OK, data={'order_box': ""})
+                except OrderDetail.DoesNotExist:
+                    return Response(status=status.HTTP_200_OK, data={'order_box': order_box.id})
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'ID not provided'})
+
+        except Exception as e:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "Something went wrong "})
 
 
 class UpdateOrderBoxApiView(APIView):
