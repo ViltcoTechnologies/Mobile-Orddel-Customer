@@ -25,6 +25,7 @@ urlpatterns = [
     # path('update_order/', UpdateOrder.as_view(), name='update_order'),
     path('update_order/', UpdateOrderApiView.as_view(), name='update_order'),
     path('list_order/', ListOrderApiView.as_view(), name='list_order'),
+    path('get_order_box/<id>/', GetOrderBoxApiView.as_view(), name='get_order_box'),
     path('list_order/<id>/', ListOrderApiView.as_view(), name='list_order/<id>/'),
     path('delete_order/<int:pk>', DeleteOrderApiView.as_view(), name='delete_order/'),
 

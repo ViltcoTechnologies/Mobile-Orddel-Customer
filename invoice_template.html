@@ -70,16 +70,50 @@
                 </header>
 
 
-                <div class="delivery_person_logo">
-                    <img src={{response.delivery_person_logo}} height="60" width="60"/>
-                </div>
+<!--                <div class="delivery_person_logo">-->
+<!--                    <img src={{response.delivery_person_logo}} height="60" width="60"/>-->
+<!--                </div>-->
                 <br>
                 <div class="top-detail">
                     <table>
                         <tbody>
-                            <tr><td>Client: {{response.client}}</td> <td>Delivery Person: {{response.delivery_person_name}}</td></tr>
-                            <tr><td>Delivery Address: {{response.delivery_person_address}}</td> <td>PO No. {{response.purchase_order_no}}</td></tr>
-                            <tr><td>Delivery Date & Time: {{response.order_delivery_datetime}}</td> <td>Invoice No. {{response.inv_number}}</td></tr>
+
+                            <tr>
+                                <td>
+                                    <div class="client_logo">
+                                        <img src={{response.client_logo}} height="60px" width="60px"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="delivery_person_logo">
+                                        <img src={{response.delivery_person_logo}} height="60px" width="60px"/>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Client: {{response.client}}
+                                </td>
+                                <td>
+                                    Delivery Person: {{response.delivery_person_name}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Delivery Address: {{response.delivery_person_address}}
+                                </td>
+                                <td>
+                                    PO No. {{response.purchase_order_no}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Delivery Date & Time: {{response.order_delivery_datetime}}
+                                </td>
+                                <td>
+                                    Invoice No. {{response.inv_number}}
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

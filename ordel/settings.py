@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_rest_passwordreset',
+    'django_crontab',
 
     # Django Apps
     'order',
@@ -77,6 +78,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'axes.middleware.AxesMiddleware'
 ]
+
+CRONJOBS = [
+    ('0 0 * * *', 'products.cron.update_avg_price_job')
+]
+
 
 ROOT_URLCONF = 'ordel.urls'
 
