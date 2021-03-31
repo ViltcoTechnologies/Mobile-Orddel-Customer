@@ -80,13 +80,13 @@ MIDDLEWARE = [
 ]
 
 CRONJOBS = [
-    ('0 0 * * *', 'products.cron.update_avg_price_job')
+    ('* * * * *', 'products.cron.update_avg_price_job', '>> /etc/orddel-crontab.log', {'verbose': 1})
 ]
-
+CRONTAB_COMMAND_SUFFIX = '2>&1'
 
 ROOT_URLCONF = 'ordel.urls'
 
-EMAIL_TEMPLATE_PATH =  os.path.join(BASE_DIR, 'mail_body.html')
+EMAIL_TEMPLATE_PATH = os.path.join(BASE_DIR, 'mail_body.html')
 EMAIL_SUCCESS_TEMPLATE = os.path.join(BASE_DIR, 'confirm_template.html')
 TEMPLATES = [
     {

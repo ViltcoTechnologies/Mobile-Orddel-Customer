@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import status, generics, permissions
 from rest_framework_simplejwt import authentication
+from fcm_django.models import FCMDevice
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.response import Response
@@ -1152,7 +1153,9 @@ class UpdateDeliveryPersonOrderApiView(APIView):
 
                 else:
                     return Response(status=status.HTTP_401_UNAUTHORIZED, data={'message': 'Cant accept, Invoices are empty'})
-
+                user_id = order_detail.order_box.client.user.id
+                device = FCMDevice.objects.get(user=user_id)
+                device.send_message(title="Order Accepted", body="Your order has been accepted.")
                 order_detail.status = 'in_progress'
 
             elif delivery_person_action == "rejected":
