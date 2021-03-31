@@ -21,7 +21,7 @@ class CreateOrderBoxApiView(APIView):
 
         try:
             client = Client.objects.get(id=client_id)
-            if client.no_of_invoices <= 0:
+            if client.no_of_invoices == 0:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Cant create orderbox, as invoices are empty'})
             try:
                 # try:
@@ -70,12 +70,15 @@ class GetOrderBoxApiView(APIView):
                     OrderDetail.objects.get(order_box=order_box)
                     return Response(status=status.HTTP_200_OK, data={'order_box': ""})
                 except OrderDetail.DoesNotExist:
-                    return Response(status=status.HTTP_200_OK, data={'order_box': order_box.id})
+                    if order_box:
+                        return Response(status=status.HTTP_200_OK, data={'order_box': order_box.id})
+                    else:
+                        return Response(status=status.HTTP_200_OK, data={'order_box': ''})
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'ID not provided'})
 
         except Exception as e:
-            return Response(status=status.HTTP_404_NOT_FOUND, data={"message": "Something went wrong "})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Something went wrong "})
 
 
 class UpdateOrderBoxApiView(APIView):
@@ -132,7 +135,7 @@ class AddOrderBoxProductsApiView(APIView):
             products = request.data['order_products']
             try:
                 order_box = OrderBox.objects.get(id=order_box_id)
-                if order_box.client.no_of_invoices <= 0:
+                if order_box.client.no_of_invoices == 0:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to place order as number of invoices are empty'})
                 for prod in products:
                     product = Product.objects.get(id=prod['id'])
@@ -280,7 +283,7 @@ class CreateOrderApiView(APIView):
                 client_id = order_box_obj.client.id
                 client = Client.objects.get(id=client_id)
                 client_package_log = ClientPackageLog.objects.filter(client=client).last()
-                if client.no_of_invoices <= 0:
+                if client.no_of_invoices == 0:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Cant order, Client invoices are empty'})
                 
                 if client_package_log:
@@ -307,7 +310,7 @@ class CreateOrderApiView(APIView):
                 for prod in list_of_order_prods:
                     order.order_products.add(prod.id)
                 # print(client.number_of_order)
-                if client.no_of_invoices != 0:
+                if client.no_of_invoices != 0 and client.no_of_invoices != -1:
                     client.no_of_invoices -= 1
                     client.used_invoices += 1
                 client.number_of_order += 1
