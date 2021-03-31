@@ -40,7 +40,7 @@ class DeliveryPersonPackageLogSerializer(serializers.ModelSerializer):
 
 class DeliveryPersonBusinessDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DeliveryPerson
+        model = DeliveryPersonBusinessDetail
         fields = "__all__"
 
 

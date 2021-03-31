@@ -767,7 +767,7 @@ class PackageUpdateApiView(APIView):
 
 
 class ListPackagesApiView(APIView):
-    def get(self, request):
+    def get(self, request, id=None):
         if id:
             try:
                 package = ClientPackage.objects.filter(id=id)
@@ -919,7 +919,7 @@ class ClientLogin(TokenObtainPairView):
                                                                      "data": serializer_class.validated_data})
                 else:
                     return Response(status=status.HTTP_401_UNAUTHORIZED,
-                                    data={"data": "The user is not authorized"})
+                                    data={"message": "The user is not authorized"})
 
             else:
                 print("invalid username and password")

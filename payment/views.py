@@ -459,7 +459,7 @@ class SaveStripeInfo(APIView):
                                         }
                                   })
 
-        return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Something went wrong !'})
+        return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': serializer_class.errors})
 
 
 class PaymentAPIView(APIView):
