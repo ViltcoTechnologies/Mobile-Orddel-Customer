@@ -642,6 +642,39 @@ class BusinessDetailInsertApiView(APIView):
             business_logo = request.data['business_logo']
             business_address = request.data['business_address']
             delivery_person = DeliveryPerson.objects.get(username=username)
+
+            try:
+                DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, name=business_name)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business name '
+                                                                                     f'{business_name} already '
+                                                                                     f'exists.'})
+            except:
+                pass
+
+            try:
+                DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, address=business_address)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
+                                                                                     f'{business_address} already '
+                                                                                     f'exists.'})
+            except:
+                pass
+
+            try:
+                DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, nature=business_nature)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business nature '
+                                                                                     f'{business_nature} already '
+                                                                                     f'exists.'})
+            except:
+                pass
+
+            try:
+                DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, type=business_type)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business type '
+                                                                                     f'{business_type} already '
+                                                                                     f'exists.'})
+            except:
+                pass
+
             business_detail = DeliveryPersonBusinessDetail.objects.create(
                 delivery_person=delivery_person,
                 name=business_name,
@@ -709,6 +742,38 @@ class UpdateBusinessApiView(APIView):
             business_type = request.data['business_type']
             business_logo = request.data['business_logo']
             business_address = request.data['business_address']
+
+            try:
+                DeliveryPersonBusinessDetail.objects.get(id=business_id, name=business_name)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business name '
+                                                                                     f'{business_name} already '
+                                                                                     f'exists.'})
+            except:
+                pass
+
+            try:
+                DeliveryPersonBusinessDetail.objects.get(id=business_id, address=business_address)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
+                                                                                     f'{business_address} already '
+                                                                                     f'exists.'})
+            except:
+                pass
+
+            try:
+                DeliveryPersonBusinessDetail.objects.get(id=business_id, nature=business_nature)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business nature '
+                                                                                     f'{business_nature} already '
+                                                                                     f'exists.'})
+            except:
+                pass
+
+            try:
+                DeliveryPersonBusinessDetail.objects.get(id=business_id, type=business_type)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business type '
+                                                                                     f'{business_type} already '
+                                                                                     f'exists.'})
+            except:
+                pass
 
             business_detail = DeliveryPersonBusinessDetail.objects.filter(id=business_id).update(
                 name=business_name,
