@@ -100,7 +100,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    Delivery Address: {{response.delivery_person_address}}
+                                    Delivery Address: {{response.business_address}}
                                 </td>
                                 <td>
                                     PO No. {{response.purchase_order_no}}
@@ -135,9 +135,9 @@
                             <tr>
                                 <td>{{order_prod.product_name}}</td>
                                 <td>{{order_prod.purchased_qty}}</td>
-                                <td>&euro; {{order_prod.unit_sales_price}}</td>
-                                <td>&euro; {{order_prod.vat_amount}}</td>
-                                <td>&euro; {{order_prod.amount}}</td>
+                                <td>&pound; {{order_prod.unit_sales_price}}</td>
+                                <td>&pound; {{order_prod.vat_amount}}</td>
+                                <td>&pound; {{order_prod.amount}}</td>
                             </tr>
 
 
@@ -149,7 +149,7 @@
                     <br>
                     <div class="total">
                         <h4>Total Packages: {{response.total_qty}}</h4>
-                        <h4>Total Amount:&euro; {{response.total_amount}}</h4>
+                        <h4>Total Amount:&pound; {{response.total_amount}}</h4>
 
                     </div>
                 </div>
