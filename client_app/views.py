@@ -370,8 +370,9 @@ class UpdateClientApiView(APIView):
             data_to_pass = Client.objects.get(username=saved_data.username)
             serializer = ClientSerializer(data_to_pass)
             return Response(status=status.HTTP_200_OK, data={"updated_details": serializer.data})
-        except AssertionError as err:
-            return Response(status=status.HTTP_404_NOT_FOUND, data=err)
+        except Exception as err:
+            print(err)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Something went wrong. '})
 
 
 class DeleteClientApiView(APIView):
