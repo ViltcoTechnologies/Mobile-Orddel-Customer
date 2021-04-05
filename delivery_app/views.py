@@ -17,6 +17,7 @@ from django.core.mail import send_mail
 from ordel.verificaton import TwilioVerification
 import datetime
 from datetime import date
+from django.shortcuts import get_object_or_404
 # Token Obtain pair
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -953,6 +954,28 @@ class DeleteBankDetailsApiView(APIView):
 
 
 # ------------------------------------------------------------------------------------------------------------------------
+
+class PackageCreate(generics.CreateAPIView):
+    serializer_class = DeliveryPersonSerializer
+    queryset = DeliveryPersonPackage.objects.all()
+
+
+class RetrieveUpdateDestroyPackage(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = DeliveryPersonPackageSerializer
+    queryset = DeliveryPersonPackage.objects.all()
+    lookup_field = 'id'
+
+    def retrieve(self, request, *args, **kwargs):
+        print('here')
+        queryset = self.get_queryset()
+        pk = self.kwargs.get('id')
+        if pk:
+            delivery_person_package = get_object_or_404(queryset, pk=pk)
+            serializer = DeliveryPersonPackageSerializer(delivery_person_package)
+            return Response(serializer.data)
+        else:
+            serializer = DeliveryPersonPackageSerializer(queryset, many=True)
+            return Response(serializer.data)
 
 
 # create package

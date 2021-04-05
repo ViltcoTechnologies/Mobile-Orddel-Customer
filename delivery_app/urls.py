@@ -62,6 +62,9 @@ urlpatterns = [
     # ------------------------------------------------------------------------------------------------------------------
 
     # Package API Routes
+    path('create_package/', PackageCreate.as_view(), name='create_package'),
+    path('retrieve_update_delete_package/', RetrieveUpdateDestroyPackage.as_view(), name='create_package'),
+    path('retrieve_update_delete_package/<int:id>/', RetrieveUpdateDestroyPackage.as_view(), name='create_package'),
     path('create_package/', PackageCreateApiView.as_view(), name='create_package'),
     path('update_package/', PackageUpdateApiView.as_view(), name='update_package'),
     path('list_packages/', ListPackagesApiView.as_view(), name='list_packages'),

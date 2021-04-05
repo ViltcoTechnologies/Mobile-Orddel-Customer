@@ -824,12 +824,6 @@ class RetrieveUpdateDestroyPackage(generics.RetrieveUpdateDestroyAPIView):
     queryset = ClientPackage.objects.all()
     lookup_field = 'id'
 
-    def list(self, request):
-        print('here')
-        queryset = self.get_queryset()
-        serializer = PackageSerializer(queryset, many=True)
-        return Response(serializer.data)
-
     def retrieve(self, request, *args, **kwargs):
         print('here')
         queryset = self.get_queryset()
@@ -841,6 +835,7 @@ class RetrieveUpdateDestroyPackage(generics.RetrieveUpdateDestroyAPIView):
         else:
             serializer = PackageSerializer(queryset, many=True)
             return Response(serializer.data)
+
 
 class PackageCreateApiView(APIView):
     def post(self, request):
