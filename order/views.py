@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from fcm_django.models import FCMDevice
 from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework_simplejwt import authentication
@@ -327,6 +328,17 @@ class CreateOrderApiView(APIView):
                     product['total_amount'] = order_prod_obj.total_amount
                     products_details.append(product)
                 response['order_products'] = products_details
+                
+                user_id = delivery_obj.user.id
+                print("dp", user_id)
+                try:
+                    device = FCMDevice.objects.filter(user=user_id, active=True)
+                    print(device)
+                    device.send_message(title="New Order", body="You have received an order.")
+                
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
+
                 return Response(status=status.HTTP_201_CREATED, data={"order": response})
 
             except:
@@ -367,6 +379,14 @@ class UpdateOrderApiView(APIView):
         order_detail.order_delivery_datetime = datetime.strptime(delivery_datetime, "%d-%m-%Y %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S.%f%z")
         order_detail.status = 'pending'
         order_detail.save()
+        user_id = delivery_person.user.id
+        try:
+            device = FCMDevice.objects.filter(user=user_id, active=True)
+            device.send_message(title="New Order", body="Your have received an order.")
+        
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
+
 
         return Response(status=status.HTTP_200_OK, data={'message': 'Order Updated'})
 

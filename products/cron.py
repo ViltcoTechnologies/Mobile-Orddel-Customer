@@ -1,5 +1,5 @@
 from order.models import *
-from .models import *
+from products.models import *
 from django.db.models import Avg, Q, F
 
 

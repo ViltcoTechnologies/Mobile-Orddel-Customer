@@ -34,11 +34,19 @@ class DeliveryPersonDashboardApiView(APIView):
             try:
                 delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
                 try:
+                    delivery_person_package_log = DeliveryPersonPackageLog.objects.filter(delivery_person=delivery_person).last()
+                    if delivery_person_package_log.date_expiry <= date.today():
+                        remaining_invoices = 0
+                        delivery_person_package = "_"
+
+                    else:
+                        remaining_invoices = delivery_person.no_of_invoices
+                        delivery_person_package = delivery_person.package.name
                     delivery_person_image = delivery_person.image
                     delivery_person_name = f"{delivery_person.first_name} {delivery_person.last_name}"
-                    delivery_person_package = delivery_person.package.name
+                    
                     total_invoices = delivery_person.package.no_of_invoices
-                    remaining_invoices = delivery_person.no_of_invoices
+                    
                     # used_invoices = total_invoices - remaining_invoices
                     # if used_invoices < 0:
                     #     used_invoices = 0
@@ -642,38 +650,52 @@ class BusinessDetailInsertApiView(APIView):
             business_logo = request.data['business_logo']
             business_address = request.data['business_address']
             delivery_person = DeliveryPerson.objects.get(username=username)
+            # count = 0
+            # try:
+            #     delivery_person_business = DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, name=business_name)
+            #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business name '
+            #     #                                                                      f'{business_name} already '
+            #     #                                                                      f'exists.'})
+            #     print(delivery_person_business.name)
+            #     count += 1
+            # except Exception as e:
+            #     print(e)
 
             try:
-                DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, name=business_name)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business name '
-                                                                                     f'{business_name} already '
-                                                                                     f'exists.'})
-            except:
-                pass
-
-            try:
-                DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, address=business_address)
+                delivery_person_business = DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, address=business_address)
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
                                                                                      f'{business_address} already '
                                                                                      f'exists.'})
-            except:
-                pass
+                # print(delivery_person_business.address)
 
-            try:
-                DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, nature=business_nature)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business nature '
-                                                                                     f'{business_nature} already '
-                                                                                     f'exists.'})
-            except:
-                pass
+                # count += 1 
+            except Exception as e:
+                print(e)
 
-            try:
-                DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, type=business_type)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business type '
-                                                                                     f'{business_type} already '
-                                                                                     f'exists.'})
-            except:
-                pass
+            # try:
+            #     delivery_person_business = DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, nature=business_nature)
+            #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business nature '
+            #     #                                                                      f'{business_nature} already '
+            #     #                                                                      f'exists.'})
+            #     print(delivery_person_business.nature)
+
+            #     count += 1
+            # except Exception as e:
+            #     print(e)
+
+            # try:
+            #     delivery_person_business = DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, type=business_type)
+            #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business type '
+            #     #                                                                      f'{business_type} already '
+            #     #                                                                      f'exists.'})
+            #     print(delivery_person_business.type)
+            #     count += 1
+            # except Exception as e:
+            #     print(e)
+            
+            # print(count)
+            # if count == 4:
+            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Record already exists'})
 
             business_detail = DeliveryPersonBusinessDetail.objects.create(
                 delivery_person=delivery_person,
@@ -743,37 +765,45 @@ class UpdateBusinessApiView(APIView):
             business_logo = request.data['business_logo']
             business_address = request.data['business_address']
 
-            try:
-                DeliveryPersonBusinessDetail.objects.get(id=business_id, name=business_name)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business name '
-                                                                                     f'{business_name} already '
-                                                                                     f'exists.'})
-            except:
-                pass
+            # count = 0
+            # try:
+            #     DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, name=business_name)
+            #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business name '
+            #     #                                                                      f'{business_name} already '
+            #     #                                                                      f'exists.'})
+            #     count += 1
+            # except:
+            #     pass
 
             try:
-                DeliveryPersonBusinessDetail.objects.get(id=business_id, address=business_address)
+                DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, address=business_address)
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
                                                                                      f'{business_address} already '
                                                                                      f'exists.'})
+                # count += 1 
             except:
                 pass
 
-            try:
-                DeliveryPersonBusinessDetail.objects.get(id=business_id, nature=business_nature)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business nature '
-                                                                                     f'{business_nature} already '
-                                                                                     f'exists.'})
-            except:
-                pass
+            # try:
+            #     DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, nature=business_nature)
+            #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business nature '
+            #     #                                                                      f'{business_nature} already '
+            #     #                                                                      f'exists.'})
+            #     count += 1
+            # except:
+            #     pass
 
-            try:
-                DeliveryPersonBusinessDetail.objects.get(id=business_id, type=business_type)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business type '
-                                                                                     f'{business_type} already '
-                                                                                     f'exists.'})
-            except:
-                pass
+            # try:
+            #     DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, type=business_type)
+            #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business type '
+            #     #                                                                      f'{business_type} already '
+            #     #                                                                      f'exists.'})
+            #     count += 1
+            # except:
+            #     pass
+            
+            # if count == 4:
+            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Record already exists'})
 
             business_detail = DeliveryPersonBusinessDetail.objects.filter(id=business_id).update(
                 name=business_name,
@@ -1215,17 +1245,28 @@ class UpdateDeliveryPersonOrderApiView(APIView):
                     delivery_person_obj.no_of_invoices -= 1
                     delivery_person_obj.used_invoices += 1
                     delivery_person_obj.save()
-
-                else:
+                
+                elif delivery_person_obj.no_of_invoices != -1:
                     return Response(status=status.HTTP_401_UNAUTHORIZED, data={'message': 'Cant accept, Invoices are empty'})
-                user_id = order_detail.order_box.client.user.id
-                device = FCMDevice.objects.get(user=user_id)
-                device.send_message(title="Order Accepted", body="Your order has been accepted.")
+                
                 order_detail.status = 'in_progress'
+                user_id = order_detail.order_box.client.user.id
+                try:
+                    device = FCMDevice.objects.filter(user=user_id, active=True)
+                    device.send_message(title="Order Accepted", body="Your order has been accepted.")
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
 
             elif delivery_person_action == "rejected":
                 # transfer order to other delivery person
                 order_detail.status = 'rejected'
+                user_id = order_detail.order_box.client.user.id
+                try:
+                    device = FCMDevice.objects.filter(user=user_id, active=True)
+                    device.send_message(title="Order Rejected", body="Your order has been rejected.")
+                
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
 
             elif delivery_person_action == "purchased":
                 order_detail.status = 'purchased'
@@ -1235,6 +1276,14 @@ class UpdateDeliveryPersonOrderApiView(APIView):
 
             elif delivery_person_action == "delivered":
                 order_detail.status = 'delivered'
+                user_id = order_detail.order_box.client.user.id
+                try:
+                    device = FCMDevice.objects.filter(user=user_id)
+                    device.send_message(title="Order Delivered", body="Your order has been delivered.")
+                
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
+
 
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST,

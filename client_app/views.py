@@ -7,6 +7,7 @@ from rest_framework_simplejwt import authentication
 from django_email_verification import sendConfirm
 from rest_framework.response import Response
 import datetime
+from datetime import date
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from client_app.models import *
 from order.models import *
@@ -36,16 +37,33 @@ class ClientDashboardApiView(APIView):
             try:
                 client = Client.objects.get(id=client_id)
                 try:
+                    client_package_log = ClientPackageLog.objects.filter(client=client).last()
+                    if client_package_log.date_expiry <= date.today():
+                        remaining_invoices = 0
+                        client_package = "_"
+
+                    else:
+                        remaining_invoices = client.no_of_invoices
+                        client_package = client.package.name
                     client_image = client.image
                     client_name = f"{client.first_name} {client.last_name}"
-                    client_package = client.package.name
                     total_invoices = client.package.no_of_invoices
                     preferred_delivery_person = client.preferred_delivery_person
-                    print(preferred_delivery_person.first_name)
-                    preferred_delivery_person_name = f"{preferred_delivery_person.first_name} {preferred_delivery_person.last_name}"
-                    preferred_delivery_person_address = client.preferred_delivery_person.address
-                    print(preferred_delivery_person_address)
-                    remaining_invoices = client.no_of_invoices
+                    if preferred_delivery_person is not None:
+                        print("efeferfre", preferred_delivery_person)
+                        print(preferred_delivery_person.first_name)
+                        preferred_delivery_person_name = f"{preferred_delivery_person.first_name} {preferred_delivery_person.last_name}"
+                        preferred_delivery_person_address = client.preferred_delivery_person.address
+                        preferred_delivery_person = preferred_delivery_person.id
+
+                        print(preferred_delivery_person_address)
+                    else:
+                        preferred_delivery_person = ""
+                        preferred_delivery_person_name = ""
+                        preferred_delivery_person_address = ""
+                    
+
+
                     # used_invoices = total_invoices - remaining_invoices
                     used_invoices = client.used_invoices
                     no_of_pending_orders = OrderDetail.objects.filter(status="pending", order_box__client=client_id)
@@ -77,20 +95,23 @@ class ClientDashboardApiView(APIView):
                         "no_of_pending_orders": no_of_pending_orders,
                         "no_of_completed_orders": no_of_completed_orders,
                         "no_of_in_progress_orders": no_of_in_progress_orders,
-                        "preferred_delivery_person": preferred_delivery_person.id,
+                        "preferred_delivery_person": preferred_delivery_person,
                         "preferred_delivery_person_name": preferred_delivery_person_name,
                         "preferred_delivery_person_address": preferred_delivery_person_address
                     }
                     return Response(status=status.HTTP_200_OK,
                                     data={"client_dashboard": data})
-                except:
+                except Exception as e:
+                    print(e)
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={"message": "There was a error fetching data "
                                                     "from the database"})
-            except:
+            except Exception as e:
+                print(e)
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={"message": "Incorrect Client ID"})
-        except:
+        except Exception as e:
+            print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"message": "client is required"})
 
@@ -426,38 +447,45 @@ class BusinessDetailInsertApiView(APIView):
             business_logo = request.data['logo']
             try:
                 client = Client.objects.get(id=client_id)
-                try:
-                    ClientBusinessDetail.objects.get(client=client, name=business_name)
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business name '
-                                                                                         f'{business_name} already '
-                                                                                         f'exists.'})
-                except:
-                    pass
+                # count = 0
+                # try:
+                #     ClientBusinessDetail.objects.get(client=client, name=business_name)
+                #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business name '
+                #     #                                                                      f'{business_name} already '
+                #     #                                                                      f'exists.'})
+                #     count += 1
+                # except:
+                #     pass
 
                 try:
                     ClientBusinessDetail.objects.get(client=client, address=business_address)
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
                                                                                          f'{business_address} already '
                                                                                          f'exists.'})
+                    # count += 1
                 except:
                     pass
 
-                try:
-                    ClientBusinessDetail.objects.get(client=client, nature=business_nature)
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business nature '
-                                                                                         f'{business_nature} already '
-                                                                                         f'exists.'})
-                except:
-                    pass
+                # try:
+                #     ClientBusinessDetail.objects.get(client=client, nature=business_nature)
+                #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business nature '
+                #     #                                                                      f'{business_nature} already '
+                #     #                                                                      f'exists.'})
+                #     count += 1
+                # except:
+                #     pass
 
-                try:
-                    ClientBusinessDetail.objects.get(client=client, type=business_type)
-                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business type '
-                                                                                         f'{business_type} already '
-                                                                                         f'exists.'})
-                except:
-                    pass
+                # try:
+                #     ClientBusinessDetail.objects.get(client=client, type=business_type)
+                #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business type '
+                #     #                                                                      f'{business_type} already '
+                #     #                                                                      f'exists.'})
+                #     count += 1
+                # except:
+                #     pass
 
+                # if count == 4:
+                #     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Record already exists'})
                 business_detail = ClientBusinessDetail.objects.create(
                     client=client,
                     name=business_name,
@@ -521,38 +549,48 @@ class UpdateBusinessApiView(APIView):
             business_nature = request.data['business_nature']
             business_type = request.data['business_type']
             business_address = request.data['address']
+            print(request.data)
             # business_logo = request.data['business_logo']
-            try:
-                ClientBusinessDetail.objects.get(id=business_id, name=business_name)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business name '
-                                                                                     f'{business_name} already '
-                                                                                     f'exists.'})
-            except:
-                pass
+            # count = 0
+            # try:
+            #     ClientBusinessDetail.objects.get(client=client, name=business_name)
+            #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business name '
+            #     #                                                                      f'{business_name} already '
+            #     #                                                                      f'exists.'})
+            #     count += 1
+            # except:
+            #     pass
 
+            
             try:
                 ClientBusinessDetail.objects.get(id=business_id, address=business_address)
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
                                                                                      f'{business_address} already '
                                                                                      f'exists.'})
+                # count += 1
             except:
                 pass
 
-            try:
-                ClientBusinessDetail.objects.get(id=business_id, nature=business_nature)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business nature '
-                                                                                     f'{business_nature} already '
-                                                                                     f'exists.'})
-            except:
-                pass
+            # try:
+            #     ClientBusinessDetail.objects.get(client=client, nature=business_nature)
+            #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business nature '
+            #     #                                                                      f'{business_nature} already '
+            #     #                                                                      f'exists.'})
+            #     count += 1
+            # except:
+            #     pass
 
-            try:
-                ClientBusinessDetail.objects.get(id=business_id, type=business_type)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business type '
-                                                                                     f'{business_type} already '
-                                                                                     f'exists.'})
-            except:
-                pass
+            # try:
+            #     ClientBusinessDetail.objects.get(client=client, type=business_type)
+            #     # return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business type '
+            #     #                                                                      f'{business_type} already '
+            #     #                                                                      f'exists.'})
+            #     count += 1
+            # except:
+            #     pass
+
+            # if count == 4:
+            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Record already exists'})
 
             business_detail = ClientBusinessDetail.objects.filter(id=business_id).update(
                 name=business_name,

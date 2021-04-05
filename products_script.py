@@ -1,3 +1,4 @@
+import math
 import random
 from django.db import models
 import sqlite3
@@ -31,5 +32,8 @@ for i in range(len(slno)):
 
     avg_price = random_number_generator(50, 150)
     category_obj = Category.objects.get(id=cat_id)
-    Product.objects.create(id=slno[i], vat=vat, category=category_obj, name=item_name[i], unit=unit[i], avg_price=avg_price)
+    if not math.isnan(slno[i]):
+        unit_lower = ""
+        unit_lower = str(unit[i]).lower()
+        Product.objects.create(id=slno[i], vat=vat, category=category_obj, name=item_name[i], unit=unit_lower, avg_price=avg_price, currency='EUR', company='Orddel')
 

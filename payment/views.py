@@ -323,8 +323,14 @@ class GeneratePDFInvoiceAPIView(APIView):
         if id:
             response = prepare_invoice(invoice_id=id)
             order_detail = OrderDetail.objects.get(id=response['order'])
-            response["client_logo"] = order_detail.order_box.client.image.url
-            response["delivery_person_logo"] = order_detail.delivery_person.image.url
+            try:
+                response["client_logo"] = order_detail.order_box.client.image.url
+            except:
+                response['client_logo'] = ""
+            try:
+                response["delivery_person_logo"] = order_detail.delivery_person.image.url
+            except:
+                response["delivery_person_logo"] = ""
             template = get_template("invoice_template.html")
             context = {
                 "response": response
@@ -525,7 +531,14 @@ class PaymentAPIView(APIView):
                 confirm=True)
             if response['status'] == 'succeeded':
                 obj.package = package_obj
-                obj.no_of_invoices += package_obj.no_of_invoices
+                if package_obj.id != 3:
+                    if obj.no_of_invoices == -1:
+                        obj.no_of_invoices += 1
+                        obj.no_of_invoices += package_obj.no_of_invoices
+                    else:
+                        obj.no_of_invoices += package_obj.no_of_invoices
+                else:
+                    obj.no_of_invoices = -1
                 obj.save()
                 if user_type == 'client':
                     ClientPackageLog.objects.create(
