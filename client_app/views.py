@@ -776,6 +776,25 @@ class DeleteBankDetailsApiView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"Error": "Unable to delete record"})
 
 
+class PackageCreate(generics.CreateAPIView):
+    serializer_class = PackageSerializer
+    queryset = ClientPackage.objects.all()
+
+
+class RetrieveUpdateDestroyPackage(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = PackageSerializer
+    queryset = ClientPackage.objects.all()
+    lookup_field = 'id'
+
+    def retrieve(self, request, *args, **kwargs):
+        id = self.kwargs.get('id')
+        if id:
+            queryset = self.get_queryset()
+            print(queryset)
+            response = PackageSerializer(queryset)
+            return Response(status=status.HTTP_200_OK, data={'result': response.data})
+
+
 class PackageCreateApiView(APIView):
     def post(self, request):
         name = request.data['name']
@@ -920,8 +939,8 @@ class UpdateClientApprovalStatus(APIView):
                         )
                     except:
                         return Response(status=status.HTTP_200_OK,
-                                        data={"status": f"log created {serializer.data}"
-                                                        f"but email can not be sent, possibly due"
+                                        data={"status": f"log created {serializer.data} "
+                                                        f"but email can not be sent, possibly due "
                                                         f"to wrong email address provided "
                                                         f"on registration"})
                     return Response(status=status.HTTP_200_OK,
@@ -1010,12 +1029,16 @@ class PendingApprovalListApiView(APIView):
         try:
             admin_approval_status = self.request.query_params.get('admin_approval_status').lower()
             try:
-                client = Client.objects.filter(admin_approval_status=admin_approval_status)
-                serializer = ClientSerializer(client, many=True)
-                print(admin_approval_status, client)
-                if not client:
-                    return Response(status=status.HTTP_200_OK,
-                                    data={"message": "Client table is empty"})
+                if admin_approval_status == 'all':
+                    clients = Client.objects.all()
+                    serializer = ClientSerializer(clients, many=True)
+                else:
+                    client = Client.objects.filter(admin_approval_status=admin_approval_status)
+                    serializer = ClientSerializer(client, many=True)
+                    print(admin_approval_status, client)
+                    if not client:
+                        return Response(status=status.HTTP_200_OK,
+                                        data={"message": "Client table is empty"})
                 return Response(status=status.HTTP_200_OK,
                                 data={"pending_approval_list": serializer.data})
             except:

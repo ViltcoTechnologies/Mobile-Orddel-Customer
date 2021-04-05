@@ -24,8 +24,6 @@ class ClientImageSerializer(serializers.ModelSerializer):
         return instance
 
 
-
-
 class BusinessDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClientBusinessDetail
