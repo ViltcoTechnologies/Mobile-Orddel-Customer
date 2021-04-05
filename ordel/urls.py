@@ -48,7 +48,9 @@ urlpatterns = [
 
     # Check Existing Email and Phone Number
     path('check_existing_email/', CheckEmailAPIView.as_view()),
-    path('check_existing_phone/', CheckPhoneAPIView.as_view())
+    path('check_existing_phone/', CheckPhoneAPIView.as_view()),
+
+    path('version_control/', VersionControlAPIView.as_view())
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

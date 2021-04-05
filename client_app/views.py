@@ -17,7 +17,7 @@ from admin_dashboard.serializers import *
 import json
 from django.core.mail import send_mail
 from ordel.verificaton import TwilioVerification
-
+from django.shortcuts import get_object_or_404
 # Token Obtain pair
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -824,13 +824,18 @@ class RetrieveUpdateDestroyPackage(generics.RetrieveUpdateDestroyAPIView):
     queryset = ClientPackage.objects.all()
     lookup_field = 'id'
 
+    def list(self, request):
+        print('here')
+        queryset = self.get_queryset()
+        serializer = PackageSerializer(queryset, many=True)
+        return Response(serializer.data)
+
     def retrieve(self, request, *args, **kwargs):
-        id = self.kwargs.get('id')
-        if id:
-            queryset = self.get_queryset()
-            print(queryset)
-            response = PackageSerializer(queryset)
-            return Response(status=status.HTTP_200_OK, data={'result': response.data})
+        queryset = self.get_queryset()
+        pk = self.kwargs.get('id')
+        client_package = get_object_or_404(queryset, pk=pk)
+        serializer = PackageSerializer(client_package)
+        return Response(serializer.data)
 
 
 class PackageCreateApiView(APIView):

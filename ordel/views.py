@@ -21,7 +21,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
-
+from .models import VersionControl
 from django_rest_passwordreset.signals import reset_password_token_created
 
 
@@ -357,3 +357,13 @@ class ChangePasswordViaPhoneNumber(APIView):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User not found'})
 
+
+class VersionControlAPIView(APIView):
+
+    def get(self, request):
+        apk_version = self.request.query_params.get('apk_version')
+        try:
+            version = VersionControl.objects.get(apk_version=apk_version)
+            return Response(status=status.HTTP_200_OK, data={'message': 'The version exists'})
+        except VersionControl.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Version not found'})

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     # Django Apps
     'order',
+    'ordel',
     'payment',
     'products',
     'admin_dashboard',
