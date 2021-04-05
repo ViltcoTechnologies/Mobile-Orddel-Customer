@@ -80,7 +80,7 @@ MIDDLEWARE = [
 ]
 
 CRONJOBS = [
-    ('* * * * *', 'products.cron.update_avg_price_job', '>> /etc/orddel-crontab.log')
+    ('* * * * *', 'products.cron.update_avg_price_job', '>> /etc/orddel-crontab.log', {'verbose': 1})
 ]
 CRONTAB_COMMAND_SUFFIX = '2>&1'
 
