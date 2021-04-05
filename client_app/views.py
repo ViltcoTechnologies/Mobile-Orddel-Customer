@@ -831,12 +831,16 @@ class RetrieveUpdateDestroyPackage(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
+        print('here')
         queryset = self.get_queryset()
         pk = self.kwargs.get('id')
-        client_package = get_object_or_404(queryset, pk=pk)
-        serializer = PackageSerializer(client_package)
-        return Response(serializer.data)
-
+        if pk:
+            client_package = get_object_or_404(queryset, pk=pk)
+            serializer = PackageSerializer(client_package)
+            return Response(serializer.data)
+        else:
+            serializer = PackageSerializer(queryset, many=True)
+            return Response(serializer.data)
 
 class PackageCreateApiView(APIView):
     def post(self, request):
