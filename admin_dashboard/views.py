@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models.functions import Cast
+from django.db.models.fields import DateField
 from .models import *
 from order.models import *
 from payment.models import *
@@ -272,108 +274,80 @@ class OrderGraphApiView(APIView):
     # authentication_classes = (authentication.JWTAuthentication,)
 
     def get(self, request):
-        # try:
+
+        def generate_stats(type_of_duration, timedelta):
+            try:
+                print('Love you to the moon and back ... ')
+                time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                # converted_time_now = datetime.datetime(time_now, tzinfo=pytz.UTC)
+                start_time = datetime.datetime.now()
+                order_data = []
+                if type_of_duration == 'hours':
+                    print('I ll be there for you ')
+                    start_time = (datetime.datetime.now() - datetime.timedelta(hours=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
+                    order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+                    order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
+                    print(order_data)
+                    
+                elif type_of_duration == 'days':
+                    start_time = (datetime.datetime.now() - datetime.timedelta(days=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
+                    order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+                    order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
+                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
+
+                elif type_of_duration == 'weeks':
+                    start_time = (datetime.datetime.now() - datetime.timedelta(weeks=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
+                    order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+                    order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
+                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
+
+                # converted_start_time = datetime.datetime(start_time, tzinfo=pytz.UTC)
+                response = []
+                for order in order_data:
+                    try:
+                        response.append({"date": order['date_only'].strftime('%Y-%m-%d %H:%M:%S')[0:10],
+                                         "orders": order['orders_count']
+                                         })
+                    except:
+                        response.append({"order_created_datetime": order['order_created_datetime'].strftime('%Y-%m-%d %H:%M:%S'),
+                                         "orders": order['orders']
+                                         })
+                return response
+
+            except Exception as e:
+                print(e)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
         graph_type = self.request.query_params.get('graph_type').lower()
-        # try:
-        if graph_type == 'today':
-            time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            # converted_time_now = datetime.datetime(time_now, tzinfo=pytz.UTC)
-            start_time = (datetime.datetime.now() - datetime.timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
-            # converted_start_time = datetime.datetime(start_time, tzinfo=pytz.UTC)
-            order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
-            order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
-            response = []
-            for order in order_data:
-                response.append({"order_created_datetime": order['order_created_datetime'].strftime('%Y-%m-%d %H:%M:%S'),
-                                 "orders": order['orders']
-                                 })
+        print(graph_type)
 
-            # total_leads = leads_data.aggregate(total_leads=Sum('leads'))
+        try:
+            if graph_type == 'today':
+                print('here to stay ')
+                response = generate_stats('hours', 24)
+                return Response(status=status.HTTP_200_OK, data={'response': response})
 
-            return Response(status=status.HTTP_200_OK, data={'response': response})
+            if graph_type == 'daily':
+                response = generate_stats('days', 7)
+                return Response(status=status.HTTP_200_OK, data={'response': response})
 
-        if graph_type == 'daily':
-            time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            start_time = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d %H:%M:%S")
-            order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
-            order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
-            response = []
-            for order in order_data:
-                response.append({"order_created_datetime": order['order_created_datetime'].strftime('%Y-%m-%d %H:%M:%S'),
-                                 "orders": order['orders']
-                                 })
+            if graph_type == 'weekly':
+                response = generate_stats('weeks', 4)
+                return Response(status=status.HTTP_200_OK, data={'response': response})
 
-            return Response(response, status=status.HTTP_200_OK)
+            if graph_type == 'monthly':
+                pass
 
-        if graph_type == 'weekly':
-            orders_count = OrderDetail.objects.all().count
-            datetime_now = datetime.now()
-            timestamp = datetime.timestamp(datetime_now)
-            seconds = 56 * 3600 * 24
-            print(seconds)
-            print(timestamp)
-            date_8_weeks_back = datetime.fromtimestamp(int(timestamp - seconds)).date()
-            print(date_8_weeks_back)
-            candles = client.get_historical_klines("BTCEUR", Client.KLINE_INTERVAL_1WEEK, str(date_8_weeks_back))
-            price_dates = []
-            for candlestick in candles:
-                price_dates.append({"Closing Price": float(candlestick[4]),
-                                    "Date": datetime.fromtimestamp(int(str(candlestick[0])[:-3])).date().strftime(
-                                        "%d %b")})
+            if graph_type == 'all':
+                pass
 
-            response = price_dates
-            print(len(candles))
-            return Response(response, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if graph_type == 'monthly':
-            orders_count = OrderDetail.objects.all().count
-            datetime_now = datetime.now()
-            timestamp = datetime.timestamp(datetime_now)
-            seconds = 365 * 3600 * 24
-            print(seconds)
-            print(timestamp)
-            date_12_months_back = datetime.fromtimestamp(int(timestamp - seconds)).date()
-            print(date_12_months_back)
-            candles = client.get_historical_klines("BTCEUR", Client.KLINE_INTERVAL_1MONTH, str(date_12_months_back))
-            price_dates = []
-            for candlestick in candles:
-                price_dates.append({"Closing Price": float(candlestick[4]),
-                                    "Date": datetime.fromtimestamp(int(str(candlestick[0])[:-3])).date().strftime(
-                                        "%b %y")})
-            response = price_dates
-            print(len(candles))
-            return Response(response, status=status.HTTP_200_OK)
-
-        if graph_type == 'all':
-            orders_count = OrderDetail.objects.all().count
-            datetime_now = datetime.now()
-            timestamp = datetime.timestamp(datetime_now)
-            seconds = 365 * 3600 * 24
-            print(seconds)
-            print(timestamp)
-            date_12_months_back = datetime.fromtimestamp(int(timestamp - seconds)).date()
-            print(date_12_months_back)
-            candles = client.get_historical_klines("BTCEUR", Client.KLINE_INTERVAL_1MONTH, str(date_12_months_back))
-            price_dates = []
-            for candlestick in candles:
-                price_dates.append({"Closing Price": float(candlestick[4]),
-                                    "Date": datetime.fromtimestamp(int(str(candlestick[0])[:-3])).date().strftime(
-                                        "%b %y")})
-            response = price_dates
-            print(len(candles))
-            return Response(response, status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND,
-                            data=f"'{graph_type}' is not valid graph_type, select "
-                                 f"between today, daily, weekly, monthly and all")
-            # except:
-            #     return Response(status=status.HTTP_400_BAD_REQUEST)
-        # except:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST,
-        #                     data="Oops! Required field graph_type is missing")
-
-
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 # ----------------------------------------------------------------------------------------------------------------------
+
 
 # Client signup approval log
 class CreateClientApprovalLog(APIView):
