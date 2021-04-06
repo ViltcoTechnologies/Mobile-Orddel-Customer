@@ -313,7 +313,7 @@ class CreateOrderApiView(APIView):
                 # print(client.number_of_order)
                 if client.no_of_invoices != 0 and client.no_of_invoices != -1:
                     client.no_of_invoices -= 1
-                    client.used_invoices += 1
+                client.used_invoices += 1
                 client.number_of_order += 1
                 client.save()
                 serializer = OrderDetailSerializer(order)

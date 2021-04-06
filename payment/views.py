@@ -248,7 +248,11 @@ class ViewInvoiceApiView(APIView):
             response['delivery_person_id'] = delivery_person_obj.id
             response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
             response['delivery_person_address'] = delivery_person_obj.address
-            response['business_address'] = invoice.order.business.address
+            try:
+                response['business_address'] = invoice.order.business.address
+            except Exception as e:
+                print(e)
+                response['business_address'] = ""
             response['purchase_order_no'] = invoice.order.purchase_order_no
             response['order_delivery_datetime'] = invoice.order.order_delivery_datetime.strftime('%d-%m-%Y %H:%M')
             # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])

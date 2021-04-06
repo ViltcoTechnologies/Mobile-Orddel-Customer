@@ -366,4 +366,4 @@ class VersionControlAPIView(APIView):
             version = VersionControl.objects.get(apk_version=apk_version)
             return Response(status=status.HTTP_200_OK, data={'message': 'The version exists'})
         except VersionControl.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Version not found'})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Please Install the Latest Version'})

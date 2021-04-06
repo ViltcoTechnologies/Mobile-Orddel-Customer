@@ -1266,12 +1266,13 @@ class UpdateDeliveryPersonOrderApiView(APIView):
 
                 if delivery_person_obj.no_of_invoices != 0 and delivery_person_obj.no_of_invoices != -1:
                     delivery_person_obj.no_of_invoices -= 1
-                    delivery_person_obj.used_invoices += 1
-                    delivery_person_obj.save()
                 
                 elif delivery_person_obj.no_of_invoices != -1:
                     return Response(status=status.HTTP_401_UNAUTHORIZED, data={'message': 'Cant accept, Invoices are empty'})
                 
+                delivery_person_obj.used_invoices += 1
+                delivery_person_obj.save()
+
                 order_detail.status = 'in_progress'
                 user_id = order_detail.order_box.client.user.id
                 try:
