@@ -139,7 +139,11 @@ class AddOrderBoxProductsApiView(APIView):
                 if order_box.client.no_of_invoices == 0:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to place order as number of invoices are empty'})
                 for prod in products:
-                    product = Product.objects.get(id=prod['id'])
+                    try:
+                        product = Product.objects.get(id=prod['id'])
+                    except:
+                        product = Product.objects.get(id=prod['product_id'])
+
                     # price = product.avg_price
                     try:
                         order_pro = OrderProduct.objects.get(order_box=order_box, product=product)
@@ -172,9 +176,9 @@ class AddOrderBoxProductsApiView(APIView):
 
                 return Response(status=status.HTTP_201_CREATED, data={"order_box": order_box})
             except Exception as e:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": e})
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": 'Something went wrong'})
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": e})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Something went wrong"})
 
 
 class ListOrderBoxProductsApiView(APIView):
@@ -428,6 +432,7 @@ class ListOrderApiView(APIView):
                 response['client_id'] = order_b_obj.client.id
             delivery_person_obj = DeliveryPerson.objects.get(id=response['delivery_person'])
             response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
+            response['delivery_person_address'] = delivery_person_obj.address
             # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
             # response['shipment_address_detail'] = shipment_address.shipment_address
             if response['status'] == 'in_progress':

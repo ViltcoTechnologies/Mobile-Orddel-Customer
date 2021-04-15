@@ -445,7 +445,11 @@ class BusinessDetailInsertApiView(APIView):
             business_address = request.data['address']
             business_nature = request.data['nature']
             business_type = request.data['type']
-            business_logo = request.data['logo']
+            # business_logo = request.data['logo']
+
+
+            if business_name.strip() == "" or business_nature.strip() == "" or business_type.strip() == "" or business_address.strip() == "":
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Do not leave fields empty.'})
             try:
                 client = Client.objects.get(id=client_id)
                 # count = 0
@@ -461,8 +465,8 @@ class BusinessDetailInsertApiView(APIView):
                 try:
                     ClientBusinessDetail.objects.get(client=client, address=business_address)
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
-                                                                                         f'{business_address} already '
-                                                                                         f'exists.'})
+                                                                                            f'{business_address} already '
+                                                                                            f'exists.'})
                     # count += 1
                 except:
                     pass
@@ -492,8 +496,8 @@ class BusinessDetailInsertApiView(APIView):
                     name=business_name,
                     address=business_address,
                     nature=business_nature,
-                    type=business_type,
-                    logo=business_logo
+                    type=business_type
+                    # logo=business_logo
                 )
                 print(business_detail.id)
                 bd = ClientBusinessDetail.objects.filter(id=business_detail.id, client=client)
@@ -563,14 +567,14 @@ class UpdateBusinessApiView(APIView):
             #     pass
 
             
-            try:
-                ClientBusinessDetail.objects.get(id=business_id, address=business_address)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
-                                                                                     f'{business_address} already '
-                                                                                     f'exists.'})
-                # count += 1
-            except:
-                pass
+            # try:
+            #     ClientBusinessDetail.objects.get(id=business_id, address=business_address)
+            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
+            #                                                                          f'{business_address} already '
+            #                                                                          f'exists.'})
+            #     # count += 1
+            # except:
+            #     pass
 
             # try:
             #     ClientBusinessDetail.objects.get(client=client, nature=business_nature)

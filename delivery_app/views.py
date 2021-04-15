@@ -650,6 +650,8 @@ class BusinessDetailInsertApiView(APIView):
             business_type = request.data['business_type']
             business_logo = request.data['business_logo']
             business_address = request.data['business_address']
+            if username.strip() == "" or business_name.strip() == "" or business_nature.strip() == "" or business_type.strip() == "" or business_address.strip() == "":
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Do not leave fields empty.'})
             delivery_person = DeliveryPerson.objects.get(username=username)
             # count = 0
             # try:
@@ -776,14 +778,14 @@ class UpdateBusinessApiView(APIView):
             # except:
             #     pass
 
-            try:
-                DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, address=business_address)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
-                                                                                     f'{business_address} already '
-                                                                                     f'exists.'})
-                # count += 1 
-            except:
-                pass
+            # try:
+            #     DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, address=business_address)
+            #     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': f'Record with business address '
+            #                                                                          f'{business_address} already '
+            #                                                                          f'exists.'})
+            #     # count += 1 
+            # except:
+            #     pass
 
             # try:
             #     DeliveryPersonBusinessDetail.objects.get(delivery_person=delivery_person, nature=business_nature)
@@ -956,7 +958,7 @@ class DeleteBankDetailsApiView(APIView):
 # ------------------------------------------------------------------------------------------------------------------------
 
 class PackageCreate(generics.CreateAPIView):
-    serializer_class = DeliveryPersonSerializer
+    serializer_class = DeliveryPersonPackageSerializer
     queryset = DeliveryPersonPackage.objects.all()
 
 

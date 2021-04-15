@@ -277,13 +277,11 @@ class OrderGraphApiView(APIView):
 
         def generate_stats(type_of_duration, timedelta):
             try:
-                print('Love you to the moon and back ... ')
                 time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 # converted_time_now = datetime.datetime(time_now, tzinfo=pytz.UTC)
                 start_time = datetime.datetime.now()
                 order_data = []
                 if type_of_duration == 'hours':
-                    print('I ll be there for you ')
                     start_time = (datetime.datetime.now() - datetime.timedelta(hours=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
                     order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
                     order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
@@ -323,7 +321,6 @@ class OrderGraphApiView(APIView):
 
         try:
             if graph_type == 'today':
-                print('here to stay ')
                 response = generate_stats('hours', 24)
                 return Response(status=status.HTTP_200_OK, data={'response': response})
 
