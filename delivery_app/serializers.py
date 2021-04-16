@@ -46,7 +46,7 @@ class DeliveryPersonBusinessDetailSerializer(serializers.ModelSerializer):
 
 class DeliveryPersonBankDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DeliveryPerson
+        model = DeliveryPersonBankDetail
         fields = "__all__"
 
 

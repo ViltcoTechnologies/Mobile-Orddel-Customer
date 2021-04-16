@@ -844,62 +844,14 @@ class DeleteBusinessApiView(APIView):
 # ------------------------------------------------------------------------------------------------------------------------
 
 
-class BankDetailsCreateApiView(APIView):
-
-    def post(self, request):
-        try:
-            delivery_person_id = request.data['delivery_person']
-            bank_name = request.data['bank_name']
-            branch_code = request.data['branch_code']
-            credit_card_no = request.data['credit_card_no']
-            sort_code = request.data['sort_code']
-            credit_card_expiry = request.data['credit_card_expiry']
-
-            delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
-            bank_record = DeliveryPersonBankDetail.objects.create(
-                delivery_person=delivery_person,
-                bank_name=bank_name,
-                branch_code=branch_code,
-                credit_card_no=credit_card_no,
-                sort_code=sort_code,
-                credit_card_expiry=credit_card_expiry
-            )
-            data_to_pass = DeliveryPersonBankDetailSerializer(bank_record)
-            return Response(status=status.HTTP_200_OK,
-                            data={"bank_details_created": data_to_pass.data})
-        except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data={"Exception": e})
+class BankDetailsCreate(generics.CreateAPIView):
+    serializer_class = DeliveryPersonBankDetailSerializer
+    queryset = DeliveryPersonBankDetail.objects.all()
 
 
-class BankDetailsUpdateApiView(APIView):
-
-    def put(self, request):
-        try:
-            bank_detail_id = request.data['id']
-            bank_name = request.data['bank_name']
-            branch_code = request.data['branch_code']
-            credit_card_no = request.data['credit_card_no']
-            sort_code = request.data['sort_code']
-            credit_card_expiry = request.data['credit_card_expiry']
-
-            bank_detail = DeliveryPersonBankDetail.objects.filter(id=bank_detail_id).update(
-                bank_name=bank_name,
-                branch_code=branch_code,
-                credit_card_no=credit_card_no,
-                sort_code=sort_code,
-                credit_card_expiry=credit_card_expiry
-            )
-            print("Bank Detail id :", bank_detail)
-            bd = DeliveryPersonBankDetail.objects.get(id=bank_detail_id)
-            data_to_pass = DeliveryPersonBankDetailSerializer(bd)
-            return Response(status=status.HTTP_200_OK,
-                            data={"updated_business_details": data_to_pass.data})
-
-        except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data={"Exception": e})
-
+class BankDetailsUpdate(generics.UpdateAPIView):
+    serializer_class = DeliveryPersonBankDetailSerializer
+    queryset = DeliveryPersonBankDetail.objects.all()
 
 class ListBankDetailsApiView(APIView):
     def get(self, request, id=None):

@@ -91,10 +91,10 @@ class DeliveryPersonBusinessDetail(models.Model):
 class DeliveryPersonBankDetail(models.Model):
     delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.CASCADE, null=True, blank=True)
     bank_name = models.CharField(max_length=100, null=True, blank=True)
-    branch_code = models.CharField(max_length=100, null=True, blank=True)
+    account_title = models.CharField(max_length=100, null=True, blank=True)
     credit_card_no = models.CharField(max_length=150, null=True, blank=True)
     sort_code = models.CharField(max_length=10, null=True, blank=True)
-    credit_card_expiry = models.DateField(auto_now=False, null=True, blank=True)
+    # credit_card_expiry = models.DateField(auto_now=False, null=True, blank=True)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):

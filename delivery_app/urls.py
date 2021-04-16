@@ -51,8 +51,8 @@ urlpatterns = [
     # ------------------------------------------------------------------------------------------------------------------
 
     # Bank Details API Routes
-    path('create_bank_details/', BankDetailsCreateApiView.as_view(), name='create_bank_details'),
-    path('update_bank_details/', BankDetailsUpdateApiView.as_view(), name='update_bank_details'),
+    path('create_bank_details/', BankDetailsCreate.as_view(), name='create_bank_details'),
+    path('update_bank_details/', BankDetailsUpdate.as_view(), name='update_bank_details'),
     path('list_bank_details/', ListBankDetailsApiView.as_view(), name='list_bank_details'),
     path('list_bank_details/<id>/', ListBankDetailsApiView.as_view(), name='list_bank_details/<id>'),
     path('list_bank_details/delivery_person/<id>/', ListDeliveryPersonBankDetailsApiView.as_view(),
