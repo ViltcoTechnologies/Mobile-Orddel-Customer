@@ -437,46 +437,55 @@ class AdminLogin(TokenObtainPairView):
         # print(request.data)
         try:
             username = request.data['username']
-            try:
-                _ = request.data['password']
-                try:
-                    serializer_class = MyTokenObtainPairSerializer(data=request.data)
-                    if serializer_class.is_valid(self):
-                        print("here")
-                        user = User.objects.get(username=username)
-                        admin_user = AdminUser.objects.get(username=username)
-                        is_active = user.is_active
-                        # otp_status = admin_user.otp_status
-                        # approval_status = admin_user.admin_approval_status
-                        print(is_active)
-                        # print(otp_status)
-                        # print(approval_status)
-                        if is_active:
-                            response = serializer_class.validated_data
-                            response["admin_user_id"] = admin_user.id
-                            return Response(status=status.HTTP_200_OK, data={"data": response})
-                        else:
-                            return Response(status=status.HTTP_200_OK, data={"data": "delivery person not authorized"})
-
-                    else:
-                        print("invalid username and password")
-
-                except Exception as e:
-                    print(e)
-                    user = User.objects.get(username=username)
-                    is_active = user.is_active
-                    if not is_active:
-                        return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data={"message": "The account is not verified via email"})
-                    else:
-                        return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data={"message": "username or password not correct"})
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={"message": "Password is required!"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"message": "Username is required!"})
+        try:
+            _ = request.data['password']
+        
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Password is required!"})
+        try:
+            serializer_class = MyTokenObtainPairSerializer(data=request.data)
+            if serializer_class.is_valid(self):
+                print("here")
+                try:
+                    user = User.objects.get(username=username)
+                except:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User does not exist'})
+                admin_user = AdminUser.objects.get(username=username)
+                is_active = user.is_active
+                # otp_status = admin_user.otp_status
+                # approval_status = admin_user.admin_approval_status
+                print(is_active)
+                # print(otp_status)
+                # print(approval_status)
+                if is_active:
+                    response = serializer_class.validated_data
+                    response["admin_user_id"] = admin_user.id
+                    return Response(status=status.HTTP_200_OK, data={"data": response})
+                else:
+                    return Response(status=status.HTTP_200_OK, data={"data": "admin user not authorized"})
+
+            else:
+                print("invalid username and password")
+
+        except Exception as e:
+            print(e)
+            try:
+                user = User.objects.get(username=username)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User does not exist'})
+
+            is_active = user.is_active
+            if not is_active:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "The account is not verified via email"})
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST,
+                                data={"message": "username or password not correct"})
+            
+        
 
 
 # ------------------------------------------------------------------------------------------------------------------------

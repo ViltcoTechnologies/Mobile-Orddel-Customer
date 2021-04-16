@@ -55,7 +55,7 @@ urlpatterns = [
     path('update_bank_details/', BankDetailsUpdateApiView.as_view(), name='update_bank_details'),
     path('list_bank_details/', ListBankDetailsApiView.as_view(), name='list_bank_details'),
     path('list_bank_details/<id>/', ListBankDetailsApiView.as_view(), name='list_bank_details/<id>'),
-    path('list_bank_details/delivery_person/<id>/', ListClientBankDetailsApiView.as_view(),
+    path('list_bank_details/delivery_person/<id>/', ListDeliveryPersonBankDetailsApiView.as_view(),
          name='list_bank_details/delivery_person/<id>'),
     path('delete_bank_details/<id>/', DeleteBankDetailsApiView.as_view(), name='delete_bank_details'),
 

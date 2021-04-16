@@ -924,9 +924,9 @@ class ListBankDetailsApiView(APIView):
                             data={"bank_details": data_to_pass.data})
 
 
-class ListClientBankDetailsApiView(APIView):
+class ListDeliveryPersonBankDetailsApiView(APIView):
 
-    def get(self, request):
+    def get(self, request, id=None):
         if id:
             try:
                 bank_details = DeliveryPersonBankDetail.objects.filter(delivery_person__id=id)
