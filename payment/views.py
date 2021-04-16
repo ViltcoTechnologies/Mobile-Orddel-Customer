@@ -26,14 +26,15 @@ class GetInvNumberAPIView(APIView):
                 invoice = Invoice.objects.filter(order=id).last()
                 orderdetail = OrderDetail.objects.get(id=id)
                 order_id = orderdetail.id
+                prefix = orderdetail.delivery_person.first_name.upper()
                 if invoice:
                     inv_number_list = invoice.inv_number.split("_")
-                    inv_number = int(inv_number_list[2])
+                    inv_number = int(inv_number_list[3])
                     inv_number += 1
-                    invoice_order_no = f"Inv#{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
+                    invoice_order_no = f"Inv#{prefix[:3]}_{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
                 else:
                     inv_number = 1
-                    invoice_order_no = f"Inv#{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
+                    invoice_order_no = f"Inv#{prefix[:3]}_{str(order_id).zfill(5)}_{date.today().strftime('%Y')}_{str(inv_number).zfill(5)}"
 
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "order not found"})

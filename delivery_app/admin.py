@@ -29,7 +29,7 @@ admin.site.register(DeliveryPersonBusinessDetail, DeliveryPersonBusinessDetailAd
 
 
 class DeliveryPersonBankDetailAdmin(admin.ModelAdmin):
-    list_display = ('id', 'delivery_person', 'bank_name', 'branch_code', 'date_created')
+    list_display = ('id', 'delivery_person', 'bank_name', 'account_title', 'sort_code', 'date_created')
     list_display_links = ('id', 'bank_name')
 
 
