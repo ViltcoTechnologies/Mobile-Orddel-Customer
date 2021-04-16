@@ -308,6 +308,7 @@ def prepare_invoice(invoice_id):
         response['total_qty'] = total_purchased_qty
         response['total_vat'] = float("{:.2f}".format(total_vat))
         response['total_amount'] = float("{:.2f}".format(total_amount))
+        response['net_total_without_vat'] = response['total_amount'] - response['total_vat']
         delivery_person_obj = DeliveryPerson.objects.get(id=invoice.order.delivery_person.id)
         response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
         response['delivery_person_address'] = delivery_person_obj.address
@@ -335,6 +336,11 @@ class GeneratePDFInvoiceAPIView(APIView):
                 response["delivery_person_logo"] = order_detail.delivery_person.image.url
             except:
                 response["delivery_person_logo"] = ""
+            try:
+                delivery_person_name = response['delivery_person_name']
+                print(delivery_person_name)
+            except:
+                delivery_person_name = ""
             template = get_template("invoice_template.html")
             context = {
                 "response": response
@@ -343,7 +349,7 @@ class GeneratePDFInvoiceAPIView(APIView):
             pdf = render_to_pdf("invoice_template.html", context)
             if pdf:
                 response = HttpResponse(pdf, content_type='application/pdf')
-                filename = "Invoice_%s.pdf" %("12132132")
+                filename = "Invoice_%s.pdf" % delivery_person_name
                 content = "inline; filename='%s'" %(filename)
                 download = request.GET.get("download")
                 if download:

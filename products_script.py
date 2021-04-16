@@ -23,11 +23,11 @@ for i in range(len(slno)):
     cat_id = 1
     vat = 0
     if category[i] == 'Vegetable':
-        cat_id = 2
+        cat_id = 3
     elif category[i] == 'Fruit':
-        cat_id = 1
+        cat_id = 4
     elif category[i] == 'Msc.':
-        cat_id = 22
+        cat_id = 5
         vat = 0.20
 
     avg_price = random_number_generator(50, 150)

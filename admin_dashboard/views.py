@@ -16,6 +16,7 @@ import datetime
 from django.utils import timezone
 import pytz
 from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 # Token Obtain pair
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -299,7 +300,24 @@ class OrderGraphApiView(APIView):
                     order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
                     order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
 
+                elif type_of_duration == 'months':
+                    start_time = (datetime.datetime.now() - relativedelta(months=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
+                    order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+                    order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
+                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
                 # converted_start_time = datetime.datetime(start_time, tzinfo=pytz.UTC)
+                elif type_of_duration == 'years':
+                    start_time = (datetime.datetime.now() - relativedelta(years=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
+                    print(start_time)
+                    order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+                    order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
+                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
+
+                elif type_of_duration == 'all':
+                    order_detail = OrderDetail.objects.all()
+                    order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
+                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
+
                 response = []
                 for order in order_data:
                     try:
@@ -320,7 +338,7 @@ class OrderGraphApiView(APIView):
         print(graph_type)
 
         try:
-            if graph_type == 'today':
+            if graph_type == '24h':
                 response = generate_stats('hours', 24)
                 return Response(status=status.HTTP_200_OK, data={'response': response})
 
@@ -333,10 +351,15 @@ class OrderGraphApiView(APIView):
                 return Response(status=status.HTTP_200_OK, data={'response': response})
 
             if graph_type == 'monthly':
-                pass
+                response = generate_stats('months', 12)
+                return Response(status=status.HTTP_200_OK, data={'response': response})
 
+            if graph_type == 'yearly':
+                response = generate_stats('years', 4)
+                return Response(status=status.HTTP_200_OK, data={'response': response})
             if graph_type == 'all':
-                pass
+                response = generate_stats('all', 0)
+                return Response(status=status.HTTP_200_OK, data={'response': response})
 
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

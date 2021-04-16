@@ -66,6 +66,10 @@
                             <img src="index.jpeg" height="40" width="40"/>
                         </div>
                         <p>Powered by ORDDEL</p>
+
+                        <div class="heading">
+                            <h1>Invoice</h1>
+                        </div>
                     </div>
                 </header>
 
@@ -133,11 +137,11 @@
                         {% for order_prod in response.order_products %}
                         <tbody>
                             <tr>
-                                <td>{{order_prod.product_name}}</td>
-                                <td>{{order_prod.purchased_qty}}</td>
-                                <td>&pound; {{order_prod.unit_sales_price}}</td>
+                                <td style="text-align:left">{{order_prod.product_name}}</td>
+                                <td style="text-align:right">{{order_prod.purchased_qty}}</td>
+                                <td style="text-align:right">&pound; {{order_prod.unit_sales_price}}</td>
                                 <td>&pound; {{order_prod.vat_amount}}</td>
-                                <td>&pound; {{order_prod.amount}}</td>
+                                <td style="text-align:right">&pound; {{order_prod.amount}}</td>
                             </tr>
 
 
@@ -149,8 +153,25 @@
                     <br>
                     <div class="total">
                         <h4>Total Packages: {{response.total_qty}}</h4>
-                        <h4>Total Amount:&pound; {{response.total_amount}}</h4>
+                        <h4>Net total(without VAT): {{response.net_total_without_vat}}</h4>
+                        <h4>Grand Total: &pound; {{response.total_amount}}</h4>
 
+                    </div>
+                    <div class="delivery_note">
+                        <p>
+                            <b>
+                                Delivery Note: {{response.delivery_note}}
+                            </b>
+                        </p>
+                    </div>
+                    <div class="thank_you_note">
+                        <p>
+                            <b>
+                                Thank You for choosing {{response.delivery_person_name}}.
+                                If you want more services kindly order again.
+                                We'll surley cater you..!
+                            </b>
+                        </p>
                     </div>
                 </div>
 
