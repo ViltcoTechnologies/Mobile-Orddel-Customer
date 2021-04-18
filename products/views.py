@@ -225,6 +225,12 @@ class CreateProductApiView(APIView):
 class ListProductApiView(APIView):
 
     def get(self, request, id=None):
+        client_id = self.request.query_params.get('client_id')
+        try:
+            client = Client.objects.get(id=client_id)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client ID not provided or does not exist'})
+
         if id:
             try:
                 product = Product.objects.get(id=id)
@@ -236,12 +242,30 @@ class ListProductApiView(APIView):
                                 data={"No Product with ID!": id})
         else:
             # try:
-            product = Product.objects.all()
-            serializer = ProductSerializer(product, many=True)
-            if not product:
+            average_prices = AveragePrice.objects.filter(client=client_id)
+            products = Product.objects.all()
+            serializer = ProductSerializer(products, many=True)
+            response = serializer.data
+
+            for res in response:
+                try:
+                    try:
+                        product = Product.objects.get(id=res['id'])
+                    except:
+                        return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client does not exist'})
+
+                    avg_price_obj = AveragePrice.objects.get(client=client, product=product)
+                    res['avg_price'] = avg_price_obj.avg_price
+                    print('here ')
+                except Exception as e:
+                    res['avg_price'] = 0.0
+
+            if not products:
                 return Response(status=status.HTTP_200_OK,
-                                data={"Product table is empty": serializer.data})
-            return Response(serializer.data,
+                                data={"message": 'Product table is empty'})
+
+
+            return Response(response,
                             status=status.HTTP_200_OK)
             # except:
             #     return Response(status=status.HTTP_400_BAD_REQUEST)
