@@ -288,7 +288,7 @@ def prepare_invoice(invoice_id):
             product['product_id'] = order_prod_obj.product.id
             product['product_name'] = order_prod_obj.product.name
             product['product_unit'] = order_prod_obj.product.unit
-            product['avg_price'] = order_prod_obj.product.avg_price
+            # product['avg_price'] = order_prod_obj.product.avg_price
             product['ordered_quantity'] = order_prod_obj.quantity
             product['purchased_qty'] = order_prod_obj.purchased_quantity
             if product['purchased_qty'] != 0:
@@ -312,6 +312,12 @@ def prepare_invoice(invoice_id):
         response['total_amount'] = float("{:.2f}".format(total_amount))
         response['net_total_without_vat'] = response['total_amount'] - response['total_vat']
         delivery_person_obj = DeliveryPerson.objects.get(id=invoice.order.delivery_person.id)
+        dp_bank_details = DeliveryPersonBankDetail.objects.filter(delivery_person=delivery_person_obj).last()
+        if dp_bank_details:
+            response['bank_name'] = dp_bank_details.bank_name
+            response['account_title'] = dp_bank_details.account_title
+            response['credit_card_no'] = dp_bank_details.credit_card_no
+            response['sort_code'] = dp_bank_details.sort_code
         response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
         response['delivery_person_address'] = delivery_person_obj.address
         response['business_address'] = invoice.order.business.address

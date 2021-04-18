@@ -163,6 +163,28 @@
                         <h4>Grand Total: &pound; {{response.total_amount}}</h4>
 
                     </div>
+                    {% if response.bank_name %}
+                    <br>
+                    <br>
+                    <hr>
+                    <div class = "dp_bank_details">
+                        <table>
+                            <thead>
+                            <h4>Bank Details of {{response.delivery_person_name}}</h4>
+                            </thead>
+
+                            <tbody>
+                                <tr><td>Bank Name: </td> <td>{{response.bank_name}}</td></tr>
+                                <tr><td>Account Title: </td> <td>{{response.account_title}}</td></tr>
+                                <tr><td>Credit Card No: </td> <td>{{response.credit_card_no}} </td></tr>
+                                <tr><td>Sort Code: </td> <td>{{response.sort_code}} </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr>
+                    <br>
+                    <br>
+                    {% endif %}
                     <div class="delivery_note">
                         <p>
                             <b>
