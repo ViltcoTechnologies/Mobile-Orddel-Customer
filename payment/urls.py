@@ -12,6 +12,7 @@ urlpatterns = [
     path('add_delivery_note/', CreateDeliveryNote.as_view()),
     path('generate_invoice/<id>/', GenerateInvoiceAPIView.as_view()),
     path('view_invoice/<id>/', ViewInvoiceApiView.as_view()),
+    path('generate_delivery_note_pdf/<id>/', GenerateDeliveryNotePDF.as_view()),
     path('generate_invoice_pdf/<id>/', GeneratePDFInvoiceAPIView.as_view()),
     # path('create_payment_method/', CreatePaymentMethod.as_view()),
     path('save_stripe_info/', SaveStripeInfo.as_view()),

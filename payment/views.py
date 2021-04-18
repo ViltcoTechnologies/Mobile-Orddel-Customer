@@ -623,3 +623,82 @@ class ShowCardAPIView(APIView):
                                                                 })
             else:
                 return Response(status=status.HTTP_200_OK, data={'error': 'Invalid Choice !'})
+
+
+def prepare_delivery_note(order_id):
+    if order_id:
+        try:
+            delivery_note = DeliveryNote.objects.get(order=order_id)
+        except:
+            raise Exception
+        serializer = DeliveryNoteSerializer(delivery_note)
+        response = serializer.data
+        order_prods = []
+        order_prods.extend(delivery_note.order.order_products.all())
+        products_details = []
+        total_purchased_qty = 0
+        total_vat = 0
+        total_amount = 0
+        for prod in order_prods:
+            product = {}
+            order_prod_obj = OrderProduct.objects.get(id=prod.id)
+            product['product_name'] = order_prod_obj.product.name
+            product['product_unit'] = order_prod_obj.product.unit
+            product['purchased_qty'] = order_prod_obj.purchased_quantity
+            if product['purchased_qty'] != 0:
+                total_purchased_qty += product['purchased_qty']
+            products_details.append(product)
+        response['order_products'] = products_details
+        order_b_obj = OrderBox.objects.get(id=delivery_note.order.order_box.id)
+        if order_b_obj.client != None:
+            response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
+        response['delivery_note'] = delivery_note.delivery_note
+        response['total_qty'] = total_purchased_qty
+        delivery_person_obj = DeliveryPerson.objects.get(id=delivery_note.order.delivery_person.id)
+        response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
+        response['delivery_person_address'] = delivery_person_obj.address
+        response['business_address'] = delivery_note.order.business.address
+        response['purchase_order_no'] = delivery_note.order.purchase_order_no[3:]
+        response['do_number'] = response['do_number'][3:]
+        response['order_delivery_datetime'] = delivery_note.order.order_delivery_datetime.strftime('%d-%m-%Y %H:%M')
+        # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
+        # response['shipment_address_detail'] = shipment_address.shipment_address
+
+        return response
+
+
+class GenerateDeliveryNotePDF(APIView):
+    def get(self, request, id=None):
+        if id:
+            response = prepare_delivery_note(order_id=id)
+            order_detail = OrderDetail.objects.get(id=response['order'])
+            try:
+                response["client_logo"] = order_detail.order_box.client.image.url
+            except:
+                response['client_logo'] = ""
+            try:
+                response["delivery_person_logo"] = order_detail.delivery_person.image.url
+            except:
+                response["delivery_person_logo"] = ""
+            try:
+                delivery_person_name = response['delivery_person_name']
+                print(delivery_person_name)
+            except:
+                delivery_person_name = ""
+            template = get_template("delivery_note.html")
+            context = {
+                "response": response
+            }
+            html = template.render(context)
+            pdf = render_to_pdf("delivery_note.html", context)
+            if pdf:
+                response = HttpResponse(pdf, content_type='application/pdf')
+                filename = "Delivery_Note_%s.pdf" % delivery_person_name
+                content = "inline; filename='%s'" % (filename)
+                download = request.GET.get("download")
+                if download:
+                    content = "attachment; filename='%s'" % (filename)
+                response['Content-Disposition'] = content
+                return response
+
+            return HttpResponse("Not found")

@@ -63,13 +63,22 @@ class Product(models.Model):
     is_available = models.BooleanField(default=True)
     unit = models.CharField(max_length=300, choices=unit_choices)
     vat = models.FloatField(default=0.0)
-    avg_price = models.FloatField(default=0.0)
     discount = models.IntegerField(default=0)
     currency = models.CharField(max_length=100, choices=CURRENCY_CHOICES)
 
     def __str__(self):
         return str(self.name)
 
+
+class AveragePrice(models.Model):
+    client = models.ForeignKey(to='client_app.Client', on_delete=models.CASCADE, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
+    avg_price = models.FloatField(default=0.0)
+    date_created = models.DateTimeField(auto_now=True)
+
+
+    def __str__(self):
+        return str(self.id)
 
 # class ItemUnitPrice(models.Model):
 #     product = models.ForeignKey(Product, on_delete=models.CASCADE)
