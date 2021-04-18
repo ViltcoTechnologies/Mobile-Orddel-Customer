@@ -23,10 +23,11 @@ class GetInvNumberAPIView(APIView):
     def get(self, request, id=None):
         if id:
             try:
-                invoice = Invoice.objects.filter(order=id).last()
                 orderdetail = OrderDetail.objects.get(id=id)
                 order_id = orderdetail.id
                 prefix = orderdetail.delivery_person.first_name.upper()
+                delivery_person_id = orderdetail.delivery_person.id
+                invoice = Invoice.objects.filter(order__delivery_person=delivery_person_id).last()
                 if invoice:
                     inv_number_list = invoice.inv_number.split("_")
                     inv_number = int(inv_number_list[3])
@@ -79,7 +80,7 @@ class GetDeliveryNoteNumberAPIView(APIView):
                 order_detail = OrderDetail.objects.get(order_box=id)
                 delivery_person_id = order_detail.delivery_person.id
                 prefix = order_detail.delivery_person.first_name[0:3].upper()
-                delivery_note = DeliveryNote.objects.filter(order=order_detail).last()
+                delivery_note = DeliveryNote.objects.filter(order__delivery_person=delivery_person_id).last()
 
                 if delivery_note:
                     do_number_list = delivery_note.do_number.split("_")

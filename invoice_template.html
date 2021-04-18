@@ -141,7 +141,13 @@
                                 <td style="text-align:right">{{order_prod.purchased_qty}}</td>
                                 <td style="text-align:right">&pound; {{order_prod.unit_sales_price}}</td>
                                 <td>&pound; {{order_prod.vat_amount}}</td>
-                                <td style="text-align:right">&pound; {{order_prod.amount}}</td>
+                                {% if order_prod.amount == 0.0 %}
+                                    <td style="text-align:right">&pound; 00</td>
+                                {% else %}
+                                    <td style="text-align:right">&pound; {{order_prod.amount}}</td>
+
+                                {% endif %}
+
                             </tr>
 
 
