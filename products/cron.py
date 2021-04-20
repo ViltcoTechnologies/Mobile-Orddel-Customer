@@ -11,8 +11,15 @@ def update_avg_price_job():
         try:
             client = Client.objects.get(id=product_record['client'])
             product = Product.objects.get(id=product_record['product'])
-            avg_price_obj = AveragePrice.objects.update_or_create(client=client, product=product, avg_price=product_record['avg_price'])
-            avg_price_obj.save()
+            avg_price_conv = float("{:.2f}".format(product_record['avg_price']))
+
+            try:
+                avg_price_obj = AveragePrice.objects.get(client=client, product=product)
+                avg_price_obj.avg_price=avg_price_conv
+                avg_price_obj.save()
+            except:
+                avg_price_obj = AveragePrice.objects.create(client=client, product=product, avg_price=avg_price_conv)
+                avg_price_obj.save()
         except:
             pass
 

@@ -81,7 +81,7 @@ MIDDLEWARE = [
 ]
 
 CRONJOBS = [
-    ('* * * * *', 'products.cron.update_avg_price_job', '> /home/anarchist/orddel-cron.log')
+    ('* * * * *', 'products.cron.update_avg_price_job', '> /home/orddel/orddel-cron.log')
 ]
 CRONTAB_COMMAND_SUFFIX = '2>&1'
 

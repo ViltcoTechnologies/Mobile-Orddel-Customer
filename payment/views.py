@@ -158,7 +158,7 @@ class GenerateInvoiceAPIView(APIView):
                     product['product_id'] = order_prod_obj.product.id
                     product['product_name'] = order_prod_obj.product.name
                     product['product_unit'] = order_prod_obj.product.unit
-                    product['avg_price'] = order_prod_obj.product.avg_price
+                    # product['avg_price'] = order_prod_obj.product.avg_price
                     product['ordered_quantity'] = order_prod_obj.quantity
                     product['purchased_qty'] = order_prod_obj.purchased_quantity
                     if product['purchased_qty'] != 0:
@@ -171,9 +171,9 @@ class GenerateInvoiceAPIView(APIView):
                         total_amount += product['amount']
                         product['supplier_market'] = order_prod_obj.supplier
                     else:
-                        product['unit_sales_price'] = ""
-                        product['vat_amount'] = ""
-                        product['amount'] = ""
+                        product['unit_sales_price'] = 0
+                        product['vat_amount'] = 0
+                        product['amount'] = 0
                         product['supplier_market'] = ""
                     products_details.append(product)
                 response['order_products'] = products_details
@@ -223,7 +223,7 @@ class ViewInvoiceApiView(APIView):
                 product['product_id'] = order_prod_obj.product.id
                 product['product_name'] = order_prod_obj.product.name
                 product['product_unit'] = order_prod_obj.product.unit
-                product['avg_price'] = order_prod_obj.product.avg_price
+                # product['avg_price'] = order_prod_obj.product.avg_price
                 product['ordered_quantity'] = order_prod_obj.quantity
                 product['purchased_qty'] = order_prod_obj.purchased_quantity
                 if product['purchased_qty'] != 0:
@@ -300,6 +300,11 @@ def prepare_invoice(invoice_id):
                 product['amount'] = float("{:.2f}".format((product['vat_amount'] + product['unit_sales_price']) * product['purchased_qty']))
                 total_amount += product['amount']
                 product['supplier_market'] = order_prod_obj.supplier
+            else:
+                product['unit_sales_price'] = 0
+                product['vat_amount'] = 0
+                product['amount'] = 0
+                product['supplier_market'] = ""
             products_details.append(product)
         response['order_products'] = products_details
         order_b_obj = OrderBox.objects.get(id=invoice.order.order_box.id)

@@ -419,7 +419,14 @@ class ListOrderApiView(APIView):
                 product['product_id'] = order_prod_obj.product.id
                 product['product_name'] = order_prod_obj.product.name
                 product['product_unit'] = order_prod_obj.product.unit
-                product['avg_price'] = order_prod_obj.product.avg_price
+                try:
+                    avg_price_obj = AveragePrice.objects.get(client=order_detail.order_box.client, product=product['product_id'])
+                    product['avg_price'] = avg_price_obj.avg_price
+
+                except Exception as e:
+                    print(e)
+                    product['avg_price'] = 0.0
+
                 product['unit_sales_price'] = order_prod_obj.unit_sale_price
                 product['quantity'] = order_prod_obj.quantity
                 product['purchased_quantity'] = order_prod_obj.purchased_quantity
@@ -569,7 +576,7 @@ class ConsolidatePurchaseAPIView(APIView):
                     order_delivery_datetime = datetime.strptime(order_delivery_datetime, "%d-%m-%Y").date().strftime("%Y-%m-%d")
 
                 print(order_delivery_datetime)
-                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit, s.avg_price
+                sql = f"""SELECT M.status,M.delivery_person_id,d.product_id,sum(d.quantity) as qty, s.id as pid, s.name, s.unit
                         FROM order_orderdetail M inner join order_orderproduct D on D.order_box_id=M.order_box_id 
                         INNER JOIN products_product S ON S.ID=D.PRODUCT_ID 
                         where M.status='in_progress' and delivery_person_id={id} and to_char(M.order_delivery_datetime, 'YYYY-MM-DD') LIKE '{order_delivery_datetime}'
@@ -584,7 +591,7 @@ class ConsolidatePurchaseAPIView(APIView):
                 total_packages = 0
                 for row in rows:
                     data_dict = {'status': row[0], 'delivery_person_id': row[1], 'product_id': row[2], 'qty': row[3],
-                                'product_name': row[5], 'unit': row[6], 'avg_price': row[7]}
+                                'product_name': row[5], 'unit': row[6]}
                     total_packages += row[3]
                     consolidated_purchases.append(data_dict)
 
