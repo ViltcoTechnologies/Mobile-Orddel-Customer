@@ -225,6 +225,12 @@ class AdminDashboardApiView(APIView):
     def get(self, request):
         try:
             order_details = OrderDetail.objects.all()
+            pending_orders = OrderDetail.objects.filter(status='pending').count()
+            rejected_orders = OrderDetail.objects.filter(status='rejected').count()
+            inprogress_orders = OrderDetail.objects.filter(status='in_progress').count()
+            purchased_orders = OrderDetail.objects.filter(status='purchased').count()
+            delivered_orders = OrderDetail.objects.filter(status='delivered').count()
+
             invoices = Invoice.objects.all()
             clients = Client.objects.all()
             delivery_persons = DeliveryPerson.objects.all()
@@ -247,7 +253,12 @@ class AdminDashboardApiView(APIView):
                 else:
                     delivery_persons = 0
                 data = {
-                    "order_details": order_details,
+                    "total_orders": order_details,
+                    "pending_orders": pending_orders,
+                    "rejected_orders": rejected_orders,
+                    "inprogress_orders": inprogress_orders,
+                    "purchased_orders": purchased_orders,
+                    "delivered_orders": delivered_orders,
                     "invoices": invoices,
                     "clients": clients,
                     "delivery_persons": delivery_persons
