@@ -362,6 +362,8 @@ class UpdateOrderApiView(APIView):
         delivery_person = request.data['delivery_person']
         business = request.data['business']
         delivery_datetime = request.data['delivery_datetime']
+        order_products = request.data['order_products']
+        print(order_products)
         try:
             order_detail = OrderDetail.objects.get(id=order_id)
         except:
@@ -378,6 +380,34 @@ class UpdateOrderApiView(APIView):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Business Not found'})
 
+        order_box = order_detail.order_box
+        list_of_order_products = order_box.orderproduct_set.all().order_by('id')
+        print(list_of_order_products)
+        for item in list_of_order_products:
+            print(item.product.id)
+        index = 0
+        for index in range(len(list_of_order_products)):
+            order_prod_id = list_of_order_products[index].id
+            product = Product.objects.get(id=order_products[index]['id'])
+            list_of_order_products.filter(id=order_prod_id).update(product=product,
+                                                                   quantity=order_products[index]['quantity'],
+                                                                   total_amount=order_products[index]['total_amount'])
+            # list_of_order_products[index].product.id = order_products[index]['id']
+            # list_of_order_products[index].quantity = order_products[index]['quantity']
+            # list_of_order_products[index].total_amount = order_products[index]['total_amount']
+        for item in list_of_order_products:
+            print(item.product.id)
+        for j in range(index+1, len(order_products)):
+            print(order_products[j]['id'])
+            product = Product.objects.get(id=order_products[j]['id'])
+            order_prods = list_of_order_products.create(
+                                                        order_box=order_box,
+                                                        product=product,
+                                                        quantity=order_products[j]['quantity'],
+                                                        total_amount=order_products[j]['total_amount'])
+
+            order_detail.order_products.add(order_prods.id)
+
         order_detail.delivery_person = delivery_person
         order_detail.business = business
         order_detail.order_delivery_datetime = datetime.strptime(delivery_datetime, "%d-%m-%Y %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S.%f%z")
@@ -390,7 +420,6 @@ class UpdateOrderApiView(APIView):
         
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
-
 
         return Response(status=status.HTTP_200_OK, data={'message': 'Order Updated'})
 
