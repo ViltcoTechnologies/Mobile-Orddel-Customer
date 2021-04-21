@@ -278,7 +278,8 @@ class ClientRegisterV2ApiView(APIView):
                                 new_auth_user.last_name = last_name
                                 try:
                                     delivery_person = DeliveryPerson.objects.get(id=preferred_delivery_person)
-                                except:
+                                except Exception as e:
+                                    print(e)
                                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                                     data={'error': 'Delivery Person does not exist'})
 
@@ -309,7 +310,8 @@ class ClientRegisterV2ApiView(APIView):
                                             status='active'
 
                                         )
-                                    except:
+                                    except Exception as e:
+                                        print(e)
                                         return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to create Client '
                                                                                                              'Package Log'})
                                     try:
@@ -326,10 +328,11 @@ class ClientRegisterV2ApiView(APIView):
 
                                     return Response(status=status.HTTP_200_OK,
                                                     data={"client_created": serializer.data})
-                                except:
+                                except Exception as e:
+                                    print(e)
                                     return Response(status=status.HTTP_400_BAD_REQUEST,
-                                                    data={"message": "there was a error creating "
-                                                                     "delivery_person was not created"})
+                                                    data={"message": "there was an error creating "
+                                                                     "client "})
                             except:
                                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                                 data={"message": "User already exists"})
@@ -339,8 +342,8 @@ class ClientRegisterV2ApiView(APIView):
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={"message": "Error! Make sure you're not missing one of the "
-                                      "following required fields: (first_name, last_name, otp_status"
-                                      "email, phone_number, password)"})
+                                      "following required fields: (first_name, last_name, otp_status, "
+                                      "email, phone_number, password, preferred_delivery_person)"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
                         data={"message": "Make sure you're not missing one "
