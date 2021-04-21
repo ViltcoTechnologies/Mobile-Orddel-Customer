@@ -207,7 +207,8 @@ class ViewInvoiceApiView(APIView):
             # try:
             try:
                 invoice = Invoice.objects.get(order=id)
-            except:
+            except Exception as e:
+                print(e)
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Invoice does not exist'})
             serializer = InvoiceSerializer(invoice)
             response = serializer.data

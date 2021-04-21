@@ -137,7 +137,7 @@
                             <tr>
                                 <td>{{order_prod.product_name}}</td>
                                 <td>{{order_prod.product_unit}}</td>
-                                <td>&pound; {{order_prod.purchased_qty}}</td>
+                                <td>{{order_prod.purchased_qty}}</td>
 
                             </tr>
 
@@ -152,6 +152,7 @@
                         <h4>Total Packages: {{response.total_qty}}</h4>
 
                     </div>
+                    {% if response.delivery_note %}
                     <div class="delivery_note">
                         <p>
                             <b>
@@ -159,6 +160,7 @@
                             </b>
                         </p>
                     </div>
+                    {% endif %}
                     <div class="thank_you_note">
                         <p>
                             <b>
