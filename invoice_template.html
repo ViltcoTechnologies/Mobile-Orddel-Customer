@@ -49,8 +49,20 @@
             border-radius: 50%;
         }
 
+        .heading{
+            padding: -4px;
+        }
         .header {
             margin-top: 50px;
+        }
+        .footer {
+
+
+          position: fixed;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          text-align: center;
         }
     </style>
 </head>
@@ -58,26 +70,16 @@
     <div class="container">
         <center>
             <div class="row">
-
                 <header>
-
                     <div class="header">
-                        <div class="logo">
-                            <img src="index.jpeg" height="40" width="40"/>
-                        </div>
-                        <p>Powered by ORDDEL</p>
-
-                        <div class="heading">
-                            <h1>Invoice</h1>
+                        <div class="heading" style="margin-top: 20px; ">
+                            <h1 style="padding-top: 5px;">Invoice</h1>
+                            <h2>{{response.dp_business_name}}</h2>
+                            <h2>{{response.dp_business_address}}</h2>
                         </div>
                     </div>
                 </header>
 
-
-<!--                <div class="delivery_person_logo">-->
-<!--                    <img src={{response.delivery_person_logo}} height="60" width="60"/>-->
-<!--                </div>-->
-                <br>
                 <div class="top-detail">
                     <table>
                         <tbody>
@@ -123,7 +125,7 @@
                 </div>
                 <br>
                 <div class="ordered_products">
-                    <table cellpadding="1">
+                    <table cellpadding="1" border="1">
                         <thead>
                             <div class="thead-border">
                                 <th>Product</th>
@@ -151,26 +153,37 @@
                             </tr>
 
 
-                        </tbody>
-                        {% endfor %}
 
+                        </tbody>
+
+                        {% endfor %}
+                        <tfoot>
+                            <tr>
+                                <td>Total</td>
+                                <td style="text-align:right">{{response.total_qty}}</td>
+                                <td>       </td>
+                                <td> &pound; {{response.total_vat}}</td>
+                                <td style="text-align:right"> &pound; {{response.total_amount}}</td>
+
+                            </tr>
+                        </tfoot>
                     </table>
                     <br>
                     <br>
                     <div class="total">
                         <h4>Total Packages: {{response.total_qty}}</h4>
-                        <h4>Net total(without VAT): {{response.net_total_without_vat}}</h4>
+                        <h4>Net total(without VAT): &pound; {{response.net_total_without_vat}}</h4>
                         <h4>Grand Total: &pound; {{response.total_amount}}</h4>
 
                     </div>
                     {% if response.bank_name %}
-                    <br>
+
                     <br>
                     <hr>
                     <div class = "dp_bank_details">
                         <table>
                             <thead>
-                            <h4>Bank Details of {{response.delivery_person_name}}</h4>
+                                <h4>Bank Details of {{response.delivery_person_name}}</h4>
                             </thead>
 
                             <tbody>
@@ -193,12 +206,11 @@
                         </p>
                     </div>
                     <div class="thank_you_note">
-                        <p>
-                            <b>
-                                Thank You for choosing {{response.delivery_person_name}}.
-                                If you want more services kindly order again.
-                                We'll surely cater you..!
-                            </b>
+                        <p style="color: grey;">
+                            Thank You for choosing {{response.delivery_person_name}}.
+                            If you want more services kindly order again.
+                            We'll surely cater you..!
+
                         </p>
                     </div>
                 </div>
@@ -206,5 +218,14 @@
             </div>
         </center>
     </div>
+    <footer>
+        <div class="footer">
+            <img src="index.jpeg" height="40" width="40"/>
+            <br>
+            <span>Powered by ORDDEL</span>
+
+        </div>
+    </footer>
+
 </body>
 </html>

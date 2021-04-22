@@ -324,6 +324,9 @@ def prepare_invoice(invoice_id):
             response['account_title'] = dp_bank_details.account_title
             response['credit_card_no'] = dp_bank_details.credit_card_no
             response['sort_code'] = dp_bank_details.sort_code
+        dp_business_detail = DeliveryPersonBusinessDetail.objects.filter(delivery_person=delivery_person_obj).last()
+        response['dp_business_name'] = dp_business_detail.name
+        response['dp_business_address'] = dp_business_detail.address
         response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
         response['delivery_person_address'] = delivery_person_obj.address
         response['business_address'] = invoice.order.business.address
