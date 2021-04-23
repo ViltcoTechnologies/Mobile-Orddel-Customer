@@ -362,6 +362,8 @@ class UpdateOrderApiView(APIView):
         delivery_person = request.data['delivery_person']
         business = request.data['business']
         delivery_datetime = request.data['delivery_datetime']
+        delivery_note = request.data['delivery_note']
+
         order_products = request.data['order_products']
         print(order_products)
         try:
@@ -412,6 +414,7 @@ class UpdateOrderApiView(APIView):
         order_detail.business = business
         order_detail.order_delivery_datetime = datetime.strptime(delivery_datetime, "%d-%m-%Y %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S.%f%z")
         order_detail.status = 'pending'
+        order_detail.delivery_note = delivery_note
         order_detail.save()
         user_id = delivery_person.user.id
         try:

@@ -165,12 +165,11 @@ class CreateProductApiView(APIView):
         sku = request.data['sku']
         name = request.data['name']
         unit = request.data['unit']
-        avg_price = request.data['avg_price']
+        # avg_price = request.data['avg_price']
         currency = request.data['currency']
         if sku == "" \
                 or name == "" \
                 or unit == "" \
-                or avg_price == "" \
                 or currency == "":
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data="Ooops! following required fields can't "
@@ -194,7 +193,7 @@ class CreateProductApiView(APIView):
                 image=image,
                 unit=unit,
                 vat=vat,
-                avg_price=avg_price,
+                # avg_price=avg_price,
                 currency=currency
             )
             new_product_details.save()
@@ -226,47 +225,52 @@ class ListProductApiView(APIView):
 
     def get(self, request, id=None):
         client_id = self.request.query_params.get('client_id')
-        try:
-            client = Client.objects.get(id=client_id)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client ID not provided or does not exist'})
-
-        if id:
+        
+        if client_id:
             try:
-                product = Product.objects.get(id=id)
-                serializer = ProductSerializer(product)
-                return Response(status=status.HTTP_200_OK,
-                                data={"product": serializer.data})
+                client = Client.objects.get(id=client_id)
             except:
-                return Response(status=status.HTTP_404_NOT_FOUND,
-                                data={"No Product with ID!": id})
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client ID not provided or does not exist'})
+            if id:
+                try:
+                    product = Product.objects.get(id=id)
+                    serializer = ProductSerializer(product)
+                    return Response(status=status.HTTP_200_OK,
+                                    data={"product": serializer.data})
+                except:
+                    return Response(status=status.HTTP_404_NOT_FOUND,
+                                    data={"No Product with ID!": id})
+            else:
+                # try:
+                average_prices = AveragePrice.objects.filter(client=client_id)
+                products = Product.objects.all()
+                serializer = ProductSerializer(products, many=True)
+                response = serializer.data
+
+                for res in response:
+                    try:
+                        try:
+                            product = Product.objects.get(id=res['id'])
+                        except:
+                            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client does not exist'})
+
+                        avg_price_obj = AveragePrice.objects.get(client=client, product=product)
+                        res['avg_price'] = avg_price_obj.avg_price
+                        print('here ')
+                    except Exception as e:
+                        res['avg_price'] = 0.0
+
+                if not products:
+                    return Response(status=status.HTTP_200_OK,
+                                    data={"message": 'Product table is empty'})
+
+
+                return Response(response,
+                                status=status.HTTP_200_OK)
         else:
-            # try:
-            average_prices = AveragePrice.objects.filter(client=client_id)
             products = Product.objects.all()
             serializer = ProductSerializer(products, many=True)
-            response = serializer.data
-
-            for res in response:
-                try:
-                    try:
-                        product = Product.objects.get(id=res['id'])
-                    except:
-                        return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client does not exist'})
-
-                    avg_price_obj = AveragePrice.objects.get(client=client, product=product)
-                    res['avg_price'] = avg_price_obj.avg_price
-                    print('here ')
-                except Exception as e:
-                    res['avg_price'] = 0.0
-
-            if not products:
-                return Response(status=status.HTTP_200_OK,
-                                data={"message": 'Product table is empty'})
-
-
-            return Response(response,
-                            status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK, data={'products': serializer.data})
             # except:
             #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
