@@ -5,11 +5,20 @@
     <title>Invoice</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <style>
+        /*html {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 65px;
+            height: 200px;
+        }*/
+
         @page {
             size: 65mm 200mm;
             margin: auto auto;
             top: 50%;
         }
+
         *{
             font-size: 0.96rem;
         }
@@ -35,17 +44,17 @@
         td {
             padding: 0.5rem 0rem 0.1rem 0.1rem;
         }
-
         .thead-border {
             padding-left: 50px;
             padding-right: 50px;
-        }/*
+        }
+
         th {
-            border: 0.5px solid black;
-            border-collapse: collapse;
+            /* border: 0.5px solid black; */
+            /* border-collapse: collapse; */
             padding: 0.5rem 0rem 0.2rem 0rem;
         }
-        */
+
         .delivery_person_logo {
             border-radius: 50%;
         }
@@ -57,12 +66,15 @@
             margin-top: 50px;
         }
         .footer {
+
+
           position: fixed;
           left: 0;
           bottom: 0;
           width: 100%;
           text-align: center;
         }
+
     </style>
 </head>
 <body>
@@ -186,10 +198,10 @@
                             </thead>
 
                             <tbody>
-                                <tr><td>Account Title: </td> <td>{{response.account_title}}</td></tr>
-                                <tr><td>Sort Code: </td> <td>{{response.sort_code}} </td></tr>
-                                <tr><td>Account No: </td> <td>{{response.credit_card_no}} </td></tr>
-                                <tr><td>Bank Name: </td> <td>{{response.bank_name}}</td></tr>
+                                <tr><td>   </td><td>Account Title: </td> <td>{{response.account_title}}</td><td>   </td></tr>
+                                <tr><td>   </td><td>Sort Code: </td> <td>{{response.sort_code}} </td><td>   </td></tr>
+                                <tr><td>   </td><td>Account No: </td> <td>{{response.credit_card_no}} </td><td>   </td></tr>
+                                <tr><td>   </td><td>Bank Name: </td> <td>{{response.bank_name}}</td><td>   </td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -197,6 +209,8 @@
                     <br>
                     <br>
                     {% endif %}
+
+                    {% if response.delivery_note %}
                     <div class="delivery_note">
                         <p>
                             <b>
@@ -204,6 +218,7 @@
                             </b>
                         </p>
                     </div>
+                    {% endif %}
                     <div class="thank_you_note">
                         <p style="color: grey;">
                             Thank You for choosing {{response.delivery_person_name}}.
@@ -216,15 +231,17 @@
 
             </div>
         </center>
+
+
     </div>
     <footer>
         <div class="footer">
             <img src="index.jpeg" height="40" width="40"/>
             <br>
             <span>Powered by ORDDEL</span>
-
         </div>
     </footer>
+
 
 </body>
 </html>
