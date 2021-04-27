@@ -85,5 +85,8 @@ urlpatterns = [
     path('delivery_person_dashboard/<id>/', DeliveryPersonDashboardApiView.as_view()),
 
     # Incoming order
-    path('update_order_status/', UpdateDeliveryPersonOrderApiView.as_view())
+    path('update_order_status/', UpdateDeliveryPersonOrderApiView.as_view()),
+
+    path('check_first_login/<id>/', CheckFirstLoginAPIView.as_view()),
+
 ]

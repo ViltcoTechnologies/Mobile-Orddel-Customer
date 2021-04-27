@@ -1097,3 +1097,19 @@ class PendingApprovalListApiView(APIView):
             pass
 
 
+class CheckFirstLoginAPIView(APIView):
+    def get(self, request, id=None):
+        try:
+            try:
+                client = Client.objects.get(id=id)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client not found'})
+            first_login = client.first_login
+
+            if first_login:
+                client.first_login = False
+                client.save()
+            return Response(status=status.HTTP_200_OK, data={'first_login': first_login})
+
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e.args})

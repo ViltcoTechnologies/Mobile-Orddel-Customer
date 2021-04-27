@@ -56,6 +56,7 @@ class DeliveryPerson(models.Model):
     otp_status = models.BooleanField(default=False)
     admin_approval_status = models.CharField(max_length=300, choices=admin_approval_choices)
     approval_read_status = models.BooleanField(default=False)
+    first_login = models.BooleanField(default=True)
     no_of_active_order = models.IntegerField(default=0)
 
     def __str__(self):

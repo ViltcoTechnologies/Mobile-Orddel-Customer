@@ -1291,3 +1291,21 @@ class UpdateDeliveryPersonOrderApiView(APIView):
                             })
 
 # ------------------------------------------------------------------------------------------------------------------------
+
+
+class CheckFirstLoginAPIView(APIView):
+    def get(self, request, id=None):
+        try:
+            try:
+                delivery_person = DeliveryPerson.objects.get(id=id)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery Person not found'})
+            first_login = delivery_person.first_login
+
+            if first_login:
+                delivery_person.first_login = False
+                delivery_person.save()
+            return Response(status=status.HTTP_200_OK, data={'first_login': first_login})
+
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e.args})

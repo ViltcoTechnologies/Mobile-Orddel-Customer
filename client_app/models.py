@@ -71,6 +71,7 @@ class Client(models.Model):
     otp_status = models.BooleanField(default=False)
     admin_approval_status = models.CharField(max_length=100, choices=admin_approval_choices)
     approval_read_status = models.BooleanField(default=False)
+    first_login = models.BooleanField(default=True)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):

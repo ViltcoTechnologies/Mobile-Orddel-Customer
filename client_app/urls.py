@@ -66,4 +66,9 @@ urlpatterns = [
 
     # Client home screen Dashboard
     path('client_dashboard/<id>/', ClientDashboardApiView.as_view()),
+
+
+    path('check_first_login/<id>/', CheckFirstLoginAPIView.as_view()),
+
+
 ]
