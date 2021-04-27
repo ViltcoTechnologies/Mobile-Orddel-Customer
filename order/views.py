@@ -734,7 +734,8 @@ class InsertPurchaseDetailsAPIView(APIView):
                             ORDER_ORDERPRODUCT D
                             SET 
                             profit_margin={profit_margin},
-                            supplier='{supplier}', 
+                            supplier='{supplier}',
+                            supplier_payment_status='unpaid', 
                             unit_purchase_price={unit_purchase_price}, 
                             unit_sale_price={unit_sales_price},
                             portrage_price={portrage_price},

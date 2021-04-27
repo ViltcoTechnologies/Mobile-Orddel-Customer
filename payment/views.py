@@ -327,8 +327,9 @@ def prepare_invoice(invoice_id):
             response['credit_card_no'] = dp_bank_details.credit_card_no
             response['sort_code'] = dp_bank_details.sort_code
         dp_business_detail = DeliveryPersonBusinessDetail.objects.filter(delivery_person=delivery_person_obj).last()
-        response['dp_business_name'] = dp_business_detail.name
-        response['dp_business_address'] = dp_business_detail.address
+        if dp_business_detail:
+            response['dp_business_name'] = dp_business_detail.name
+            response['dp_business_address'] = dp_business_detail.address
         response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
         response['delivery_person_address'] = delivery_person_obj.address
         response['business_address'] = invoice.order.business.address
@@ -349,11 +350,13 @@ class GeneratePDFInvoiceAPIView(APIView):
             order_detail = OrderDetail.objects.get(id=response['order'])
             try:
                 response["client_logo"] = order_detail.order_box.client.image.url
-            except:
+            except Exception as e:
+                print(e.args)
                 response['client_logo'] = ""
             try:
                 response["delivery_person_logo"] = order_detail.delivery_person.image.url
-            except:
+            except Exception as e:
+                print(e.args)
                 response["delivery_person_logo"] = ""
             try:
                 delivery_person_name = response['delivery_person_name']
