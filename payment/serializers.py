@@ -34,3 +34,7 @@ class MakePaymentSerializer(serializers.Serializer):
     user_type = serializers.CharField(write_only=True)
     package_id = serializers.IntegerField(write_only=True)
 
+
+class SuppliersListSerializer(serializers.Serializer):
+    supplier = serializers.CharField(read_only=True)
+    amount = serializers.CharField(read_only=True)

@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from datetime import date
+from django.db.models import Avg, Q, F, Sum, FloatField
 from .models import *
 from .serializers import *
 from order.serializers import OrderDetailSerializer
@@ -13,6 +14,7 @@ from django.views.generic import View as view
 from .utils import *
 import stripe
 import datetime
+from pprint import pprint
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Create your views here.
@@ -717,3 +719,53 @@ class GenerateDeliveryNotePDF(APIView):
                 return response
 
             return HttpResponse("Not found")
+
+
+class SuppliersList(APIView):
+    def get(self, request):
+        try:
+            delivery_person = self.request.query_params.get('delivery_person_id')
+            date = self.request.query_params.get('date')
+            order_delivery_date = datetime.datetime.strptime(date, "%d-%m-%Y").date().strftime("%Y-%m-%d")
+
+            DeliveryPerson.objects.get(id=delivery_person)
+            order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, order_products__supplier_payment_status='unpaid',
+                                                      order_delivery_datetime__date=order_delivery_date).values(
+                                                      supplier=F('order_products__supplier')).annotate(
+                                                      amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()))
+
+            serializer = SuppliersListSerializer(order_detail, many=True)
+            return Response(status=status.HTTP_200_OK, data=serializer.data)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e.args})
+
+
+class SubmitPurchasePaymentDetails(APIView):
+    def post(self, request):
+        try:
+            delivery_person_id = request.data['delivery_person']
+            supplier = request.data['supplier']
+            amount = request.data['amount']
+            invoice_number = request.data['invoice_number']
+            date = request.data['date']
+
+            order_delivery_date = datetime.datetime.strptime(date, "%d-%m-%Y").date().strftime("%Y-%m-%d")
+            order_details = OrderDetail.objects.filter(delivery_person=delivery_person_id, order_delivery_datetime__date=order_delivery_date, order_products__supplier=supplier)
+            pprint(order_details[0].order_products)
+
+            for order in order_details:
+                order.order_products.update(supplier_payment_status='paid')
+
+            try:
+                delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery Person does not exist'})
+
+            PurchasePaymentDetail.objects.create(delivery_person=delivery_person, supplier_name=supplier, amount=amount, invoice_number=invoice_number)
+            return Response(status=status.HTTP_200_OK, data={
+                                                                'message': 'Purchase Payment details successfully submitted'
+                                                            })
+
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e.args})

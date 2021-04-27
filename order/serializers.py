@@ -24,12 +24,6 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         exclude = ('order_products',)
 
 
-class ConsolidatedPurchaseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ConsolidatedPurchase
-        fields = "__all__"
-
-
 # class InsertConsolidatePurchaseDetailsSerializer(serializers.Serializer):
 #     class Meta:
 #         fields = "delivery_person_id, product_id, supplier, unit_purchase_price, profit_margin"

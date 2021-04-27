@@ -18,14 +18,6 @@ class InvoiceAdmin(admin.ModelAdmin):
 admin.site.register(Invoice, InvoiceAdmin)
 
 
-class ItemUnitPriceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'product', 'unit_price', 'invoice')
-    list_display_links = ('id', 'invoice')
-
-
-admin.site.register(ItemUnitPrice, ItemUnitPriceAdmin)
-
-
 class ClientPaymentDetailAdmin(admin.ModelAdmin):
     list_display = ('id', 'client', 'customer_id', 'payment_method_id')
     list_display_links = ('id', 'client')
@@ -40,3 +32,11 @@ class DeliveryPaymentDetailsAdmin(admin.ModelAdmin):
 
 
 admin.site.register(DeliveryPaymentDetails, DeliveryPaymentDetailsAdmin)
+
+
+class PurchasePaymentDetailsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'delivery_person', 'supplier_name', 'amount', 'payment_date', 'invoice_number')
+    list_display_links = ('id', 'delivery_person')
+
+
+admin.site.register(PurchasePaymentDetail, PurchasePaymentDetailsAdmin)

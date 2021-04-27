@@ -20,6 +20,11 @@ order_status_choices = (
     ('delivered', 'Delivered')
 
 )
+supplier_payment_choices = (
+    ('paid', 'Paid'),
+    ('unpaid', 'Unpaid')
+
+)
 
 cart_staging_choices = (
     ('staged', 'Staged'),
@@ -50,6 +55,7 @@ class OrderProduct(models.Model):
     purchased_quantity = models.IntegerField(default=0)
     total_amount = models.FloatField(default=0.0)
     supplier = models.CharField(max_length=30, null=True, blank=True)
+    supplier_payment_status = models.CharField(choices=supplier_payment_choices, max_length=50, null=True, blank=True, default=supplier_payment_choices[1][1])
     unit_purchase_price = models.FloatField(default=0.0)
     portrage_price = models.FloatField(default=0.0, null=True, blank=True)
     profit_margin = models.FloatField(default=0.0)
@@ -82,14 +88,3 @@ class OrderDetail(models.Model):
     def __str__(self):
         return str(self.id)
 
-
-class ConsolidatedPurchase(models.Model):
-    delivery_person = models.ForeignKey(DeliveryPerson, on_delete=models.CASCADE, null=True)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    quantity = models.IntegerField(null=True, blank=True)
-    cost_per_unit = models.IntegerField(null=True, blank=True)
-    purchased_from = models.CharField(max_length=300, null=True, blank=True)
-    date_created = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return str(self.id)

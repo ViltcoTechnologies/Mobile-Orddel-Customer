@@ -132,6 +132,7 @@ AUTHENTICATION_BACKENDS = [
     # 'axes.backends.AxesBackend',
 
     # Django ModelBackend is the default authentication backend.
+    'ordel.backends.CaseInsensitiveModelBackend',
     'django.contrib.auth.backends.ModelBackend',
     'axes.backends.AxesBackend'
 ]
