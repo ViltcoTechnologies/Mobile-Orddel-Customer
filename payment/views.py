@@ -131,9 +131,13 @@ class CreateDeliveryNote(APIView):
                 order_prod_obj.save()
 
             try:
-                DeliveryNote.objects.get(order=order_detail)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Delivery note already exists"})
-            except:
+                delivery_note_obj = DeliveryNote.objects.get(order=order_detail)
+                delivery_note_obj.order = order_detail
+                delivery_note_obj.do_number = delivery_note_number
+                delivery_note_obj.delivery_note = delivery_note
+                delivery_note_obj.save()
+            except Exception as e:
+                print(e.args)
                 DeliveryNote.objects.create(order=order_detail, do_number=delivery_note_number, delivery_note=delivery_note)
             return Response(status=status.HTTP_200_OK, data={'message': 'Delivery note created'})
 
