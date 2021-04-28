@@ -743,7 +743,7 @@ class SuppliersList(APIView):
             order_delivery_date = datetime.datetime.strptime(date, "%d-%m-%Y").date().strftime("%Y-%m-%d")
 
             DeliveryPerson.objects.get(id=delivery_person)
-            order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, order_products__supplier_payment_status='unpaid',
+            order_detail = OrderDetail.objects.filter(delivery_person=delivery_person,
                                                       order_delivery_datetime__date=order_delivery_date).values(
                                                       supplier=F('order_products__supplier')).annotate(
                                                       amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()))
