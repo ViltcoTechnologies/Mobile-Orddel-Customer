@@ -242,7 +242,14 @@ class ViewInvoiceApiView(APIView):
                     product['amount'] = float("{:.2f}".format((product['vat_amount'] + product['unit_sales_price']) * product['purchased_qty']))
                     total_amount += product['amount']
                     product['supplier_market'] = order_prod_obj.supplier
+
+                else:
+                    product['unit_sales_price'] = 0
+                    product['vat_amount'] = 0
+                    product['amount'] = 0
+                    product['supplier_market'] = ""
                 products_details.append(product)
+
             response['order_products'] = products_details
             order_b_obj = OrderBox.objects.get(id=invoice.order.order_box.id)
             if order_b_obj.client != None:
