@@ -38,4 +38,4 @@ class MakePaymentSerializer(serializers.Serializer):
 class SuppliersListSerializer(serializers.Serializer):
     supplier = serializers.CharField(read_only=True)
     amount = serializers.CharField(read_only=True)
-    status = serializers.CharField(read_only=True)
+    supplier_payment_status = serializers.CharField(read_only=True)
