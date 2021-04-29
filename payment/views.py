@@ -14,6 +14,7 @@ from django.views.generic import View as view
 from .utils import *
 import stripe
 import datetime
+import json
 from pprint import pprint
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -765,20 +766,26 @@ class SubmitPurchasePaymentDetails(APIView):
             date = request.data['date']
 
             order_delivery_date = datetime.datetime.strptime(date, "%d-%m-%Y").date().strftime("%Y-%m-%d")
-            order_details = OrderDetail.objects.filter(delivery_person=delivery_person_id, order_delivery_datetime__date=order_delivery_date, order_products__supplier=supplier)
-            pprint(order_details[0].order_products)
+            order_detail = OrderDetail.objects.filter(delivery_person=delivery_person_id, order_delivery_datetime__date=order_delivery_date, order_products__supplier=supplier).values(order_product=F('order_products'))
+            # pprint(order_details[0].order_products)
+            print(order_detail)
 
-            for order in order_details:
-                order.order_products.update(supplier_payment_status='paid', supplier_invoice_number=invoice_number, payment_datetime=datetime.datetime.now())
+            for order_prod in order_detail:
+                order_product = OrderProduct.objects.get(id=order_prod['order_product'])
+                order_product.supplier_payment_status='paid'
+                order_product.supplier_invoice_number=invoice_number
+                order_product.payment_datetime=datetime.datetime.now()
+                order_product.save()
 
             try:
                 delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery Person does not exist'})
 
-            PurchasePaymentDetail.objects.create(delivery_person=delivery_person, supplier_name=supplier, amount=amount, invoice_number=invoice_number)
+            purchase_payment = PurchasePaymentDetail.objects.get_or_create(delivery_person=delivery_person, supplier_name=supplier, amount=amount, invoice_number=invoice_number)
+            print(purchase_payment)
             return Response(status=status.HTTP_200_OK, data={
-                                                                'message': 'Purchase Payment details successfully submitted'
+                                                                'message': 'Purchase Payment details successfully submitted',
                                                             })
 
         except Exception as e:
