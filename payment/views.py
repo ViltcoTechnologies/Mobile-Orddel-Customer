@@ -745,7 +745,7 @@ class SuppliersList(APIView):
             DeliveryPerson.objects.get(id=delivery_person)
             order_detail = OrderDetail.objects.filter(delivery_person=delivery_person,
                                                       order_delivery_datetime__date=order_delivery_date).values(
-                                                      supplier_payment_status=F('order_products__supplier_payment_status'), supplier=F('order_products__supplier')).annotate(
+                                                      supplier_payment_status=F('order_products__supplier_payment_status'), supplier=F('order_products__supplier'), invoice_number=F('order_products__supplier_invoice_number')).annotate(
                                                       amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()))
 
             serializer = SuppliersListSerializer(order_detail, many=True)
@@ -769,7 +769,7 @@ class SubmitPurchasePaymentDetails(APIView):
             pprint(order_details[0].order_products)
 
             for order in order_details:
-                order.order_products.update(supplier_payment_status='paid')
+                order.order_products.update(supplier_payment_status='paid', supplier_invoice_number=invoice_number, payment_datetime=datetime.datetime.now())
 
             try:
                 delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)

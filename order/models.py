@@ -56,6 +56,8 @@ class OrderProduct(models.Model):
     total_amount = models.FloatField(default=0.0)
     supplier = models.CharField(max_length=30, null=True, blank=True)
     supplier_payment_status = models.CharField(choices=supplier_payment_choices, max_length=50, null=True, blank=True, default=supplier_payment_choices[1][1])
+    supplier_invoice_number = models.CharField(max_length=500, null=True, blank=True)
+    payment_datetime = models.DateTimeField(auto_now=False, null=True, blank=True)
     unit_purchase_price = models.FloatField(default=0.0)
     portrage_price = models.FloatField(default=0.0, null=True, blank=True)
     profit_margin = models.FloatField(default=0.0)
