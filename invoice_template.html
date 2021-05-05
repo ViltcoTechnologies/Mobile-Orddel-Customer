@@ -50,8 +50,14 @@
         }
 
         th {
-            /* border: 0.5px solid black; */
-            /* border-collapse: collapse; */
+            border: 0.5px solid black;
+            border-collapse: collapse;
+            padding: 0.5rem 0rem 0.2rem 0rem;
+        }
+
+        tfoot td {
+            border: 0.5px solid black;
+            border-collapse: collapse;
             padding: 0.5rem 0rem 0.2rem 0rem;
         }
 
@@ -109,7 +115,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    Client: {{response.client}}
+                                    Customer: {{response.client}}
                                 </td>
                                 <td>
                                     Delivery Person: {{response.delivery_person_name}}
@@ -136,7 +142,7 @@
                 </div>
                 <br>
                 <div class="ordered_products">
-                    <table cellpadding="1" border="1">
+                    <table cellpadding="1">
                         <thead>
                             <div class="thead-border">
                                 <th>Product</th>
@@ -168,7 +174,7 @@
                         </tbody>
 
                         {% endfor %}
-                        <tfoot>
+                        <tfoot id='total'>
                             <tr>
                                 <td>Total</td>
                                 <td style="text-align:right">{{response.total_qty}}</td>

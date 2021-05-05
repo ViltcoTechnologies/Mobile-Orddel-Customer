@@ -176,8 +176,10 @@ class AddOrderBoxProductsApiView(APIView):
 
                 return Response(status=status.HTTP_201_CREATED, data={"order_box": order_box})
             except Exception as e:
+                print(e.args)
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": 'Something went wrong'})
         except Exception as e:
+            print(e.args)
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Something went wrong"})
 
 
@@ -419,7 +421,7 @@ class UpdateOrderApiView(APIView):
         user_id = delivery_person.user.id
         try:
             device = FCMDevice.objects.filter(user=user_id, active=True)
-            device.send_message(title="New Order", body="Your have received an order.")
+            device.send_message(title="New Order", body="You have received an order.")
         
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})

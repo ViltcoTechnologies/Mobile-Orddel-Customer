@@ -693,6 +693,10 @@ def prepare_delivery_note(order_id):
         response['purchase_order_no'] = delivery_note.order.purchase_order_no[3:]
         response['do_number'] = response['do_number'][3:]
         response['order_delivery_datetime'] = delivery_note.order.order_delivery_datetime.strftime('%d-%m-%Y %H:%M')
+        dp_business_detail = DeliveryPersonBusinessDetail.objects.filter(delivery_person=delivery_person_obj).last()
+        if dp_business_detail:
+            response['dp_business_name'] = dp_business_detail.name
+            response['dp_business_address'] = dp_business_detail.address
         # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
         # response['shipment_address_detail'] = shipment_address.shipment_address
 
@@ -744,7 +748,7 @@ class SuppliersList(APIView):
             order_delivery_date = datetime.datetime.strptime(date, "%d-%m-%Y").date().strftime("%Y-%m-%d")
 
             DeliveryPerson.objects.get(id=delivery_person)
-            order_detail = OrderDetail.objects.filter(delivery_person=delivery_person,
+            order_detail = OrderDetail.objects.filter(Q(status='purchased') | Q(status='delivered'), delivery_person=delivery_person,
                                                       order_delivery_datetime__date=order_delivery_date).values(
                                                       supplier_payment_status=F('order_products__supplier_payment_status'), supplier=F('order_products__supplier'), invoice_number=F('order_products__supplier_invoice_number')).annotate(
                                                       amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()))

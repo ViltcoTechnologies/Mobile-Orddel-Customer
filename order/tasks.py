@@ -12,7 +12,9 @@ logger = get_task_logger(__name__)
 def update_order_status():
     timezone = pytz.timezone("Asia/Karachi")
     current_datetime = datetime.now(tz=timezone)
-    order_detail = OrderDetail.objects.filter(Q(order_delivery_datetime__lte=current_datetime), ~Q(status='rejected'))
+    order_detail = OrderDetail.objects.filter(Q(order_delivery_datetime__lte=current_datetime), Q(status='pending'))
+    logger.info(order_detail)
+
     if order_detail:
         for order in order_detail:
             logger.info(order)
@@ -33,5 +35,4 @@ def update_order_status():
 
             
         order_detail.update(status='rejected')
-    logger.info(order_detail)
     return 1
