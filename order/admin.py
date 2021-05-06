@@ -10,9 +10,17 @@ class OrderBoxAdmin(admin.ModelAdmin):
 admin.site.register(OrderBox, OrderBoxAdmin)
 
 
+class SupplierAdmin(admin.ModelAdmin):
+    list_display = ('id', 'supplier', 'date_created')
+    list_display_links = ('supplier',)
+
+
+admin.site.register(Supplier, SupplierAdmin)
+
+
 class OrderProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'order_box', 'product', 'quantity', 'total_amount')
-    list_display_links = ('order_box',)
+    list_display = ('id', 'order_box', 'product', 'quantity', 'purchased_quantity', 'supplier', 'supplier_payment_status', 'unit_sale_price')
+    list_display_links = ('id', 'order_box')
 
 
 admin.site.register(OrderProduct, OrderProductAdmin)

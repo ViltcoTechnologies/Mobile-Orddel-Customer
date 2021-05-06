@@ -48,15 +48,24 @@ class OrderBox(models.Model):
         return str(self.id)
 
 
+class Supplier(models.Model):
+    supplier = models.CharField(max_length=30, null=True, blank=True)
+    date_created = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.id)
+
+
 class OrderProduct(models.Model):
     order_box = models.ForeignKey(OrderBox, on_delete=models.CASCADE, null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.IntegerField(default=0)
     purchased_quantity = models.IntegerField(default=0)
     total_amount = models.FloatField(default=0.0)
-    supplier = models.CharField(max_length=30, null=True, blank=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
     supplier_payment_status = models.CharField(choices=supplier_payment_choices, max_length=50, null=True, blank=True, default=supplier_payment_choices[1][1])
     supplier_invoice_number = models.CharField(max_length=500, null=True, blank=True)
+    purchase_details_submission_datetime = models.DateTimeField(auto_now=False, null=True, blank=True)
     payment_datetime = models.DateTimeField(auto_now=False, null=True, blank=True)
     unit_purchase_price = models.FloatField(default=0.0)
     portrage_price = models.FloatField(default=0.0, null=True, blank=True)

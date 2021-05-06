@@ -745,15 +745,32 @@ class SuppliersList(APIView):
         try:
             delivery_person = self.request.query_params.get('delivery_person_id')
             date = self.request.query_params.get('date')
+            supplier_payment_status = self.request.query_params.get('supplier_payment_status')
+
             order_delivery_date = datetime.datetime.strptime(date, "%d-%m-%Y").date().strftime("%Y-%m-%d")
 
             DeliveryPerson.objects.get(id=delivery_person)
             order_detail = OrderDetail.objects.filter(Q(status='purchased') | Q(status='delivered'), delivery_person=delivery_person,
-                                                      order_delivery_datetime__date=order_delivery_date).values(
+                                                      order_delivery_datetime__date=order_delivery_date, order_products__supplier_payment_status=supplier_payment_status).values(
                                                       supplier_payment_status=F('order_products__supplier_payment_status'), supplier=F('order_products__supplier'), invoice_number=F('order_products__supplier_invoice_number')).annotate(
-                                                      amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()))
+                                                      amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()), datetime=F('order_products__purchase_details_submission_datetime'))
 
+            # product = F('order_products__product'), quantity = F('order_products__quantity'), purchased_quantity = F(
+            #     'order_products__purchased_quantity'),
+            # , purchase_details_submission_datetime=obj['datetime']
             serializer = SuppliersListSerializer(order_detail, many=True)
+            # print(serializer.data)
+            # list_of_ordered_products = []
+            # response = []
+            # list_of_order_prod = []
+            # for obj in serializer.data:
+            #     order_prod = OrderProduct.objects.filter(supplier=obj['supplier'], supplier_invoice_number=obj['invoice_number'], supplier_payment_status=obj['supplier_payment_status'])
+            #     list_of_order_prod.append(order_prod)
+            # for obj1 in list_of_order_prod:
+            #     list_of_ordered_products.append({'product_name': obj1.product.name, 'unit_purchase_price': obj1.unit_purchase_price,
+            #                                     'portrage_price': obj1.portrage_price, 'quantity': obj1.quantity, 'purchased_quantity': obj1.purchased_quantity})
+            #     obj['order_products'] = list_of_ordered_products
+            #     response.append(obj)
             return Response(status=status.HTTP_200_OK, data=serializer.data)
         except Exception as e:
             print(e)

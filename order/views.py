@@ -724,7 +724,8 @@ class InsertPurchaseDetailsAPIView(APIView):
                 unit_sales_price = detail['unit_sales_price']
                 try:
                     DeliveryPerson.objects.get(id=delivery_person)
-                except:
+                except Exception as e:
+                    print(e.args)
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Delivery person does not exist"})
 
                 try:
@@ -732,23 +733,34 @@ class InsertPurchaseDetailsAPIView(APIView):
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Product does not exist"})
 
+                try:
+                    supplier = Supplier.objects.get_or_create(supplier__iexact=supplier)
+                    print(supplier[0])
+                except Exception as e:
+                    print(e.args)
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": e.args})
+
                 sql = f"""UPDATE 
                             ORDER_ORDERPRODUCT D
                             SET 
                             profit_margin={profit_margin},
-                            supplier='{supplier}',
+                            supplier_id={supplier[0]},
                             supplier_payment_status='unpaid', 
                             unit_purchase_price={unit_purchase_price}, 
                             unit_sale_price={unit_sales_price},
                             portrage_price={portrage_price},
-                            profit_margin_choice='{profit_margin_choice}'
+                            profit_margin_choice='{profit_margin_choice}',
+                            purchase_details_submission_datetime='{datetime.now()}'
                         FROM 
                             ORDER_ORDERDETAIL M 
                         WHERE 
                             M.order_box_id=D.order_box_id AND D.product_id={product_id} AND M.delivery_person_id={delivery_person} AND M.status='in_progress' AND to_char(M.order_delivery_datetime, 'YYYY-MM-DD') LIKE '{delivery_date}';
                         """
-                cursor = connection.cursor()
-                cursor.execute(sql)
+                try:
+                    cursor = connection.cursor()
+                    cursor.execute(sql)
+                except Exception as e:
+                    print(e.args)
             order_details = OrderDetail.objects.filter(delivery_person=delivery_person, status='in_progress', order_delivery_datetime__date=delivery_date)
             print(order_details)
             order_details.update(status='purchased')
@@ -758,8 +770,9 @@ class InsertPurchaseDetailsAPIView(APIView):
                                                             'message': 'Successful'
                                                             })
 
-        except:
+        except Exception as e:
+            print(e.args)
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'response': 'Unable to submit purchase details',
-                                                                      'status_code': '200',
+                                                                      'status_code': '400',
                                                                       'message': 'Unsuccessful'
                                                                       })
