@@ -10,6 +10,8 @@ class OrderBoxSerializer(serializers.ModelSerializer):
 
 
 class OrderProductsSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+
     class Meta:
         model = OrderProduct
         fields = "__all__"

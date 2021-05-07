@@ -40,3 +40,4 @@ class SuppliersListSerializer(serializers.Serializer):
     amount = serializers.CharField(read_only=True)
     supplier_payment_status = serializers.CharField(read_only=True)
     invoice_number = serializers.CharField(read_only=True)
+
