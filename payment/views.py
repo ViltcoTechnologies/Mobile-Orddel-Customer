@@ -751,22 +751,26 @@ class SuppliersList(APIView):
 
             DeliveryPerson.objects.get(id=delivery_person)
             order_detail = OrderDetail.objects.filter(Q(status='purchased') | Q(status='delivered'), delivery_person=delivery_person,
-                                                      order_products__purchase_details_submission_datetime__date=purchase_date, order_products__supplier_payment_status=supplier_payment_status).values('order_box',
-                                                      supplier_payment_status=F('order_products__supplier_payment_status'), supplier=F('order_products__supplier'), invoice_number=F('order_products__supplier_invoice_number'))\
-                                                      .annotate(amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()), time=F('order_products__purchase_details_submission_datetime__time'))
+                                                      order_products__purchase_details_submission_datetime__date=purchase_date, order_products__supplier_payment_status=supplier_payment_status).values(
+                                                      supplier_payment_status=F('order_products__supplier_payment_status'), invoice_number=F('order_products__supplier_invoice_number'))\
+                                                      .annotate(supplier=F('order_products__supplier'), amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()), time=F('order_products__purchase_details_submission_datetime__time'))
 
             # , product = F('order_products__product'), quantity = F('order_products__quantity'),
             # purchased_quantity = F('order_products__purchased_quantity'),
             response_list = []
+            print(order_detail)
             for od in order_detail:
                 print(od)
                 order_prod = OrderProduct.objects.filter(purchase_details_submission_datetime__date=purchase_date, supplier_payment_status=supplier_payment_status, supplier=od['supplier'])\
-                    .annotate(time=F('purchase_details_submission_datetime__time'))
+                    .values('supplier_payment_status', 'supplier_invoice_number', 'unit_purchase_price', 'portrage_price', 'profit_margin'
+                            ,'profit_margin_choice', 'unit_sale_price').annotate(product_name=F('product__name'), quantity_total=Sum('quantity'), purchased_quantity_total=Sum('purchased_quantity'), datetime=F('purchase_details_submission_datetime'))
 
+                # order_prod.amount = order_prod.aggregate(amount=Sum(F('unit_sale_price') * F('quantity'), output_field=FloatField()))
+                print(order_prod)
                 serializer = SuppliersListSerializer(od)
                 response = serializer.data
-
-                serializer1 = OrderProductsSerializer(order_prod, many=True)
+                print(order_prod)
+                serializer1 = SuppliersOrderedProductsDetailSerializer(order_prod, many=True)
                 # serializer1.data['quantity_sum'] = order_prod['quantity_sum']
                 response['order_products'] = serializer1.data
                 response_list.append(response)
