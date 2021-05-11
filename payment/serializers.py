@@ -43,6 +43,7 @@ class SuppliersListSerializer(serializers.Serializer):
 
 
 class SuppliersOrderedProductsDetailSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     product_name = serializers.CharField(read_only=True)
     quantity_total = serializers.IntegerField(read_only=True)
     purchased_quantity_total = serializers.IntegerField(read_only=True)

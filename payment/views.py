@@ -176,7 +176,7 @@ class GenerateInvoiceAPIView(APIView):
                     # product['total_amount'] = order_prod_obj.total_amount
                         product['amount'] = float("{:.2f}".format((product['vat_amount'] + product['unit_sales_price']) * product['purchased_qty']))
                         total_amount += product['amount']
-                        product['supplier_market'] = order_prod_obj.supplier
+                        # product['supplier_market'] = order_prod_obj.supplier
                     else:
                         product['unit_sales_price'] = 0
                         product['vat_amount'] = 0
@@ -242,7 +242,7 @@ class ViewInvoiceApiView(APIView):
                     # product['total_amount'] = order_prod_obj.total_amount
                     product['amount'] = float("{:.2f}".format((product['vat_amount'] + product['unit_sales_price']) * product['purchased_qty']))
                     total_amount += product['amount']
-                    product['supplier_market'] = order_prod_obj.supplier
+                    # product['supplier_market'] = order_prod_obj.supplier
 
                 else:
                     product['unit_sales_price'] = 0
@@ -314,7 +314,7 @@ def prepare_invoice(invoice_id):
                 # product['total_amount'] = order_prod_obj.total_amount
                 product['amount'] = float("{:.2f}".format((product['vat_amount'] + product['unit_sales_price']) * product['purchased_qty']))
                 total_amount += product['amount']
-                product['supplier_market'] = order_prod_obj.supplier
+                # product['supplier_market'] = order_prod_obj.supplier
             else:
                 product['unit_sales_price'] = 0
                 product['vat_amount'] = 0
@@ -762,7 +762,7 @@ class SuppliersList(APIView):
             for od in order_detail:
                 print(od)
                 order_prod = OrderProduct.objects.filter(purchase_details_submission_datetime__date=purchase_date, supplier_payment_status=supplier_payment_status, supplier=od['supplier'])\
-                    .values('supplier_payment_status', 'supplier_invoice_number', 'unit_purchase_price', 'portrage_price', 'profit_margin'
+                    .values('id', 'supplier_payment_status', 'supplier_invoice_number', 'unit_purchase_price', 'portrage_price', 'profit_margin'
                             ,'profit_margin_choice', 'unit_sale_price').annotate(product_name=F('product__name'), quantity_total=Sum('quantity'), purchased_quantity_total=Sum('purchased_quantity'), datetime=F('purchase_details_submission_datetime'))
 
                 # order_prod.amount = order_prod.aggregate(amount=Sum(F('unit_sale_price') * F('quantity'), output_field=FloatField()))
@@ -789,6 +789,7 @@ class SuppliersList(APIView):
             #     obj['order_products'] = list_of_ordered_products
             #     response.append(obj)
             # OrderProduct.objects.filter()
+            print(response_list)
             return Response(status=status.HTTP_200_OK, data=response_list)
         except Exception as e:
             print(e)
