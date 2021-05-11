@@ -20,6 +20,7 @@ urlpatterns = [
     path('show_card/<id>/', ShowCardAPIView.as_view()),
     path('suppliers_list/', SuppliersList.as_view()),
     path('submit_purchase_payment/', SubmitPurchasePaymentDetails.as_view()),
+    # path('submit_purchase_payment/', SupplierPayment.as_view()),
 
 
 

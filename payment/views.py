@@ -753,7 +753,7 @@ class SuppliersList(APIView):
             order_detail = OrderDetail.objects.filter(Q(status='purchased') | Q(status='delivered'), delivery_person=delivery_person,
                                                       order_products__purchase_details_submission_datetime__date=purchase_date, order_products__supplier_payment_status=supplier_payment_status).values(
                                                       supplier_payment_status=F('order_products__supplier_payment_status'), invoice_number=F('order_products__supplier_invoice_number'))\
-                                                      .annotate(supplier=F('order_products__supplier'), amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()), time=F('order_products__purchase_details_submission_datetime__time'))
+                                                      .annotate(supplier=F('order_products__supplier'), amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()), datetime=F('order_products__purchase_details_submission_datetime'))
 
             # , product = F('order_products__product'), quantity = F('order_products__quantity'),
             # purchased_quantity = F('order_products__purchased_quantity'),
@@ -762,7 +762,7 @@ class SuppliersList(APIView):
             for od in order_detail:
                 print(od)
                 order_prod = OrderProduct.objects.filter(purchase_details_submission_datetime__date=purchase_date, supplier_payment_status=supplier_payment_status, supplier=od['supplier'])\
-                    .values('id', 'supplier_payment_status', 'supplier_invoice_number', 'unit_purchase_price', 'portrage_price', 'profit_margin'
+                    .values('supplier_payment_status', 'supplier_invoice_number', 'unit_purchase_price', 'portrage_price', 'profit_margin'
                             ,'profit_margin_choice', 'unit_sale_price').annotate(product_name=F('product__name'), quantity_total=Sum('quantity'), purchased_quantity_total=Sum('purchased_quantity'), datetime=F('purchase_details_submission_datetime'))
 
                 # order_prod.amount = order_prod.aggregate(amount=Sum(F('unit_sale_price') * F('quantity'), output_field=FloatField()))
@@ -801,13 +801,11 @@ class SubmitPurchasePaymentDetails(APIView):
         try:
             delivery_person_id = request.data['delivery_person']
             supplier = request.data['supplier']
-            amount = request.data['amount']
+            # amount = request.data['amount']
             invoice_number = request.data['invoice_number']
-            date = request.data['date']
+            purchase_datetime = request.data['purchase_datetime']
 
-            order_delivery_date = datetime.datetime.strptime(date, "%d-%m-%Y").date().strftime("%Y-%m-%d")
-            order_detail = OrderDetail.objects.filter(delivery_person=delivery_person_id, order_delivery_datetime__date=order_delivery_date, order_products__supplier=supplier).values(order_product=F('order_products'))
-            # pprint(order_details[0].order_products)
+            order_detail = OrderDetail.objects.filter(order_products__purchase_details_submission_datetime=purchase_datetime, delivery_person=delivery_person_id, order_products__supplier=supplier).values(order_product=F('order_products'))
             print(order_detail)
 
             for order_prod in order_detail:
@@ -817,16 +815,26 @@ class SubmitPurchasePaymentDetails(APIView):
                 order_product.payment_datetime=datetime.datetime.now()
                 order_product.save()
 
-            try:
-                delivery_person = DeliveryPerson.objects.get(id=delivery_person_id)
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery Person does not exist'})
 
-            purchase_payment = PurchasePaymentDetail.objects.get_or_create(delivery_person=delivery_person, supplier_name=supplier, amount=amount, invoice_number=invoice_number)
-            print(purchase_payment)
             return Response(status=status.HTTP_200_OK, data={
                                                                 'message': 'Purchase Payment details successfully submitted',
                                                             })
 
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e})
+
+
+class SupplierPayment(APIView):
+    def post(self, request):
+        try:
+            invoice_number = request.data['invoice_number']
+            order_products = request.data['order_products']
+
+            for order_prod in order_products:
+                payment_datetime = datetime.datetime.now()
+                op = OrderProduct.objects.filter(id=order_prod['id']).update(supplier_payment_status='paid', payment_datetime=payment_datetime, invoice_number=invoice_number)
+                print(op)
+            return Response(status=status.HTTP_200_OK, data={'message': 'Successful'})
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e.args})
