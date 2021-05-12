@@ -734,8 +734,13 @@ class InsertPurchaseDetailsAPIView(APIView):
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Product does not exist"})
 
                 try:
-                    supplier = Supplier.objects.get_or_create(supplier__iexact=supplier)
-                    print(supplier[0])
+                    # supplier = Supplier.objects.get_or_create(supplier__iexact=supplier)
+
+                    try:
+                        supplier = Supplier.objects.get(supplier__iexact=supplier)
+                    except Exception as e:
+                        print(e.args)
+                        supplier = Supplier.objects.create(supplier=supplier)
                 except Exception as e:
                     print(e.args)
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": e.args})
@@ -744,7 +749,7 @@ class InsertPurchaseDetailsAPIView(APIView):
                             ORDER_ORDERPRODUCT D
                             SET 
                             profit_margin={profit_margin},
-                            supplier_id={supplier[0]},
+                            supplier_id={supplier.id},
                             supplier_payment_status='unpaid', 
                             unit_purchase_price={unit_purchase_price}, 
                             unit_sale_price={unit_sales_price},
