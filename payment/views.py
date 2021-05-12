@@ -752,9 +752,9 @@ class SuppliersList(APIView):
             DeliveryPerson.objects.get(id=delivery_person)
             order_detail = OrderDetail.objects.filter(Q(status='purchased') | Q(status='delivered'), delivery_person=delivery_person,
                                                       order_products__purchase_details_submission_datetime__date=purchase_date, order_products__supplier_payment_status=supplier_payment_status).values(
-                                                      supplier_payment_status=F('order_products__supplier_payment_status'), invoice_number=F('order_products__supplier_invoice_number'), supplier_name=F('order_products__supplier__supplier'))\
+                                                      supplier_payment_status=F('order_products__supplier_payment_status'), invoice_number=F('order_products__supplier_invoice_number'), supplier_name=F('order_products__supplier__supplier'), portrage_price_total=Sum(F('order_products__portrage_price'), output_field=FloatField()))\
                                                       .annotate(supplier=F('order_products__supplier'), amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()), datetime=F('order_products__purchase_details_submission_datetime'))
-
+            # portrage_price_total = Sum(F('order_products__portrage_price'), output_field=FloatField()),
             # , product = F('order_products__product'), quantity = F('order_products__quantity'),
             # purchased_quantity = F('order_products__purchased_quantity'),
             response_list = []

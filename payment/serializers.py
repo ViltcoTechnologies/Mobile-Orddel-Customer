@@ -39,6 +39,7 @@ class SuppliersListSerializer(serializers.Serializer):
     supplier = serializers.CharField(read_only=True)
     supplier_name = serializers.CharField(read_only=True)
     amount = serializers.CharField(read_only=True)
+    portrage_price_total = serializers.FloatField(read_only=True)
     supplier_payment_status = serializers.CharField(read_only=True)
     invoice_number = serializers.CharField(read_only=True)
     datetime = serializers.DateTimeField(read_only=True)

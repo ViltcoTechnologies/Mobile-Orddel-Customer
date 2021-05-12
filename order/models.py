@@ -68,7 +68,7 @@ class OrderProduct(models.Model):
     purchase_details_submission_datetime = models.DateTimeField(auto_now=False, null=True, blank=True)
     payment_datetime = models.DateTimeField(auto_now=False, null=True, blank=True)
     unit_purchase_price = models.FloatField(default=0.0)
-    portrage_price = models.FloatField(default=0.0, null=True, blank=True)
+    portrage_price = models.FloatField(null=True, blank=True)
     profit_margin = models.FloatField(default=0.0)
     profit_margin_choice = models.CharField(max_length=100, choices=profit_choices, null=True, blank=True)
     unit_sale_price = models.FloatField(default=0.0)
