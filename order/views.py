@@ -717,6 +717,7 @@ class InsertPurchaseDetailsAPIView(APIView):
                 delivery_person = detail['delivery_person_id']
                 product_id = detail['product_id']
                 supplier = detail['supplier']
+                print(supplier)
                 unit_purchase_price = detail['unit_purchase_price']
                 portrage_price = detail['portrage_price']
                 profit_margin = detail['profit_margin']
