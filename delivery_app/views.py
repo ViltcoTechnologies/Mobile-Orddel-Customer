@@ -1161,18 +1161,20 @@ class DeliveryPersonLogin(TokenObtainPairView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Password is required!"})
 
         try:
+            request.data['username'] = User.objects.get(username__iexact=username).username
             serializer_class = MyTokenObtainPairSerializer(data=request.data)
             if serializer_class.is_valid(self):
                 print("here")
-                user = User.objects.get(username=username)
-                delivery_person = DeliveryPerson.objects.get(username=username)
+                user = User.objects.get(username=request.data['username'])
+                delivery_person = DeliveryPerson.objects.get(username=request.data['username'])
                 is_active = user.is_active
                 otp_status = delivery_person.otp_status
-                approval_status = delivery_person.admin_approval_status
+                # approval_status = delivery_person.admin_approval_status
                 print(is_active)
                 print(otp_status)
-                print(approval_status)
-                if is_active and otp_status and approval_status == 'approved':
+                # print(approval_status)
+                # and approval_status == 'approved'
+                if is_active and otp_status:
                     return Response(status=status.HTTP_200_OK, data={"delivery_person": delivery_person.id, "data": serializer_class.validated_data})
                 else:
                     return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "The user is not authorized"})
@@ -1182,7 +1184,7 @@ class DeliveryPersonLogin(TokenObtainPairView):
 
         except:
             try:
-                user = User.objects.get(username=username)
+                user = User.objects.get(username__iexact=username)
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User does not exist'})
             is_active = user.is_active

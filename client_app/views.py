@@ -1038,15 +1038,17 @@ class ClientLogin(TokenObtainPairView):
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={"message": "Password is required!"})
         try:
+            request.data['username'] = User.objects.get(username__iexact=username).username
+            print(request.data)
             serializer_class = MyTokenObtainPairSerializer(data=request.data)
             if serializer_class.is_valid(self):
-                user = User.objects.get(username=username)
-                client = Client.objects.get(username=username)
+                user = User.objects.get(username=request.data['username'])
+                client = Client.objects.get(username=request.data['username'])
                 is_active = user.is_active
                 otp_status = client.otp_status
-                approval_status = client.admin_approval_status
-                if is_active and otp_status and approval_status == 'approved':
-
+                # approval_status = client.admin_approval_status
+                #  and approval_status == 'approved'
+                if is_active and otp_status:
                     return Response(status=status.HTTP_200_OK, data={"client_id": client.id,
                                                                      "data": serializer_class.validated_data})
                 else:
@@ -1056,9 +1058,10 @@ class ClientLogin(TokenObtainPairView):
             else:
                 print("invalid username and password")
 
-        except:
+        except Exception as e:
+            print(e.args)
             try:
-                user = User.objects.get(username=username)
+                user = User.objects.get(username__iexact=request.data['username'])
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User or Password is not correct'})
             is_active = user.is_active
