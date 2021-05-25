@@ -323,6 +323,13 @@ def prepare_invoice(invoice_id):
                 product['vat_amount'] = 0
                 product['amount'] = 0
                 product['supplier_market'] = ""
+
+            # Formatting Sales price, vat amount and amount '.00'
+            product['unit_sales_price'] = format(product['unit_sales_price'], '.2f')
+            product['vat_amount'] = format(product['vat_amount'], '.2f')
+            product['amount'] = format(product['amount'], '.2f')
+
+
             products_details.append(product)
         response['order_products'] = sorted(products_details, key = lambda i: i['amount'])
         order_b_obj = OrderBox.objects.get(id=invoice.order.order_box.id)
@@ -351,6 +358,11 @@ def prepare_invoice(invoice_id):
         response['purchase_order_no'] = invoice.order.purchase_order_no[3:]
         response['inv_number'] = response['inv_number'][4:]
         response['order_delivery_datetime'] = invoice.order.order_delivery_datetime.strftime('%d-%m-%Y %H:%M')
+
+        # Formatting total values
+        response['total_vat'] = format(response['total_vat'], '.2f')
+        response['total_amount'] = format(response['total_amount'], '.2f')
+
         # shipment_address = ClientShipmentAddress.objects.get(id=response['shipment_address'])
         # response['shipment_address_detail'] = shipment_address.shipment_address
 
