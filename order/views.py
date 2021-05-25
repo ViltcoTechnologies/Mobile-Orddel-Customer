@@ -719,7 +719,7 @@ class InsertPurchaseDetailsAPIView(APIView):
             for detail in request.data['purchase_details']:
                 delivery_person = detail['delivery_person_id']
                 product_id = detail['product_id']
-                supplier = detail['supplier']
+                supplier = detail['supplier'].strip()
                 print(supplier)
                 unit_purchase_price = detail['unit_purchase_price']
                 portrage_price = detail['portrage_price']

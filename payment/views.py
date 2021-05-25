@@ -777,18 +777,20 @@ class SuppliersList(APIView):
             order_detail = OrderDetail.objects.filter(Q(status='purchased') | Q(status='delivered'), delivery_person=delivery_person,
                                                       order_products__purchase_details_submission_datetime__date=purchase_date, order_products__supplier_payment_status=supplier_payment_status).values(
                                                       supplier_payment_status=F('order_products__supplier_payment_status'), invoice_number=F('order_products__supplier_invoice_number'), supplier_name=F('order_products__supplier__supplier'))\
-                                                      .annotate(supplier=F('order_products__supplier'), amount=Sum(F('order_products__unit_purchase_price') * F('order_products__quantity'), output_field=FloatField()), datetime=Cast(TruncSecond('order_products__purchase_details_submission_datetime', DateTimeField()), CharField()))
+                                                      .annotate(supplier=F('order_products__supplier'), amount=Sum(F('order_products__unit_purchase_price') * F('order_products__purchased_quantity'), output_field=FloatField()))
+            # , datetime=Cast(TruncSecond('order_products__purchase_details_submission_datetime', DateTimeField()), CharField())
             # , portrage_price_total=Sum(F('order_products__portrage_price'), output_field=FloatField())
             # portrage_price_total = Sum(F('order_products__portrage_price'), output_field=FloatField()),
             # , product = F('order_products__product'), quantity = F('order_products__quantity'),
             # purchased_quantity = F('order_products__purchased_quantity'),
             response_list = []
             for od in order_detail:
+                od['datetime'] = datetime.datetime.strptime(purchase_date + " 00:00:00", '%Y-%m-%d %H:%M:%S')
                 # print(od['datetime'])
                 # print(type(od['datetime']))
-                formatted_datetime = datetime.datetime.strptime(od['datetime'], "%Y-%m-%d %H:%M:%S")
-                print(formatted_datetime)
-                order_prod = OrderProduct.objects.filter(purchase_details_submission_datetime__contains=formatted_datetime, supplier_payment_status=supplier_payment_status, supplier=od['supplier'])\
+                # formatted_datetime = datetime.datetime.strptime(od['datetime'], "%Y-%m-%d %H:%M:%S")
+                # print(formatted_datetime)
+                order_prod = OrderProduct.objects.filter(purchase_details_submission_datetime__contains=purchase_date, supplier_payment_status=supplier_payment_status, supplier=od['supplier'])\
                     .values(product_name=F('product__name')).annotate(purchased_quantity_total=Sum('purchased_quantity'), unit_purchase_price_total=Sum('unit_purchase_price'), unit_portrage_price_total=Sum('portrage_price'))
 
                 # , datetime=F('purchase_details_submission_datetime')
@@ -830,8 +832,9 @@ class SubmitPurchasePaymentDetails(APIView):
             # amount = request.data['amount']
             invoice_number = request.data['invoice_number']
             purchase_datetime = request.data['purchase_datetime']
-
-            order_detail = OrderDetail.objects.filter(order_products__purchase_details_submission_datetime__contains=purchase_datetime, delivery_person=delivery_person_id, order_products__supplier=supplier).values(order_product=F('order_products'))
+            print(purchase_datetime)
+            formatted_datetime = datetime.datetime.strptime(purchase_datetime, "%Y-%m-%dT%H:%M:%S").date()
+            order_detail = OrderDetail.objects.filter(order_products__purchase_details_submission_datetime__date=formatted_datetime, delivery_person=delivery_person_id, order_products__supplier=supplier).values(order_product=F('order_products'))
             print(order_detail)
 
             for order_prod in order_detail:
