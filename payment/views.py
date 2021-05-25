@@ -7,6 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from datetime import date
 from django.db.models import Avg, Q, F, Sum, FloatField
+from django.db.models.functions import Cast, TruncSecond
+from django.db.models import DateTimeField, CharField
 from .models import *
 from .serializers import *
 from order.serializers import OrderDetailSerializer, OrderProductsSerializer
@@ -65,7 +67,8 @@ class ListCreateInvoice(generics.ListCreateAPIView):
                 print(invoice)
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Invoice already exists"})
 
-            except:
+            except Exception as e:
+                print(e.args)
                 serializer.save()
                 return Response(status=status.HTTP_201_CREATED, data={"response": serializer.data})
 
@@ -321,7 +324,7 @@ def prepare_invoice(invoice_id):
                 product['amount'] = 0
                 product['supplier_market'] = ""
             products_details.append(product)
-        response['order_products'] = products_details
+        response['order_products'] = sorted(products_details, key = lambda i: i['amount'])
         order_b_obj = OrderBox.objects.get(id=invoice.order.order_box.id)
         if order_b_obj.client != None:
             response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
@@ -375,6 +378,11 @@ class GeneratePDFInvoiceAPIView(APIView):
                 print(delivery_person_name)
             except:
                 delivery_person_name = ""
+
+            try:
+                client_name = response['client']
+            except:
+                client_name = ""
             template = get_template("invoice_template.html")
             context = {
                 "response": response
@@ -383,7 +391,7 @@ class GeneratePDFInvoiceAPIView(APIView):
             pdf = render_to_pdf("invoice_template.html", context)
             if pdf:
                 response = HttpResponse(pdf, content_type='application/pdf')
-                filename = "Invoice_%s.pdf" % delivery_person_name
+                filename = "Invoice_%s.pdf" % client_name
                 content = "inline; filename='%s'" %(filename)
                 download = request.GET.get("download")
                 if download:
@@ -721,6 +729,11 @@ class GenerateDeliveryNotePDF(APIView):
                 print(delivery_person_name)
             except:
                 delivery_person_name = ""
+
+            try:
+                client_name = response['client']
+            except:
+                client_name = ""
             template = get_template("delivery_note.html")
             context = {
                 "response": response
@@ -729,7 +742,7 @@ class GenerateDeliveryNotePDF(APIView):
             pdf = render_to_pdf("delivery_note.html", context)
             if pdf:
                 response = HttpResponse(pdf, content_type='application/pdf')
-                filename = "Delivery_Note_%s.pdf" % delivery_person_name
+                filename = "Delivery_Note_%s.pdf" % client_name
                 content = "inline; filename='%s'" % (filename)
                 download = request.GET.get("download")
                 if download:
@@ -746,30 +759,32 @@ class SuppliersList(APIView):
             delivery_person = self.request.query_params.get('delivery_person_id')
             date = self.request.query_params.get('date')
             supplier_payment_status = self.request.query_params.get('supplier_payment_status')
-
             purchase_date = datetime.datetime.strptime(date, "%d-%m-%Y").date().strftime("%Y-%m-%d")
 
             DeliveryPerson.objects.get(id=delivery_person)
             order_detail = OrderDetail.objects.filter(Q(status='purchased') | Q(status='delivered'), delivery_person=delivery_person,
                                                       order_products__purchase_details_submission_datetime__date=purchase_date, order_products__supplier_payment_status=supplier_payment_status).values(
-                                                      supplier_payment_status=F('order_products__supplier_payment_status'), invoice_number=F('order_products__supplier_invoice_number'), supplier_name=F('order_products__supplier__supplier'), portrage_price_total=Sum(F('order_products__portrage_price'), output_field=FloatField()))\
-                                                      .annotate(supplier=F('order_products__supplier'), amount=Sum(F('order_products__unit_sale_price') * F('order_products__quantity'), output_field=FloatField()), datetime=F('order_products__purchase_details_submission_datetime'))
+                                                      supplier_payment_status=F('order_products__supplier_payment_status'), invoice_number=F('order_products__supplier_invoice_number'), supplier_name=F('order_products__supplier__supplier'))\
+                                                      .annotate(supplier=F('order_products__supplier'), amount=Sum(F('order_products__unit_purchase_price') * F('order_products__quantity'), output_field=FloatField()), datetime=Cast(TruncSecond('order_products__purchase_details_submission_datetime', DateTimeField()), CharField()))
+            # , portrage_price_total=Sum(F('order_products__portrage_price'), output_field=FloatField())
             # portrage_price_total = Sum(F('order_products__portrage_price'), output_field=FloatField()),
             # , product = F('order_products__product'), quantity = F('order_products__quantity'),
             # purchased_quantity = F('order_products__purchased_quantity'),
             response_list = []
-            print(order_detail)
             for od in order_detail:
-                print(od)
-                order_prod = OrderProduct.objects.filter(purchase_details_submission_datetime__date=purchase_date, supplier_payment_status=supplier_payment_status, supplier=od['supplier'])\
-                    .values('supplier_payment_status', 'supplier_invoice_number', 'unit_purchase_price', 'portrage_price', 'profit_margin'
-                            ,'profit_margin_choice', 'unit_sale_price').annotate(product_name=F('product__name'), quantity_total=Sum('quantity'), purchased_quantity_total=Sum('purchased_quantity'), datetime=F('purchase_details_submission_datetime'))
+                # print(od['datetime'])
+                # print(type(od['datetime']))
+                formatted_datetime = datetime.datetime.strptime(od['datetime'], "%Y-%m-%d %H:%M:%S")
+                print(formatted_datetime)
+                order_prod = OrderProduct.objects.filter(purchase_details_submission_datetime__contains=formatted_datetime, supplier_payment_status=supplier_payment_status, supplier=od['supplier'])\
+                    .values(product_name=F('product__name')).annotate(purchased_quantity_total=Sum('purchased_quantity'), unit_purchase_price_total=Sum('unit_purchase_price'), unit_portrage_price_total=Sum('portrage_price'))
 
+                # , datetime=F('purchase_details_submission_datetime')
+                # .values('product__name', 'purchased_quantity', 'unit_purchase_price', 'portrage_price')
                 # order_prod.amount = order_prod.aggregate(amount=Sum(F('unit_sale_price') * F('quantity'), output_field=FloatField()))
                 print(order_prod)
                 serializer = SuppliersListSerializer(od)
                 response = serializer.data
-                print(order_prod)
                 serializer1 = SuppliersOrderedProductsDetailSerializer(order_prod, many=True)
                 # serializer1.data['quantity_sum'] = order_prod['quantity_sum']
                 response['order_products'] = serializer1.data
@@ -789,7 +804,6 @@ class SuppliersList(APIView):
             #     obj['order_products'] = list_of_ordered_products
             #     response.append(obj)
             # OrderProduct.objects.filter()
-            print(response_list)
             return Response(status=status.HTTP_200_OK, data=response_list)
         except Exception as e:
             print(e)
@@ -805,7 +819,7 @@ class SubmitPurchasePaymentDetails(APIView):
             invoice_number = request.data['invoice_number']
             purchase_datetime = request.data['purchase_datetime']
 
-            order_detail = OrderDetail.objects.filter(order_products__purchase_details_submission_datetime=purchase_datetime, delivery_person=delivery_person_id, order_products__supplier=supplier).values(order_product=F('order_products'))
+            order_detail = OrderDetail.objects.filter(order_products__purchase_details_submission_datetime__contains=purchase_datetime, delivery_person=delivery_person_id, order_products__supplier=supplier).values(order_product=F('order_products'))
             print(order_detail)
 
             for order_prod in order_detail:
@@ -822,7 +836,7 @@ class SubmitPurchasePaymentDetails(APIView):
 
         except Exception as e:
             print(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e.args})
 
 
 class SupplierPayment(APIView):

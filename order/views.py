@@ -365,6 +365,7 @@ class UpdateOrderApiView(APIView):
         business = request.data['business']
         delivery_datetime = request.data['delivery_datetime']
         delivery_note = request.data['delivery_note']
+        print(delivery_note)
 
         order_products = request.data['order_products']
         print(order_products)
@@ -416,7 +417,8 @@ class UpdateOrderApiView(APIView):
         order_detail.business = business
         order_detail.order_delivery_datetime = datetime.strptime(delivery_datetime, "%d-%m-%Y %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S.%f%z")
         order_detail.status = 'pending'
-        order_detail.delivery_note = delivery_note
+        order_detail.delivery_notes = delivery_note
+        # print("odddd deliverynote", order_detail.delivery_note)
         order_detail.save()
         user_id = delivery_person.user.id
         try:
@@ -479,6 +481,7 @@ class ListOrderApiView(APIView):
             # response['shipment_address_detail'] = shipment_address.shipment_address
             if response['status'] == 'in_progress':
                 response['status'] = 'in progress'
+            print(response)
             return Response(status=status.HTTP_200_OK, data={"order": response})
 
         else:
@@ -603,6 +606,7 @@ class ConsolidatePurchaseAPIView(APIView):
         if id:
             try:
                 order_delivery_datetime = self.request.query_params.get('order_delivery_datetime', None)
+                response_delivery_date = order_delivery_datetime
                 print(order_delivery_datetime)
                 if order_delivery_datetime is None:
                     order_delivery_datetime = date.today()
@@ -619,13 +623,12 @@ class ConsolidatePurchaseAPIView(APIView):
                         """
                 cursor = connection.cursor()
                 cursor.execute(sql)
-                #
                 rows = cursor.fetchall()
                 consolidated_purchases = []
                 total_packages = 0
                 for row in rows:
                     data_dict = {'status': row[0], 'delivery_person_id': row[1], 'product_id': row[2], 'qty': row[3],
-                                'product_name': row[5], 'unit': row[6]}
+                                'product_name': row[5], 'unit': row[6], 'date': response_delivery_date}
                     total_packages += row[3]
                     consolidated_purchases.append(data_dict)
 

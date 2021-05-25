@@ -21,8 +21,8 @@ from django.shortcuts import get_object_or_404
 # Token Obtain pair
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-
+from django.contrib.auth import authenticate
+from django.http import HttpRequest
 # Delivery Person home screen Dashboard
 class DeliveryPersonDashboardApiView(APIView):
 
@@ -1135,7 +1135,31 @@ class PendingApprovalListApiView(APIView):
 
 # ------------------------------------------------------------------------------------------------------------------------
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    # AxesBackend authentication issue 'REQUEST' 
 
+    # def _authenticate_user_email(self, email, password, request):
+    #     # This is key: Pass request to the authenticate function
+    #     self.user = authenticate(email=email, password=password, request=request)
+    #     print("test user....", self.user)
+    #     return self.user
+
+    # def validate(self, attrs):
+    #     print(attrs)
+    #     password = attrs.get('password')
+    #     email = attrs.get('username')
+    #     # request = self.context.get('request')   # <<=== Grab request
+    #     request = HttpRequest()
+    #     self.user = self._authenticate_user_email(email, password, request)
+
+    #     # All error handling should be done by this code line 
+
+    #     refresh = self.get_token(self.user)
+
+    #     data = {}
+    #     data['refresh'] = str(refresh)
+    #     data['access'] = str(refresh.access_token)
+
+    #     return data
     def validate(self, attrs):
         data = super().validate(attrs)
         refresh = self.get_token(self.user)
@@ -1159,6 +1183,7 @@ class DeliveryPersonLogin(TokenObtainPairView):
             _ = request.data['password']
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Password is required!"})
+        
 
         try:
             request.data['username'] = User.objects.get(username__iexact=username).username
@@ -1182,7 +1207,8 @@ class DeliveryPersonLogin(TokenObtainPairView):
             else:
                 print("invalid username and password")
 
-        except:
+        except Exception as e:
+            print(e)
             try:
                 user = User.objects.get(username__iexact=username)
             except:
@@ -1193,7 +1219,7 @@ class DeliveryPersonLogin(TokenObtainPairView):
                                 data={"message": "The account is not verified via email"})
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data={"message": "username or password not correct"})
+                                data={"message": "Username or password not correct"})
 
 
 # ------------------------------------------------------------------------------------------------------------------------

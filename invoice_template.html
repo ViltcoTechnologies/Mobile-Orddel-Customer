@@ -158,10 +158,10 @@
                             <tr>
                                 <td style="text-align:left">{{order_prod.product_name}}</td>
                                 <td style="text-align:right">{{order_prod.purchased_qty}}</td>
-                                <td style="text-align:right">&pound; {{order_prod.unit_sales_price}}</td>
+                                <td>&pound; {{order_prod.unit_sales_price}}</td>
                                 <td>&pound; {{order_prod.vat_amount}}</td>
                                 {% if order_prod.amount == 0.0 %}
-                                    <td style="text-align:right">&pound; 00</td>
+                                    <td>&pound; 00</td>
                                 {% else %}
                                     <td style="text-align:right">&pound; {{order_prod.amount}}</td>
 
@@ -174,16 +174,18 @@
                         </tbody>
 
                         {% endfor %}
+                        <b>
                         <tfoot id='total'>
                             <tr>
-                                <td>Total</td>
-                                <td style="text-align:right">{{response.total_qty}}</td>
+                                <td><b>Total</b></td>
+                                <td style="text-align:right"><b>{{response.total_qty}}</b></td>
                                 <td>       </td>
-                                <td> &pound; {{response.total_vat}}</td>
-                                <td style="text-align:right"> &pound; {{response.total_amount}}</td>
+                                <td> &pound; <b>{{response.total_vat}}</b></td>
+                                <td style="text-align:right"> &pound; <b>{{response.total_amount}}</b></td>
 
                             </tr>
                         </tfoot>
+                        </b>
                     </table>
                     <br>
                     <br>
@@ -227,10 +229,9 @@
                     {% endif %}
                     <div class="thank_you_note">
                         <p style="color: grey;">
-                            Thank You for choosing {{response.delivery_person_name}}.
-                            If you want more services kindly order again.
-                            We'll surely cater you..!
-
+                            Thank you for the business with {{response.delivery_person_name}}.
+                            We look forward for more orders and long-term business relation. 
+                            Please tell your friends about ORDDEL App.
                         </p>
                     </div>
                 </div>
