@@ -45,6 +45,12 @@
             border-collapse: collapse;
             padding: 0.5rem 0rem 0.2rem 0rem;
         }
+
+        tfoot td{
+            border: 0.5px solid black;
+            border-collapse: collapse;
+            padding: 0.5rem 0rem 0.2rem 0rem;
+        }
         .delivery_person_logo {
             border-radius: 50%;
         }
@@ -52,6 +58,7 @@
         .header {
             margin-top: 50px;
         }
+
         .footer {
           position: fixed;
           left: 0;
@@ -149,7 +156,13 @@
 
                         </tbody>
                         {% endfor %}
-
+                        <tfoot class="">
+                            <tr>
+                                <td>Total: </td>
+                                <td>     </td>
+                                <td>{{response.total_qty}}</td>
+                            </tr>
+                        </tfoot>
                     </table>
                     <br>
                     <br>
@@ -157,6 +170,7 @@
                         <h4>Total Packages: {{response.total_qty}}</h4>
 
                     </div>
+                    <hr>
                     {% if response.delivery_note %}
                     <div class="delivery_note">
                         <p>

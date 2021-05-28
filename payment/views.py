@@ -595,7 +595,7 @@ class PaymentAPIView(APIView):
                 confirm=True)
             if response['status'] == 'succeeded':
                 obj.package = package_obj
-                if package_obj.id != 3:
+                if package_obj.name.lower() != 'gold':
                     if obj.no_of_invoices == -1:
                         obj.no_of_invoices += 1
                         obj.no_of_invoices += package_obj.no_of_invoices
@@ -785,7 +785,7 @@ class SuppliersList(APIView):
             # purchased_quantity = F('order_products__purchased_quantity'),
             response_list = []
             for od in order_detail:
-                od['datetime'] = datetime.datetime.strptime(purchase_date + " 00:00:00", '%Y-%m-%d %H:%M:%S')
+                od['datetime'] = datetime.datetime.strptime(purchase_date + " 00:00:00", '%Y-%m-%d %H:%M:%S').strftime('%d-%m-%Y %H:%M:%S')
                 # print(od['datetime'])
                 # print(type(od['datetime']))
                 # formatted_datetime = datetime.datetime.strptime(od['datetime'], "%Y-%m-%d %H:%M:%S")
@@ -833,7 +833,7 @@ class SubmitPurchasePaymentDetails(APIView):
             invoice_number = request.data['invoice_number']
             purchase_datetime = request.data['purchase_datetime']
             print(purchase_datetime)
-            formatted_datetime = datetime.datetime.strptime(purchase_datetime, "%Y-%m-%dT%H:%M:%S").date()
+            formatted_datetime = datetime.datetime.strptime(purchase_datetime, "%d-%m-%Y %H:%M:%S").date().strftime('%Y-%m-%d')
             order_detail = OrderDetail.objects.filter(order_products__purchase_details_submission_datetime__date=formatted_datetime, delivery_person=delivery_person_id, order_products__supplier=supplier).values(order_product=F('order_products'))
             print(order_detail)
 
