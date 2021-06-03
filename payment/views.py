@@ -353,6 +353,7 @@ def prepare_invoice(invoice_id):
             response['dp_business_name'] = dp_business_detail.name
             response['dp_business_address'] = dp_business_detail.address
         response['delivery_person_name'] = delivery_person_obj.first_name + " " + delivery_person_obj.last_name
+        response['delivery_person_phone'] = delivery_person_obj.phone_number
         response['delivery_person_address'] = delivery_person_obj.address
         response['business_address'] = invoice.order.business.address
         response['purchase_order_no'] = invoice.order.purchase_order_no[3:]
@@ -791,8 +792,9 @@ class SuppliersList(APIView):
                 # formatted_datetime = datetime.datetime.strptime(od['datetime'], "%Y-%m-%d %H:%M:%S")
                 # print(formatted_datetime)
                 order_prod = OrderProduct.objects.filter(purchase_details_submission_datetime__contains=purchase_date, supplier_payment_status=supplier_payment_status, supplier=od['supplier'])\
-                    .values(product_name=F('product__name')).annotate(purchased_quantity_total=Sum('purchased_quantity'), unit_purchase_price_total=Sum('unit_purchase_price'), unit_portrage_price_total=Sum('portrage_price'))
-
+                    .values(product_name=F('product__name'), purchase_price_per_unit=F('unit_purchase_price')).annotate(purchased_quantity_total=Sum('purchased_quantity'), unit_purchase_price_total=Sum('unit_purchase_price'), unit_portrage_price_total=Sum('portrage_price'))
+                
+                # , unit_purchase_price_total=Sum('unit_purchase_price')
                 # , datetime=F('purchase_details_submission_datetime')
                 # .values('product__name', 'purchased_quantity', 'unit_purchase_price', 'portrage_price')
                 # order_prod.amount = order_prod.aggregate(amount=Sum(F('unit_sale_price') * F('quantity'), output_field=FloatField()))
@@ -801,6 +803,12 @@ class SuppliersList(APIView):
                 response = serializer.data
                 serializer1 = SuppliersOrderedProductsDetailSerializer(order_prod, many=True)
                 # serializer1.data['quantity_sum'] = order_prod['quantity_sum']
+                count = sum(1 for i in serializer1.data if i['purchased_quantity_total'] == 0)
+                print('count......', count)
+                if count>0:
+                    response['supplier_check'] = "True"
+                else:
+                    response['supplier_check'] = "False"
                 response['order_products'] = serializer1.data
                 response_list.append(response)
             # , purchased_quantity=Sum(F('purchased_quantity')), quantity=Sum(F('quantity')), unit_purchase_price=Sum(F('unit_purchase_price')), portrage_price=Sum(F('portrage_price'))

@@ -50,6 +50,7 @@ class SuppliersOrderedProductsDetailSerializer(serializers.Serializer):
     product_name = serializers.CharField(read_only=True)
     # quantity_total = serializers.IntegerField(read_only=True)
     purchased_quantity_total = serializers.IntegerField(read_only=True)
+    purchase_price_per_unit = serializers.FloatField(read_only=True)
     # unit_sale_price = serializers.FloatField(read_only=True)
     # datetime = serializers.DateTimeField(read_only=True)
     # profit_margin = serializers.FloatField(read_only=True)
