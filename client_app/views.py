@@ -247,8 +247,9 @@ class ClientRegisterV2ApiView(APIView):
                 password = request.data['password']
                 otp_status = request.data['otp_status']
                 admin_approval_status = 'pending'
-                package = request.data['package']
+                package = request.data['package'].strip().lower()
                 preferred_delivery_person = request.data['preferred_delivery_person']
+                print(package)
 
                 if first_name == ""\
                         or last_name == ""\
@@ -266,7 +267,7 @@ class ClientRegisterV2ApiView(APIView):
                                     data={"message": "Phone Number already registered!"})
                 except:
                         try:
-                            package = ClientPackage.objects.get(id=package)
+                            package = ClientPackage.objects.get(name__iexact=package)
                             no_of_invoices = package.no_of_invoices
                             try:
                                 new_auth_user = User.objects.create_user(
@@ -336,10 +337,12 @@ class ClientRegisterV2ApiView(APIView):
                             except:
                                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                                 data={"message": "User already exists"})
-                        except:
+                        except Exception as e:
+                            print(e.args)
                             return Response(status=status.HTTP_404_NOT_FOUND,
                                             data={"message": f"No package with the ID: {package}"})
-            except:
+            except Exception as e:
+                print(e.args)
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={"message": "Error! Make sure you're not missing one of the "
                                       "following required fields: (first_name, last_name, otp_status, "
@@ -433,7 +436,7 @@ class ClientLogoUploadAPIView(APIView):
             client = Client.objects.get(id=serializer.validated_data['id'])
             # print(serializer.validated_data['image'])
             serializer.update(client, serializer.validated_data)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data={'message': 'Image uploaded successfully'}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

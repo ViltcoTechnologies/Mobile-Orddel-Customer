@@ -502,7 +502,7 @@ class DeliveryPersonLogoUploadAPIView(APIView):
         if serializer.is_valid():
             delivery_person = DeliveryPerson.objects.get(id=serializer.validated_data['id'])
             serializer.update(delivery_person, serializer.validated_data)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data={'message': 'Image uploaded successfully'}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

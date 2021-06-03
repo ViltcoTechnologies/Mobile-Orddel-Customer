@@ -227,7 +227,7 @@ EMAIL_MAIL_SUBJECT = 'Confirm your email'
 EMAIL_MAIL_HTML = EMAIL_TEMPLATE_PATH
 # EMAIL_MAIL_PLAIN = 'mail_body.txt'
 EMAIL_PAGE_TEMPLATE = EMAIL_SUCCESS_TEMPLATE
-EMAIL_PAGE_DOMAIN = 'http://ec2-13-59-209-70.us-east-2.compute.amazonaws.com:8000'
+EMAIL_PAGE_DOMAIN = 'http://ec2-3-131-162-40.us-east-2.compute.amazonaws.com:8000'
 
 
 # Reset password SMTP configuration
@@ -279,3 +279,5 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Africa/Nairobi'
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880

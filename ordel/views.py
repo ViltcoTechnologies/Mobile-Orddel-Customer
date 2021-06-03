@@ -36,7 +36,8 @@ class ResendOtpApiView(APIView):
                 twilio_verification.send_otp()
                 return Response(status=status.HTTP_200_OK,
                                 data="Verification code resent")
-            except:
+            except Exception as e:
+                print(e.args)
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data="There was a error sending "
                                      "Verification code")
