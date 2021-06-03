@@ -269,8 +269,20 @@ TWILIO_AUTH_TOKEN = "46049db1db0055d84ca56824c7a18b21"
 SERVICE_SID = "VA7bf9da7b14d553e1e4f4bf0d77fb8bdc"
 
 # Stripe API Keys Test
-STRIPE_PUBLISHABLE_KEY = 'pk_test_51IVGKwDfezRTPDs34lUTyxAmb2chp2zcCZpEbMwV7NkZWRufIcMJj3EILXrCcYZtWRFFtn34s0cWy6dE4wkSAhiF00425cFai7'
-STRIPE_SECRET_KEY = 'sk_test_51IVGKwDfezRTPDs3rwZEwqnKVGp6o9ehpuOIQyCJ5opnwQ6Bwi6O9HBVx2x48sTpjRkDZt4e2EPuSUrfKtfpLyKj00g1s0RcGH'
+
+# --------------------- orddel@viltco.com -----------------------------
+# Test
+# STRIPE_PUBLISHABLE_KEY = 'pk_test_51IVGKwDfezRTPDs34lUTyxAmb2chp2zcCZpEbMwV7NkZWRufIcMJj3EILXrCcYZtWRFFtn34s0cWy6dE4wkSAhiF00425cFai7'
+# STRIPE_SECRET_KEY = 'sk_test_51IVGKwDfezRTPDs3rwZEwqnKVGp6o9ehpuOIQyCJ5opnwQ6Bwi6O9HBVx2x48sTpjRkDZt4e2EPuSUrfKtfpLyKj00g1s0RcGH'
+
+# --------------------- orddel.uk@gmail.com ----------------------------
+# Test
+# STRIPE_PUBLISHABLE_KEY = 'pk_test_51IyCptIcReLPdril50b0zXIgmlquL8SUKEM00WsJdQ6x4Su2YPQ723x0Xw6cGFRCoraL3zCXICFtzSABqAzYYS9s00ctf3AVsi'
+# STRIPE_SECRET_KEY = 'sk_test_51IyCptIcReLPdrilpb98tUDvHF4Z4PAVFIfkWZhodB729S9YxhJjBNL8Q5KrgIfxWPO3eNr9i6DGCYOzggIRFFnD0075P0Cn7c'
+
+# Live
+STRIPE_PUBLISHABLE_KEY = 'pk_live_51IyCptIcReLPdrilf8PHenT8O8oWbysA8eElZM2raDRwVhk9NNjvk0MCViI4fc27KEBp4Pzp8JEkaNqRU4BckBSD00ell4k13f'
+STRIPE_SECRET_KEY = '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'
 
 # CELERY STUFF
 BROKER_URL = 'redis://localhost:6379'
