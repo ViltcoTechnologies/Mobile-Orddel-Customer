@@ -81,7 +81,10 @@ MIDDLEWARE = [
 ]
 
 CRONJOBS = [
-    ('* * * * *', 'products.cron.update_avg_price_job', '> /home/orddel/orddel-cron.log')
+    ('* * * * *', 'products.cron.update_avg_price_job', '> /home/orddel/orddel-cron.log'),
+    ('0 0 * * *', 'order.cron.send_pending_order_notification', '> /home/orddel/orddel-cron.log'),
+    ('0 0 * * *', 'order.cron.send_inprogress_order_notification', '> /home/orddel/orddel-cron.log')
+
 ]
 CRONTAB_COMMAND_SUFFIX = '2>&1'
 
@@ -277,12 +280,12 @@ SERVICE_SID = "VA7bf9da7b14d553e1e4f4bf0d77fb8bdc"
 
 # --------------------- orddel.uk@gmail.com ----------------------------
 # Test
-# STRIPE_PUBLISHABLE_KEY = 'pk_test_51IyCptIcReLPdril50b0zXIgmlquL8SUKEM00WsJdQ6x4Su2YPQ723x0Xw6cGFRCoraL3zCXICFtzSABqAzYYS9s00ctf3AVsi'
-# STRIPE_SECRET_KEY = 'sk_test_51IyCptIcReLPdrilpb98tUDvHF4Z4PAVFIfkWZhodB729S9YxhJjBNL8Q5KrgIfxWPO3eNr9i6DGCYOzggIRFFnD0075P0Cn7c'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51IyCptIcReLPdril50b0zXIgmlquL8SUKEM00WsJdQ6x4Su2YPQ723x0Xw6cGFRCoraL3zCXICFtzSABqAzYYS9s00ctf3AVsi'
+STRIPE_SECRET_KEY = 'sk_test_51IyCptIcReLPdrilpb98tUDvHF4Z4PAVFIfkWZhodB729S9YxhJjBNL8Q5KrgIfxWPO3eNr9i6DGCYOzggIRFFnD0075P0Cn7c'
 
 # Live
-STRIPE_PUBLISHABLE_KEY = 'pk_live_51IyCptIcReLPdrilf8PHenT8O8oWbysA8eElZM2raDRwVhk9NNjvk0MCViI4fc27KEBp4Pzp8JEkaNqRU4BckBSD00ell4k13f'
-STRIPE_SECRET_KEY = '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'
+# STRIPE_PUBLISHABLE_KEY = 'pk_live_51IyCptIcReLPdrilf8PHenT8O8oWbysA8eElZM2raDRwVhk9NNjvk0MCViI4fc27KEBp4Pzp8JEkaNqRU4BckBSD00ell4k13f'
+# STRIPE_SECRET_KEY = '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'
 
 # CELERY STUFF
 BROKER_URL = 'redis://localhost:6379'
