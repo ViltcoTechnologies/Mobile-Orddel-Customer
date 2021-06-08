@@ -591,7 +591,7 @@ class PaymentAPIView(APIView):
             response = stripe.PaymentIntent.create(
                 customer=customer,
                 payment_method=payment_method_id,
-                currency='EUR',
+                currency='GBP',
                 amount=int(float(amount)*100),
                 confirm=True)
             if response['status'] == 'succeeded':

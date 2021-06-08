@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models.functions import Cast
+from django.db.models.functions import Cast, TruncMonth, TruncSecond, TruncYear
 from django.db.models.fields import DateField
 from .models import *
 from order.models import *
@@ -298,48 +298,77 @@ class OrderGraphApiView(APIView):
                     order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
                     order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
                     print(order_data)
+                    response = []
+                    for order in order_data:
+                        response.append({"order_created_datetime": order['order_created_datetime'].strftime('%Y-%m-%d %H:%M:%S'),
+                            "orders": order['orders']
+                                    })
+                    return response
                     
                 elif type_of_duration == 'days':
                     start_time = (datetime.datetime.now() - datetime.timedelta(days=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
                     order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
                     order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
-                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
+                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only')).order_by('date_only')
+                    response = []
+                    for order in order_data:
+                        response.append({"date": order['date_only'].strftime('%Y-%m-%d %H:%M:%S')[0:10],
+                                        "orders": order['orders_count']
+                                        })
 
+                    return response
                 elif type_of_duration == 'weeks':
                     start_time = (datetime.datetime.now() - datetime.timedelta(weeks=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
                     order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
                     order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
-                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
+                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only')).order_by('date_only')
+                    response = []
+                    for order in order_data:
+                        response.append({"date": order['date_only'].strftime('%Y-%m-%d %H:%M:%S')[0:10],
+                                        "orders": order['orders_count']
+                                        })
+
+                    return response
 
                 elif type_of_duration == 'months':
                     start_time = (datetime.datetime.now() - relativedelta(months=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
                     order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
-                    order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
-                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
+                    # order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
+                    order_data = order_detail.annotate(date_only=Cast(TruncMonth('order_created_datetime'), DateField())).values('date_only').annotate(orders_count=Count('date_only')).order_by('date_only')
+                    response = []
+                    for order in order_data:
+                        response.append({"date": order['date_only'].strftime('%Y-%m-%d %H:%M:%S')[0:7],
+                                        "orders": order['orders_count']
+                                        })
+
+                    return response
                 # converted_start_time = datetime.datetime(start_time, tzinfo=pytz.UTC)
                 elif type_of_duration == 'years':
                     start_time = (datetime.datetime.now() - relativedelta(years=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
                     print(start_time)
                     order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
-                    order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
-                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
+                    # order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
+                    order_data = order_detail.annotate(date_only=Cast(TruncYear('order_created_datetime'), DateField())).values('date_only').annotate(orders_count=Count('date_only')).order_by('date_only')
+                    print(order_data)
+                    response = []
+                    for order in order_data:
+                        response.append({"date": order['date_only'].strftime('%Y-%m-%d %H:%M:%S')[0:4],
+                                        "orders": order['orders_count']
+                                        })
 
+                    return response
                 elif type_of_duration == 'all':
                     order_detail = OrderDetail.objects.all()
                     order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
-                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only'))
-
-                response = []
-                for order in order_data:
-                    try:
+                    order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only')).order_by('date_only')
+                    response = []
+                    for order in order_data:
                         response.append({"date": order['date_only'].strftime('%Y-%m-%d %H:%M:%S')[0:10],
-                                         "orders": order['orders_count']
-                                         })
-                    except:
-                        response.append({"order_created_datetime": order['order_created_datetime'].strftime('%Y-%m-%d %H:%M:%S'),
-                                         "orders": order['orders']
-                                         })
-                return response
+                                        "orders": order['orders_count']
+                                        })
+    
+                    return response
+
 
             except Exception as e:
                 print(e)
@@ -523,3 +552,10 @@ class AdminLogin(TokenObtainPairView):
 
 
 # ------------------------------------------------------------------------------------------------------------------------
+
+
+class CompletedOrdersReport(APIView):
+
+    def get(self, request, id=None):
+        
+        return Response(status=status.HTTP_200_OK)

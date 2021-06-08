@@ -82,8 +82,8 @@ MIDDLEWARE = [
 
 CRONJOBS = [
     ('* * * * *', 'products.cron.update_avg_price_job', '> /home/orddel/orddel-cron.log'),
-    ('0 0 * * *', 'order.cron.send_pending_order_notification', '> /home/orddel/orddel-cron.log'),
-    ('0 0 * * *', 'order.cron.send_inprogress_order_notification', '> /home/orddel/orddel-cron.log')
+    ('0 */2 * * *', 'order.cron.send_pending_order_notification', '> /home/orddel/orddel-cron.log'),
+    ('0 */2 * * *', 'order.cron.send_inprogress_order_notification', '> /home/orddel/orddel-cron.log')
 
 ]
 CRONTAB_COMMAND_SUFFIX = '2>&1'
