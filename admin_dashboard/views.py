@@ -5,10 +5,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models.functions import Cast, TruncMonth, TruncSecond, TruncYear
 from django.db.models.fields import DateField
+from django.db.models import Case, Value, When
 from .models import *
 from order.models import *
 from payment.models import *
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, Q, Sum, F
 from client_app.models import *
 from .serializers import *
 from django_email_verification import sendConfirm
@@ -20,6 +21,7 @@ from dateutil.relativedelta import relativedelta
 # Token Obtain pair
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from order.serializers import *
 
 
 # Admin Registration API
@@ -275,10 +277,6 @@ class AdminDashboardApiView(APIView):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-
-def order_stats(days=None, hours=None):
-    pass
-
 
 # Home screen - Dashboard resources
 class OrderGraphApiView(APIView):
@@ -553,9 +551,61 @@ class AdminLogin(TokenObtainPairView):
 
 # ------------------------------------------------------------------------------------------------------------------------
 
+def prepare_completed_orders_report(id, from_date, to_date):
+
+    order_details = OrderDetail.objects.filter \
+        (Q(delivery_person=id),
+         Q(order_delivery_datetime__date__gte=datetime.datetime.strptime(from_date, '%Y-%m-%d')),
+         Q(order_delivery_datetime__date__lte=datetime.datetime.strptime(to_date, '%Y-%m-%d'))) \
+        .annotate(total_packages=Sum('order_products__purchased_quantity'),
+                  total_purchase_price=Sum('order_products__unit_purchase_price'),
+                  total_profit_margin=Sum(Case(
+                      When(order_products__profit_margin_choice='percentage', then=Cast(
+                          F('order_products__profit_margin') * 0.01 * F('order_products__unit_purchase_price'),
+                          models.FloatField())),
+                      When(order_products__profit_margin_choice='value',
+                           then=Cast(F('order_products__profit_margin'), models.FloatField()))
+                  )
+                  ),
+                  total_porterage_price=Sum('order_products__portrage_price')
+                  )
+    # order_details = OrderDetail.objects.filter(delivery_person=id)
+    response_dict = {}
+    response_dict['grand_total_packages'] = 0
+    response_dict['grand_total_purchase_price'] = 0
+    response_dict['grand_total_profit_margin'] = 0
+    response_dict['grand_total_porterage_price'] = 0
+    order_details_list = []
+    for od in order_details:
+        order_products_list = []
+        response_dict['grand_total_packages'] += od.total_packages
+        response_dict['grand_total_purchase_price'] += od.total_purchase_price
+        response_dict['grand_total_profit_margin'] += float("{:.2f}".format(od.total_profit_margin))
+        response_dict['grand_total_porterage_price'] += od.total_porterage_price
+        serializer = OrderDetailSerializer(od)
+        list_of_order_products = od.order_products.all()
+        for order_prod in list_of_order_products:
+            serializer1 = OrderProductsSerializer(order_prod)
+            order_products_list.append(serializer1.data)
+        response = serializer.data
+        response['customer_name'] = od.order_box.client.first_name + ' ' + od.order_box.client.first_name
+        response['total_order_items'] = od.total_packages
+        response['total_purchase_price'] = od.total_purchase_price
+        response['total_profit_margin'] = float("{:.2f}".format(od.total_profit_margin))
+        response['order_products'] = order_products_list
+        order_details_list.append(response)
+    response_dict['order_details_list'] = order_details_list
+    return response_dict
 
 class CompletedOrdersReport(APIView):
 
     def get(self, request, id=None):
-        
-        return Response(status=status.HTTP_200_OK)
+        try:
+            if id:
+                from_date = self.request.query_params.get('from_date')
+                to_date = self.request.query_params.get('to_date')
+                response_dict = prepare_completed_orders_report(id, from_date, to_date)
+                return Response(data=response_dict, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e.args})
