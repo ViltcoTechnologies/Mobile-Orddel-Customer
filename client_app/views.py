@@ -438,6 +438,7 @@ class ClientLogoUploadAPIView(APIView):
             serializer.update(client, serializer.validated_data)
             return Response(data={'message': 'Image uploaded successfully'}, status=status.HTTP_200_OK)
         else:
+            print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

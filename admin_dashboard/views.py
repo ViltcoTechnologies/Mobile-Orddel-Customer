@@ -283,7 +283,15 @@ class OrderGraphApiView(APIView):
     # permission_classes = [permissions.IsAuthenticated, ]
     # authentication_classes = (authentication.JWTAuthentication,)
 
-    def get(self, request):
+    def get(self, request, id=None):
+        
+        def order_detail_filter(start_time, time_now):
+            if id:
+                order_detail = OrderDetail.objects.filter(Q(delivery_person=id), Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+            else:
+                order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+
+            return order_detail
 
         def generate_stats(type_of_duration, timedelta):
             try:
@@ -293,7 +301,7 @@ class OrderGraphApiView(APIView):
                 order_data = []
                 if type_of_duration == 'hours':
                     start_time = (datetime.datetime.now() - datetime.timedelta(hours=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
-                    order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+                    order_detail = order_detail_filter(start_time, time_now)
                     order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
                     print(order_data)
                     response = []
@@ -305,7 +313,7 @@ class OrderGraphApiView(APIView):
                     
                 elif type_of_duration == 'days':
                     start_time = (datetime.datetime.now() - datetime.timedelta(days=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
-                    order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+                    order_detail = order_detail_filter(start_time, time_now)
                     order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
                     order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only')).order_by('date_only')
                     response = []
@@ -317,7 +325,7 @@ class OrderGraphApiView(APIView):
                     return response
                 elif type_of_duration == 'weeks':
                     start_time = (datetime.datetime.now() - datetime.timedelta(weeks=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
-                    order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+                    order_detail = order_detail_filter(start_time, time_now)
                     order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
                     order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only')).order_by('date_only')
                     response = []
@@ -330,7 +338,7 @@ class OrderGraphApiView(APIView):
 
                 elif type_of_duration == 'months':
                     start_time = (datetime.datetime.now() - relativedelta(months=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
-                    order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+                    order_detail = order_detail_filter(start_time, time_now)
                     # order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
                     order_data = order_detail.annotate(date_only=Cast(TruncMonth('order_created_datetime'), DateField())).values('date_only').annotate(orders_count=Count('date_only')).order_by('date_only')
                     response = []
@@ -344,7 +352,7 @@ class OrderGraphApiView(APIView):
                 elif type_of_duration == 'years':
                     start_time = (datetime.datetime.now() - relativedelta(years=timedelta)).strftime("%Y-%m-%d %H:%M:%S")
                     print(start_time)
-                    order_detail = OrderDetail.objects.filter(Q(order_created_datetime__gte=start_time), Q(order_created_datetime__lte=time_now))
+                    order_detail = order_detail_filter(start_time, time_now)
                     # order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
                     order_data = order_detail.annotate(date_only=Cast(TruncYear('order_created_datetime'), DateField())).values('date_only').annotate(orders_count=Count('date_only')).order_by('date_only')
                     print(order_data)
@@ -356,7 +364,11 @@ class OrderGraphApiView(APIView):
 
                     return response
                 elif type_of_duration == 'all':
-                    order_detail = OrderDetail.objects.all()
+                    if id:
+                        order_detail = OrderDetail.objects.filter(delivery_person=id)
+                    else:
+                        order_detail = OrderDetail.objects.all()
+
                     order_data = order_detail.values('order_created_datetime').annotate(orders=Count('order_created_datetime'))
                     order_data = order_data.annotate(date_only=Cast('order_created_datetime', DateField())).values('date_only').annotate(orders_count=Count('date_only')).order_by('date_only')
                     response = []

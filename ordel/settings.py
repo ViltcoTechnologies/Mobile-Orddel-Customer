@@ -27,7 +27,7 @@ SECRET_KEY = '3&6_2w!n-d*na4@a(p-us406+b4!6^xle2993x!^lefg_^*t&s'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ec2-3-131-162-40.us-east-2.compute.amazonaws.com', '127.0.0.1', '192.168.1.99']
+ALLOWED_HOSTS = ['77.68.5.32']
 
 
 # Application definition
@@ -230,7 +230,7 @@ EMAIL_MAIL_SUBJECT = 'Confirm your email'
 EMAIL_MAIL_HTML = EMAIL_TEMPLATE_PATH
 # EMAIL_MAIL_PLAIN = 'mail_body.txt'
 EMAIL_PAGE_TEMPLATE = EMAIL_SUCCESS_TEMPLATE
-EMAIL_PAGE_DOMAIN = 'http://ec2-3-131-162-40.us-east-2.compute.amazonaws.com:8000'
+EMAIL_PAGE_DOMAIN = 'http://77.68.5.32'
 
 
 # Reset password SMTP configuration
@@ -253,15 +253,17 @@ STATIC_ROOT = STATIC_URL
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-AWS_ACCESS_KEY_ID = 'AKIAYD4FFDBGKS2T7FSP'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'orddel-frontend'
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_REGION_NAME = 'us-east-2'
-AWS_S3_SIGNATURE_VERSION = 's3v4'
+
+
+# AWS_ACCESS_KEY_ID = 'AKIAYD4FFDBGKS2T7FSP'
+# AWS_SECRET_ACCESS_KEY = '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'
+# AWS_STORAGE_BUCKET_NAME = 'orddel-frontend'
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
+# AWS_S3_REGION_NAME = 'us-east-2'
+# AWS_S3_SIGNATURE_VERSION = 's3v4'
 
 # Twilio Account
 # TWILIO_ACCOUNT_SID = "AC8d6c1e71edeb9459705b7320568df7ca"

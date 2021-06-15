@@ -17,6 +17,8 @@ urlpatterns = [
     # Orddel Dashboard API Routes
     path('dashboard/', AdminDashboardApiView.as_view()),
     path('order_graph/', OrderGraphApiView.as_view()),
+    path('order_graph_delivery_person/<id>/', OrderGraphApiView.as_view()),
+
 
     # ------------------------------------------------------------------------------------------------------------------
 
