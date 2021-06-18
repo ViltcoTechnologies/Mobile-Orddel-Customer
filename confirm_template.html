@@ -1,17 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Confirmation</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-        body{ color: blue; }
+      .orddel {
+        background-color: #ffe9ec;
+        text-align: center;
+        margin: 15% 20%;
+        border-radius: 20px;
+        box-shadow: 5px 5px 5px 5px #a3a3a35d;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        color: rgb(48, 47, 47);
+      }
+      .headings {
+        font-weight: bold;
+        font-size: 30px;
+      }
+
+      .text {
+        margin: 10px 50px;
+        font-weight: bold;
+      }
+
+      span {
+        color: #e21b1b;
+      }
     </style>
-</head>
-<body>
-    {% if success %}
-        You have confirmed your account!
-    {% else %}
-        Error, invalid token!
-    {% endif %}
-</body>
+  </head>
+  <body>
+    <div class="orddel">
+      <div>
+        <img style = "width: 100px; height: 100px; border-radius: 50px;" src="./orddel logo-01.png">
+      </div>
+      <p class="headings">HI,</p>
+        {% if success %}
+            <p class="text">
+                Congratulations your <span>Orddel account Confirmation</span> has been
+                accepted.
+            </p>
+
+            <p class="text">
+                Start saving your time and you know time is money.Log in to ORDDEL app
+                now.
+            </p>
+            <p class="text">Good Luck</p>
+        {% else %}
+            <p class="text">Link has expired. Please open the latest email and proceed.</p>
+        {% endif %}
+
+    </div>
+  </body>
 </html>

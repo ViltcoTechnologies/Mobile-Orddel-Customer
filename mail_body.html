@@ -1,13 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-        h1{ color: blue; }
+      .orddel {
+        background-color: #ffe9ec;
+        text-align: center;
+        margin: 8% 20%;
+        border-radius: 20px;
+        box-shadow: 5px 5px 5px 5px #a3a3a35d;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        color: rgb(48, 47, 47);
+      }
+      .headings {
+        font-weight: bold;
+        font-size: 30px;
+      }
+      .account_button {
+        padding: 10px 30px;
+        background-color: #e21b1b;
+        color: #fff;
+        border-radius: 8px;
+        border: none;
+      }
+      .text {
+        margin: 10px 50px;
+      }
+
+      .button_section {
+        padding: 20px 0px;
+        background-color: #e21b1b3f;
+      }
     </style>
-</head>
-    <body>
-        <h1>You are almost there!</h1><br>
-        <h2>Please click <a href="{{ link }}">here</a> to confirm your account</h2>
-    </body>
+  </head>
+  <body>
+    <div class="orddel">
+      <div>
+        <img style = "width: 100px; height: 100px; border-radius: 50px;" src="./orddel logo-01.png">
+      </div>
+      <p class="headings">Welcome to the ORDDEL Limited</p>
+      <p class="text">
+        Thanks for signin up.To enjoy the fruit of hard work of ORDDEL team and
+        activate your Orddel account please send confirmation by clicking the
+        button below:
+      </p>
+      <div class="button_section">
+        <a class="account_button" href="{{ link }}">Activate your Orddel account</a>
+      </div>
+      <p>For any further information please contact:<b>support@orddel.co.uk</b></p>
+      <p>Best Regards</p>
+      <p>Orddel Team</p>
+    </div>
+  </body>
 </html>
