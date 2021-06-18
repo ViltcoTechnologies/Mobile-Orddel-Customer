@@ -592,23 +592,26 @@ def prepare_completed_orders_report(id, from_date, to_date):
         order_products_list = []
         response_dict['grand_total_packages'] += od.total_packages
         response_dict['grand_total_purchase_price'] += od.total_purchase_price
-        response_dict['grand_total_profit_margin'] += float("{:.2f}".format(od.total_profit_margin))
-        response_dict['grand_total_porterage_price'] += od.total_porterage_price
+        if od.total_profit_margin != None:
+            response_dict['grand_total_profit_margin'] += float("{:.2f}".format(od.total_profit_margin))
+        if od.total_porterage_price != None:
+            response_dict['grand_total_porterage_price'] += od.total_porterage_price
         serializer = OrderDetailSerializer(od)
         list_of_order_products = od.order_products.all()
         for order_prod in list_of_order_products:
             serializer1 = OrderProductsSerializer(order_prod)
             order_products_list.append(serializer1.data)
         response = serializer.data
-        response['customer_name'] = od.order_box.client.first_name + ' ' + od.order_box.client.first_name
+        response['customer_name'] = od.order_box.client.first_name + ' ' + od.order_box.client.last_name
         response['total_order_items'] = od.total_packages
         response['total_purchase_price'] = od.total_purchase_price
-        response['total_profit_margin'] = float("{:.2f}".format(od.total_profit_margin))
+        if od.total_profit_margin != None:
+            response['total_profit_margin'] = float("{:.2f}".format(od.total_profit_margin))
         response['order_products'] = order_products_list
         order_details_list.append(response)
     response_dict['order_details_list'] = order_details_list
     return response_dict
-
+import traceback
 class CompletedOrdersReport(APIView):
 
     def get(self, request, id=None):
@@ -620,4 +623,7 @@ class CompletedOrdersReport(APIView):
                 return Response(data=response_dict, status=status.HTTP_200_OK)
 
         except Exception as e:
+            print(e.args)
+            traceback.print_exc()
+
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e.args})

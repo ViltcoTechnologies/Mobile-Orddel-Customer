@@ -219,12 +219,15 @@ USE_TZ = True
 
 # Email configuration
 EMAIL_ACTIVE_FIELD = 'is_active'
-EMAIL_SERVER = 'smtp.gmail.com'
+# EMAIL_SERVER = 'smtp.gmail.com'
+EMAIL_SERVER = 'mail.orddel.co.uk'
 # EMAIL_SERVER = 'mail.viltco.com'
-EMAIL_ADDRESS = 'leadarc123@gmail.com'
+# EMAIL_ADDRESS = 'leadarc123@gmail.com'
+EMAIL_ADDRESS = 'support@orddel.co.uk'
 # EMAIL_ADDRESS = 'orddel@viltco.com'
-EMAIL_FROM_ADDRESS = 'orddel@viltco.com'
-EMAIL_PASSWORD = '9WiPy98qhUPBvFL' # os.environ['password_key'] suggested
+EMAIL_FROM_ADDRESS = 'support@orddel.co.uk'
+EMAIL_PASSWORD = 'Orddel@4321'
+# EMAIL_PASSWORD = '9WiPy98qhUPBvFL' # os.environ['password_key'] suggested
 # EMAIL_PASSWORD = 'orddel@3221'  # os.environ['password_key'] suggested
 EMAIL_MAIL_SUBJECT = 'Confirm your email'
 EMAIL_MAIL_HTML = EMAIL_TEMPLATE_PATH
@@ -234,16 +237,19 @@ EMAIL_PAGE_DOMAIN = 'http://77.68.5.32'
 
 
 # Reset password SMTP configuration
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_HOST = 'mail.viltco.com'
-EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.orddel.co.uk'
 EMAIL_PORT = 587
 # EMAIL_PORT = 465
 # EMAIL_HOST_USER = 'orddel@viltco.com'
-EMAIL_HOST_USER = 'leadarc123@gmail.com'
-EMAIL_HOST_PASSWORD = '9WiPy98qhUPBvFL'
+# EMAIL_HOST_USER = 'leadarc123@gmail.com'
+EMAIL_HOST_USER = 'support@orddel.co.uk'
+# EMAIL_HOST_PASSWORD = '9WiPy98qhUPBvFL'
+EMAIL_HOST_PASSWORD = 'Orddel@4321'
 # EMAIL_HOST_PASSWORD = 'orddel@3221'
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
 
 

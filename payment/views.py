@@ -377,12 +377,12 @@ class GeneratePDFInvoiceAPIView(APIView):
             response = prepare_invoice(invoice_id=id)
             order_detail = OrderDetail.objects.get(id=response['order'])
             try:
-                response["client_logo"] = order_detail.order_box.client.image.url
+                response["client_logo"] = "http://77.68.5.32" + order_detail.order_box.client.image.url
             except Exception as e:
                 print(e.args)
                 response['client_logo'] = ""
             try:
-                response["delivery_person_logo"] = order_detail.delivery_person.image.url
+                response["delivery_person_logo"] = "http://77.68.5.32" + order_detail.delivery_person.image.url
             except Exception as e:
                 print(e.args)
                 response["delivery_person_logo"] = ""
@@ -730,11 +730,11 @@ class GenerateDeliveryNotePDF(APIView):
             response = prepare_delivery_note(order_id=id)
             order_detail = OrderDetail.objects.get(id=response['order'])
             try:
-                response["client_logo"] = order_detail.order_box.client.image.url
+                response["client_logo"] = "http://77.68.5.32" + order_detail.order_box.client.image.url
             except:
                 response['client_logo'] = ""
             try:
-                response["delivery_person_logo"] = order_detail.delivery_person.image.url
+                response["delivery_person_logo"] = "http://77.68.5.32" + order_detail.delivery_person.image.url
             except:
                 response["delivery_person_logo"] = ""
             try:

@@ -305,7 +305,8 @@ class RegisterDeliveryPersonApiViewV2(APIView):
 
                                 return Response(status=status.HTTP_200_OK,
                                                 data={"delivery_person_created": serializer.data})
-                            except:
+                            except Exception as e:
+                                print(e.args)
                                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                                 data={"message": "there was an error "
                                                                  "creating delivery person"})
@@ -490,7 +491,7 @@ class DeliveryPersonLogoUploadAPIView(APIView):
                 delivery_person = DeliveryPerson.objects.get(id=id)
                 serializer_class = DeliveryPersonSerializer(delivery_person)
 
-                return Response(status=status.HTTP_200_OK, data={"image": serializer_class.data['image']})
+                return Response(status=status.HTTP_200_OK, data={"image": "http://77.68.5.32" + serializer_class.data['image']})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery person not found'})
         else:
