@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,7 +8,7 @@
       .orddel {
         background-color: #ffe9ec;
         text-align: center;
-        margin: 15% 20%;
+        margin: 15% 15%;
         border-radius: 20px;
         box-shadow: 5px 5px 5px 5px #a3a3a35d;
         padding-top: 20px;
@@ -33,20 +34,22 @@
   <body>
     <div class="orddel">
       <div>
-        <img style = "width: 100px; height: 100px; border-radius: 50px;" src="./orddel logo-01.png">
+        <img style = "margin: 0 auto; width: 100px; height: 100px; border-radius: 50px;" id="logo" src="https://orddel.co.uk/wp-content/uploads/2020/12/Orddel-Logo-05.png">
       </div>
-      <p class="headings">HI,</p>
+      <p class="headings">Hi,</p>
         {% if success %}
             <p class="text">
-                Congratulations your <span>Orddel account Confirmation</span> has been
+                <b><span>Congratulations, </span><b> your Orddel account Confirmation has been
                 accepted.
             </p>
 
             <p class="text">
-                Start saving your time and you know time is money.Log in to ORDDEL app
-                now.
+                Start saving your time and you know time is money.
             </p>
-            <p class="text">Good Luck</p>
+            <p class="text">                
+              Log-in to ORDDEL app now.
+            </p>
+            <p class="text">Good Luck &#128578;</p>
         {% else %}
             <p class="text">Link has expired. Please open the latest email and proceed.</p>
         {% endif %}

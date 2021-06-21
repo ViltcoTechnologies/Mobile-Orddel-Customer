@@ -1,13 +1,15 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
+      
       .orddel {
         background-color: #ffe9ec;
         text-align: center;
-        margin: 8% 20%;
+        margin: 8% 15%;
         border-radius: 20px;
         box-shadow: 5px 5px 5px 5px #a3a3a35d;
         padding-top: 20px;
@@ -22,7 +24,7 @@
       .account_button {
         padding: 10px 30px;
         background-color: #e21b1b;
-        color: #fff;
+        color: #fff !important; 
         border-radius: 8px;
         border: none;
       }
@@ -33,24 +35,26 @@
       .button_section {
         padding: 20px 0px;
         background-color: #e21b1b3f;
+        color: #fff;
       }
     </style>
   </head>
   <body>
     <div class="orddel">
       <div>
-        <img style = "width: 100px; height: 100px; border-radius: 50px;" src="./orddel logo-01.png">
+        <img style = "margin: 0 auto; width: 100px; height: 100px; border-radius: 50px;" id="logo" src="https://orddel.co.uk/wp-content/uploads/2020/12/Orddel-Logo-05.png">
       </div>
       <p class="headings">Welcome to the ORDDEL Limited</p>
       <p class="text">
-        Thanks for signin up.To enjoy the fruit of hard work of ORDDEL team and
+        Thanks for your sign-up.
+        To enjoy the fruit of hard work of ORDDEL team and
         activate your Orddel account please send confirmation by clicking the
         button below:
       </p>
       <div class="button_section">
-        <a class="account_button" href="{{ link }}">Activate your Orddel account</a>
+        <a class="account_button" href="{{ link }}">Activate</a>
       </div>
-      <p>For any further information please contact:<b>support@orddel.co.uk</b></p>
+      <p>For any further information please contact:<b style="color: rgb(48, 47, 47);"> support@orddel.co.uk</b></p>
       <p>Best Regards</p>
       <p>Orddel Team</p>
     </div>
