@@ -14,8 +14,11 @@ from rest_framework_simplejwt.views import (
 from django.conf.urls import include
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework_swagger.views import get_swagger_view
 
+schema_view = get_swagger_view(title='Orddel APIs')
 urlpatterns = [
+    path('swagger/', schema_view),
     path('devices/', include(router.urls)),
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
