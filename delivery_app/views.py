@@ -491,7 +491,7 @@ class DeliveryPersonLogoUploadAPIView(APIView):
                 delivery_person = DeliveryPerson.objects.get(id=id)
                 serializer_class = DeliveryPersonSerializer(delivery_person)
 
-                return Response(status=status.HTTP_200_OK, data={"image": "http://77.68.5.32" + serializer_class.data['image']})
+                return Response(status=status.HTTP_200_OK, data={"image": "https://apps.orddel.co.uk" + serializer_class.data['image']})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery person not found'})
         else:

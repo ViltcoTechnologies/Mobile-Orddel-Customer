@@ -424,7 +424,7 @@ class ClientLogoUploadAPIView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client does not exist'})
             serializer_class = ClientSerializer(client)
 
-            return Response(status=status.HTTP_200_OK, data={"image": "http://77.68.5.32" + serializer_class.data['image']})
+            return Response(status=status.HTTP_200_OK, data={"image": "https://apps.orddel.co.uk" + serializer_class.data['image']})
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

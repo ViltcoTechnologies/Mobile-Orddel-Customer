@@ -583,6 +583,7 @@ def prepare_completed_orders_report(id, from_date, to_date):
                   )
     # order_details = OrderDetail.objects.filter(delivery_person=id)
     response_dict = {}
+    response_dict['grand_total_order_items'] = 0
     response_dict['grand_total_packages'] = 0
     response_dict['grand_total_purchase_price'] = 0
     response_dict['grand_total_profit_margin'] = 0
@@ -603,10 +604,17 @@ def prepare_completed_orders_report(id, from_date, to_date):
             order_products_list.append(serializer1.data)
         response = serializer.data
         response['customer_name'] = od.order_box.client.first_name + ' ' + od.order_box.client.last_name
-        response['total_order_items'] = od.total_packages
+        response['total_packages'] = od.total_packages
+        if len(order_products_list) > 0:
+            response['total_order_items'] = len(order_products_list)
+            response_dict['grand_total_order_items'] += response['total_order_items']
+
         response['total_purchase_price'] = od.total_purchase_price
         if od.total_profit_margin != None:
             response['total_profit_margin'] = float("{:.2f}".format(od.total_profit_margin))
+        if od.total_porterage_price != None:
+            response['total_porterage_price'] = float("{:.2f}".format(od.total_porterage_price))
+
         response['order_products'] = order_products_list
         order_details_list.append(response)
     response_dict['order_details_list'] = order_details_list
