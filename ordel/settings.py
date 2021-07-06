@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '3&6_2w!n-d*na4@a(p-us406+b4!6^xle2993x!^lefg_^*t&s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['apps.orddel.co.uk', '77.68.5.32']
 
@@ -238,7 +238,7 @@ EMAIL_MAIL_SUBJECT = 'Confirm your email'
 EMAIL_MAIL_HTML = EMAIL_TEMPLATE_PATH
 # EMAIL_MAIL_PLAIN = 'mail_body.txt'
 EMAIL_PAGE_TEMPLATE = EMAIL_SUCCESS_TEMPLATE
-EMAIL_PAGE_DOMAIN = 'http://77.68.5.32'
+EMAIL_PAGE_DOMAIN = 'https://apps.orddel.co.uk'
 
 
 # Reset password SMTP configuration
@@ -258,11 +258,12 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
 
 
-STATIC_URL = os.path.join(BASE_DIR, 'static/')
+STATIC_URL = 'static/'
 STATIC_ROOT = STATIC_URL
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = MEDIA_URL
 
 
 
