@@ -490,9 +490,13 @@ class DeliveryPersonLogoUploadAPIView(APIView):
             try:
                 delivery_person = DeliveryPerson.objects.get(id=id)
                 serializer_class = DeliveryPersonSerializer(delivery_person)
+                if serializer_class.data['image']:
+                    return Response(status=status.HTTP_200_OK, data={"image": "https://apps.orddel.co.uk" + serializer_class.data['image']})
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Image not found"})
 
-                return Response(status=status.HTTP_200_OK, data={"image": "https://apps.orddel.co.uk" + serializer_class.data['image']})
-            except:
+            except Exception as e:
+                print(e.args)
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Delivery person not found'})
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'ID not provided'})
@@ -1121,14 +1125,19 @@ class PendingApprovalListApiView(APIView):
         try:
             admin_approval_status = self.request.query_params.get('admin_approval_status').lower()
             try:
-                delivery_person = DeliveryPerson.objects.filter(admin_approval_status=admin_approval_status)
-                serializer = DeliveryPersonSerializer(delivery_person, many=True)
+                if admin_approval_status == 'all':
+                    delivery_person = DeliveryPerson.objects.all()
+                    serializer = DeliveryPersonSerializer(delivery_person, many=True)
+                else:
+                    delivery_person = DeliveryPerson.objects.filter(admin_approval_status=admin_approval_status)
+                    serializer = DeliveryPersonSerializer(delivery_person, many=True)
                 if not delivery_person:
                     return Response(status=status.HTTP_200_OK,
                                     data={"message": "Delivery Person table is empty"})
                 return Response(status=status.HTTP_200_OK,
                                 data={"pending_approval_list": serializer.data})
-            except:
+            except Exception as e:
+                print(e.args)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except:
             pass

@@ -23,7 +23,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from axes.backends import AxesBackend as a
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from validate_email import validate_email
 
 # Client home screen Dashboard
 class ClientDashboardApiView(APIView):
@@ -250,97 +250,102 @@ class ClientRegisterV2ApiView(APIView):
                 package = request.data['package'].strip().lower()
                 preferred_delivery_person = request.data['preferred_delivery_person']
                 print(package)
-
-                if first_name == ""\
-                        or last_name == ""\
-                        or email == ""\
-                        or phone_number == ""\
-                        or otp_status == ""\
-                        or password == "":
-                    return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data={"message": "following required fields can't "
-                                          "be empty: (first_name, last_name, email, otp_status"
-                                          "phone_number, password)"})
-                try:
-                    saved_data = Client.objects.get(phone_number=phone_number)
-                    return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data={"message": "Phone Number already registered!"})
-                except:
-                        try:
-                            package = ClientPackage.objects.get(name__iexact=package)
-                            no_of_invoices = package.no_of_invoices
+                is_valid = validate_email(email,verify=True)
+                print("asbhsbhfb", is_valid)
+                if is_valid:
+                    if first_name == ""\
+                            or last_name == ""\
+                            or email == ""\
+                            or phone_number == ""\
+                            or otp_status == ""\
+                            or password == "":
+                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                        data={"message": "following required fields can't "
+                                            "be empty: (first_name, last_name, email, otp_status"
+                                            "phone_number, password)"})
+                    try:
+                        saved_data = Client.objects.get(phone_number=phone_number)
+                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                        data={"message": "Phone Number already registered!"})
+                    except:
                             try:
-                                new_auth_user = User.objects.create_user(
-                                    email,
-                                    email,
-                                    password
-                                )
-                                new_auth_user.first_name = first_name
-                                new_auth_user.last_name = last_name
+                                package = ClientPackage.objects.get(name__iexact=package)
+                                no_of_invoices = package.no_of_invoices
                                 try:
-                                    delivery_person = DeliveryPerson.objects.get(id=preferred_delivery_person)
-                                except Exception as e:
-                                    print(e)
-                                    return Response(status=status.HTTP_400_BAD_REQUEST,
-                                                    data={'error': 'Delivery Person does not exist'})
-
-                                try:
-                                    new_client = Client.objects.create(
-                                        user=new_auth_user,
-                                        preferred_delivery_person=delivery_person,
-                                        package=package,
-                                        otp_status=otp_status,
-                                        first_name=first_name,
-                                        last_name=last_name,
-                                        username=username,
-                                        admin_approval_status=admin_approval_status,
-                                        email=email,
-                                        no_of_invoices=no_of_invoices,
-                                        current_location=current_location,
-                                        phone_number=phone_number,
-                                        address=address,
-                                        gender=gender,
-                                        image=image
+                                    new_auth_user = User.objects.create_user(
+                                        email,
+                                        email,
+                                        password
                                     )
+                                    new_auth_user.first_name = first_name
+                                    new_auth_user.last_name = last_name
                                     try:
-                                        ClientPackageLog.objects.create(
-                                            client=new_client,
-                                            package=package,
-                                            date_expiry=datetime.datetime.now() + datetime.timedelta(
-                                                package.validity_in_days),
-                                            status='active'
-
-                                        )
+                                        delivery_person = DeliveryPerson.objects.get(id=preferred_delivery_person)
                                     except Exception as e:
                                         print(e)
-                                        return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to create Client '
-                                                                                                             'Package Log'})
-                                    try:
-                                        sendConfirm(new_auth_user)
-                                    except:
                                         return Response(status=status.HTTP_400_BAD_REQUEST,
-                                                        data={"message": "There was a error sending verification "
-                                                                             "email"})
+                                                        data={'error': 'Delivery Person does not exist'})
 
-                                    new_client.save()
-                                    serializer = ClientSerializer(new_client)
-                                    new_auth_user.save()
+                                    try:
+                                        new_client = Client.objects.create(
+                                            user=new_auth_user,
+                                            preferred_delivery_person=delivery_person,
+                                            package=package,
+                                            otp_status=otp_status,
+                                            first_name=first_name,
+                                            last_name=last_name,
+                                            username=username,
+                                            admin_approval_status=admin_approval_status,
+                                            email=email,
+                                            no_of_invoices=no_of_invoices,
+                                            current_location=current_location,
+                                            phone_number=phone_number,
+                                            address=address,
+                                            gender=gender,
+                                            image=image
+                                        )
+                                        try:
+                                            ClientPackageLog.objects.create(
+                                                client=new_client,
+                                                package=package,
+                                                date_expiry=datetime.datetime.now() + datetime.timedelta(
+                                                    package.validity_in_days),
+                                                status='active'
+
+                                            )
+                                        except Exception as e:
+                                            print(e)
+                                            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to create Client '
+                                                                                                                'Package Log'})
+                                        try:
+                                            sendConfirm(new_auth_user)
+                                        except:
+                                            return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                            data={"message": "There was a error sending verification "
+                                                                                "email"})
+
+                                        new_client.save()
+                                        serializer = ClientSerializer(new_client)
+                                        new_auth_user.save()
 
 
-                                    return Response(status=status.HTTP_200_OK,
-                                                    data={"client_created": serializer.data})
-                                except Exception as e:
-                                    print(e)
+                                        return Response(status=status.HTTP_200_OK,
+                                                        data={"client_created": serializer.data})
+                                    except Exception as e:
+                                        print(e)
+                                        return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                        data={"message": "there was an error creating "
+                                                                        "client "})
+                                except:
                                     return Response(status=status.HTTP_400_BAD_REQUEST,
-                                                    data={"message": "there was an error creating "
-                                                                     "client "})
-                            except:
-                                return Response(status=status.HTTP_400_BAD_REQUEST,
-                                                data={"message": "User already exists"})
-                        except Exception as e:
-                            print(e.args)
-                            return Response(status=status.HTTP_404_NOT_FOUND,
-                                            data={"message": f"No package with the ID: {package}"})
+                                                    data={"message": "User already exists"})
+                            except Exception as e:
+                                print(e.args)
+                                return Response(status=status.HTTP_404_NOT_FOUND,
+                                                data={"message": f"No package with the ID: {package}"})
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST,
+                                                data={"message": "Email is invalid!"})
             except Exception as e:
                 print(e.args)
                 return Response(status=status.HTTP_400_BAD_REQUEST,
@@ -423,8 +428,11 @@ class ClientLogoUploadAPIView(APIView):
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Client does not exist'})
             serializer_class = ClientSerializer(client)
-
-            return Response(status=status.HTTP_200_OK, data={"image": "https://apps.orddel.co.uk" + serializer_class.data['image']})
+    
+            if serializer_class.data['image']:
+                return Response(status=status.HTTP_200_OK, data={"image": "https://apps.orddel.co.uk" + serializer_class.data['image']})
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Image not found"})
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -1087,18 +1095,19 @@ class PendingApprovalListApiView(APIView):
             admin_approval_status = self.request.query_params.get('admin_approval_status').lower()
             try:
                 if admin_approval_status == 'all':
-                    clients = Client.objects.all()
-                    serializer = ClientSerializer(clients, many=True)
+                    client = Client.objects.all()
+                    serializer = ClientSerializer(client, many=True)
                 else:
                     client = Client.objects.filter(admin_approval_status=admin_approval_status)
                     serializer = ClientSerializer(client, many=True)
-                    print(admin_approval_status, client)
-                    if not client:
-                        return Response(status=status.HTTP_200_OK,
-                                        data={"message": "Client table is empty"})
+                    # print(admin_approval_status, client)
+                if not client:
+                    return Response(status=status.HTTP_200_OK,
+                                    data={"message": "Client table is empty"})
                 return Response(status=status.HTTP_200_OK,
                                 data={"pending_approval_list": serializer.data})
-            except:
+            except Exception as e:
+                print(e.args)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except:
             pass

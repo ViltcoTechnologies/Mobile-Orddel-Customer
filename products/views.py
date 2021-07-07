@@ -25,11 +25,11 @@ class CreateCategoryApiView(APIView):
                 category_name = request.data['name'].title()
                 if category_name == "":
                     return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data="Ooops! 'name' of category can not be empty")
+                                    data={"message": "Ooops! 'name' of category can not be empty"})
                 try:
                     saved_data = Category.objects.get(name=category_name)
                     return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data=f"Category name with '{category_name}' already exists!")
+                                    data={"message": f"Category name with '{category_name}' already exists!"})
                 except:
                     try:
                         new_product_details = Category.objects.create(
@@ -42,14 +42,13 @@ class CreateCategoryApiView(APIView):
                                         data={"category_created": serializer.data})
                     except:
                         return Response(status=status.HTTP_400_BAD_REQUEST,
-                                        data="There was a error creating record!")
+                                        data={"message": "There was a error creating record!"})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
-                                data="Oops! 'name' of category is required")
+                                data={"message": "Oops! 'name' of category is required"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data="Oops! Please provide description, send empty"
-                                 "string if you do not want to set anything")
+                            data={"message": "Oops! Please provide description, send empty string if you do not want to set anything"})
 
 
 # Category List API
@@ -172,13 +171,13 @@ class CreateProductApiView(APIView):
                 or unit == "" \
                 or currency == "":
             return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data="Ooops! following required fields can't "
+                            data={"message": "Ooops! following required fields can't "
                                  "be empty: (sku, name, unit, avg_price, "
-                                 "currency)")
+                                 "currency)"})
         try:
             saved_data = Product.objects.get(name=name, unit=unit, company=company)
             return Response(status=status.HTTP_200_OK,
-                            data="Product already registered!")
+                            data={"message": "Product already registered!"})
         except:
             # try:
             category = Category.objects.get(id=request.data['category'])
