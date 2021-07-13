@@ -267,7 +267,7 @@ class ListProductApiView(APIView):
                 return Response(response,
                                 status=status.HTTP_200_OK)
         else:
-            products = Product.objects.all()
+            products = Product.objects.all().order_by('-date_created')
             serializer = ProductSerializer(products, many=True)
             return Response(status=status.HTTP_200_OK, data={'products': serializer.data})
             # except:

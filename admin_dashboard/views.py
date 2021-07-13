@@ -568,7 +568,8 @@ def prepare_completed_orders_report(id, from_date, to_date):
     order_details = OrderDetail.objects.filter \
         (Q(delivery_person=id),
          Q(order_delivery_datetime__date__gte=datetime.datetime.strptime(from_date, '%Y-%m-%d')),
-         Q(order_delivery_datetime__date__lte=datetime.datetime.strptime(to_date, '%Y-%m-%d'))) \
+         Q(order_delivery_datetime__date__lte=datetime.datetime.strptime(to_date, '%Y-%m-%d')),
+         Q(status='delivered')) \
         .annotate(total_packages=Sum('order_products__purchased_quantity'),
                   total_purchase_price=Sum('order_products__unit_purchase_price'),
                   total_profit_margin=Sum(Case(
