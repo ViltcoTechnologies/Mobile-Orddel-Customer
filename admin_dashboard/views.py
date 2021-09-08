@@ -21,9 +21,10 @@ from dateutil.relativedelta import relativedelta
 # Token Obtain pair
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework import generics
 from order.serializers import *
-
-
+from delivery_app.models import DeliveryPersonPackageLog
+from delivery_app.serializers import *
 # Admin Registration API
 class RegisterAdminUserApiView(APIView):
 
@@ -636,3 +637,22 @@ class CompletedOrdersReport(APIView):
             traceback.print_exc()
 
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e.args})
+
+
+class PackageLogs(generics.ListAPIView):
+    # get_queryset().order_by('id')
+    queryset = DeliveryPersonPackageLog.objects.all().order_by('id')
+    serializer_class = DeliveryPersonPackageLogSerializer
+
+    # def get_object(self):
+    #     queryset = self.filter_queryset(self.get_queryset())
+    #     # make sure to catch 404's below
+    #     obj = queryset.all()
+    #     self.check_object_permissions(self.request, obj)
+    #     return obj
+    # def list(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance)
+    #     print(serializer.data)
+    #     serializer.data['delivery_person_name'] = serializer.data['delivery_person_first_name'] + serializer.data['delivery_person_last_name']
+    #     return Response(serializer.data)

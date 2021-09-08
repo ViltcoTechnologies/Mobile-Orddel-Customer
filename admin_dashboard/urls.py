@@ -27,7 +27,7 @@ urlpatterns = [
     path('create_delivery_person_approval_log/', CreateDeliveryPersonApprovalLog.as_view()),
     path('admin_user_login/', AdminLogin.as_view()),
 
-
+    path('package_subscription_logs/', PackageLogs.as_view()),
     path('completed_orders_report/<id>/', CompletedOrdersReport.as_view()),
 
 ]
