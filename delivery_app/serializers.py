@@ -33,9 +33,13 @@ class DeliveryPersonImageSerializer(serializers.ModelSerializer):
 
 
 class DeliveryPersonPackageLogSerializer(serializers.ModelSerializer):
+    delivery_person_first_name = serializers.CharField(source='delivery_person.first_name')
+    delivery_person_last_name = serializers.CharField(source='delivery_person.last_name')
+
     class Meta:
-        model = DeliveryPerson
+        model = DeliveryPersonPackageLog
         fields = "__all__"
+        ordering = ['-id']
 
 
 class DeliveryPersonBusinessDetailSerializer(serializers.ModelSerializer):

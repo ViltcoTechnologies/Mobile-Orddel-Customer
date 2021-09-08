@@ -37,6 +37,8 @@ class DeliveryPersonDashboardApiView(APIView):
                 try:
                     delivery_person_package_log = DeliveryPersonPackageLog.objects.filter(delivery_person=delivery_person).last()
                     if delivery_person_package_log.date_expiry <= date.today():
+                        delivery_person.no_of_invoices = 0
+                        delivery_person.save()
                         remaining_invoices = 0
                         delivery_person_package = "_"
 
