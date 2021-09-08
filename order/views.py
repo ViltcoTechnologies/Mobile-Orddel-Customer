@@ -576,7 +576,8 @@ class ListOrdersAssignedAPIView(APIView):
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'delivered':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
+                date_1yr_ago = datetime.datetime.now() - datetime.timedelta(days=365)
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice, order_created_datetime__gte=date_1yr_ago)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             else:
@@ -687,7 +688,8 @@ class ListClientOrdersAPIView(APIView):
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'delivered':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                date_1yr_ago = datetime.datetime.now() - datetime.timedelta(days=365)
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice, order_created_datetime__gte=date_1yr_ago)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             else:
