@@ -69,7 +69,7 @@ keystoneauth1==4.3.0
 kombu==4.6.11
 MarkupSafe==1.1.1
 munch==2.5.0
-netifaces==0.10.9
+#netifaces==0.10.9
 numpy==1.19.4
 oauthlib==3.1.0
 openpyxl==3.0.7
@@ -85,7 +85,7 @@ pip-tools==5.4.0
 pkg-resources==0.0.0
 placebo==0.9.0
 prompt-toolkit==3.0.17
-psycopg2==2.8.6
+#psycopg2==2.8.6
 psycopg2-binary==2.8.6
 pycparser==2.20
 pyfcm==1.4.9
