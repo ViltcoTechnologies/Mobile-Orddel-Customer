@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt import authentication
 from rest_framework.response import Response
 from .models import *
-from datetime import datetime
+from datetime import datetime, timedelta
 from datetime import date
 from django.db.models import Sum
 from .serializers import *
@@ -576,8 +576,7 @@ class ListOrdersAssignedAPIView(APIView):
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'delivered':
-                date_1yr_ago = datetime.datetime.now() - datetime.timedelta(days=365)
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice, order_created_datetime__gte=date_1yr_ago)
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             else:
@@ -602,7 +601,8 @@ class ListOrdersAssignedAPIView(APIView):
                 data_list.append(data)
             return Response(status=status.HTTP_200_OK, data={'response': data_list})
 
-        except:
+        except Exception as e:
+            print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'unable to fetch records'})
 
 
@@ -688,7 +688,7 @@ class ListClientOrdersAPIView(APIView):
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'delivered':
-                date_1yr_ago = datetime.datetime.now() - datetime.timedelta(days=365)
+                date_1yr_ago = datetime.now() - timedelta(days=365)
                 order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice, order_created_datetime__gte=date_1yr_ago)
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
