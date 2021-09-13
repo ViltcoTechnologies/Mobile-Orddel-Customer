@@ -449,6 +449,7 @@ class ListOrderApiView(APIView):
             order_prods = []
             order_prods.extend(order_detail.order_products.all())
             products_details = []
+            total_amount = 0
             for prod in order_prods:
                 product = {}
                 order_prod_obj = OrderProduct.objects.get(id=prod.id)
@@ -464,12 +465,17 @@ class ListOrderApiView(APIView):
                     product['avg_price'] = 0.0
 
                 product['unit_sales_price'] = order_prod_obj.unit_sale_price
+                product['vat_amount'] = float("{:.2f}".format(order_prod_obj.product.vat * order_prod_obj.unit_sale_price))
                 product['quantity'] = order_prod_obj.quantity
                 product['purchased_quantity'] = order_prod_obj.purchased_quantity
-                product['total_amount'] = order_prod_obj.total_amount
+                product['amount'] = float("{:.2f}".format((product['vat_amount'] + product['unit_sales_price']) * product['purchased_quantity']))
+                total_amount += product['amount']
+
                 # product['supplier_market'] = order_prod_obj.supplier.supplier
                 products_details.append(product)
             response['order_products'] = products_details
+            response['total_amount'] = float("{:.2f}".format(total_amount))
+
             order_b_obj = OrderBox.objects.get(id=response['order_box'])
             if order_b_obj.client != None:
                 response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
@@ -493,15 +499,23 @@ class ListOrderApiView(APIView):
                 order_prods = []
                 order_prods.extend(order_b_obj.orderproduct_set.all())
                 products_details = []
+                total_amount = 0
                 for prod in order_prods:
                     product = {}
                     order_prod_obj = OrderProduct.objects.get(id=prod.id)
                     product['product_name'] = order_prod_obj.product.name
+                    product['vat_amount'] = float("{:.2f}".format(order_prod_obj.product.vat * order_prod_obj.unit_sale_price))
+                    product['unit_sales_price'] = order_prod_obj.unit_sale_price
+                    product['purchased_qty'] = order_prod_obj.purchased_quantity
+
                     product['product_unit'] = order_prod_obj.product.unit
                     product['quantity'] = order_prod_obj.quantity
-                    product['total_amount'] = order_prod_obj.total_amount
+                    product['amount'] = float("{:.2f}".format((product['vat_amount'] + product['unit_sales_price']) * product['purchased_qty']))
+                    total_amount += product['amount']
                     products_details.append(product)
                 res['order_products'] = products_details
+                res['total_amount'] = float("{:.2f}".format(total_amount))
+
                 if order_b_obj.client != None:
                     res['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name
                 try:    
