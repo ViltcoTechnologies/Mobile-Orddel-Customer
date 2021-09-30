@@ -16,12 +16,14 @@ from rest_framework.response import Response
 from .serializers import ChangePasswordSerializer
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
-
+from smtplib import SMTPException
 from django.core.mail import EmailMultiAlternatives
+from django.core.mail import BadHeaderError, send_mail
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
 from .models import VersionControl
+from django.conf import settings
 from django_rest_passwordreset.signals import reset_password_token_created
 
 
@@ -263,6 +265,7 @@ class CheckPhoneAPIView(APIView):
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 
     # send an e-mail to the user
+    print('here to send email')
     context = {
         'current_user': reset_password_token.user,
         'username': reset_password_token.user.username,
@@ -270,6 +273,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         'reset_password_url': reset_password_token.key
     }
 
+    print(reset_password_token.user.email)
     # render email text
     email_html_message = render_to_string('email/user_reset_password.html', context)
     email_plaintext_message = render_to_string('email/user_reset_password.txt', context)
@@ -280,12 +284,43 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         # message:
         email_plaintext_message,
         # from:
-        "noreply@somehost.local",
+        settings.EMAIL_HOST_USER,
         # to:
         [reset_password_token.user.email]
+
     )
     msg.attach_alternative(email_html_message, "text/html")
-    msg.send()
+    try:
+        msg.send(fail_silently=False)
+    except BadHeaderError:              # If mail's Subject is not properly formatted.
+        print('Invalid header found.')
+    except SMTPException as e:          # It will catch other errors related to SMTP.
+        print('There was an error sending an email.'+ e)
+    except:                             # It will catch All other possible errors.
+        print("Mail Sending Failed!")
+
+
+    try:
+        send_mail(
+            # title:
+            "Password Reset for {title}".format(title="ORDDEL"),
+            # message:
+            email_plaintext_message,
+            # from:
+            settings.EMAIL_HOST_USER,
+            # to:
+            [reset_password_token.user.email], 
+            fail_silently = False
+        )
+    except BadHeaderError:              # If mail's Subject is not properly formatted.
+        print('Invalid header found.')
+    except SMTPException as e:          # It will catch other errors related to SMTP.
+        print('There was an error sending an email.'+ e)
+    except:                             # It will catch All other possible errors.
+        print("Mail Sending Failed!") 
+
+
+    print('email sent')
 
 
 class ChangePasswordView(generics.UpdateAPIView):
@@ -332,17 +367,21 @@ class GetEmailAndPhoneApiView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'username and/or user_type not provided'})
         if user_type == 'client':
             try:
-                client = Client.objects.get(username=username)
+                print(username)
+                client = Client.objects.get(username__iexact=username)
+                print(client)
                 data = {'email': client.email, 'phone': client.phone_number}
                 return Response(status=status.HTTP_200_OK, data={'data': data})
-            except:
+            except Exception as e:
+                print(e)
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'user not found'})
         elif user_type == 'delivery_person':
             try:
-                delivery_person = DeliveryPerson.objects.get(username=username)
+                delivery_person = DeliveryPerson.objects.get(username__iexact=username)
                 data = {'email': delivery_person.email, 'phone': delivery_person.phone_number}
                 return Response(status=status.HTTP_200_OK, data={'data': data})
-            except:
+            except Exception as e:
+                print(e)
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'user not found'})
 
 
@@ -351,7 +390,7 @@ class ChangePasswordViaPhoneNumber(APIView):
         username = request.data['username']
         new_password = request.data['password']
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(username__iexact=username)
             user.set_password(new_password)
             user.save()
             return Response(status=status.HTTP_200_OK, data = {'message': 'Password Updated successfully'})

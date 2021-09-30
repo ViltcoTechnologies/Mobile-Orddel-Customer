@@ -340,7 +340,7 @@ class CreateOrderApiView(APIView):
                 try:
                     device = FCMDevice.objects.filter(user=user_id, active=True)
                     print(device)
-                    device.send_message(title="New Order", body="You have received an order.")
+                    device.send_message(title="New Order", body=f"You have received an order from {client.first_name} {client.last_name}.")
                 
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
@@ -574,23 +574,23 @@ class ListOrdersAssignedAPIView(APIView):
         choice = self.request.query_params.get('choice').lower()
         try:
             if choice == 'all':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person)
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'pending':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'purchased':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'in_progress':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'delivered':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice)
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             else:
@@ -663,7 +663,8 @@ class ConsolidatePurchaseAPIView(APIView):
                                                                     'status_code': 200,
                                                                     'message': "Successful"
                                                                     })
-            except:
+            except Exception as e:
+                print(e)
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={
                                                                         'status_code': 400,
                                                                         'message': "Unsuccessful"
@@ -682,28 +683,28 @@ class ListClientOrdersAPIView(APIView):
         choice = self.request.query_params.get('choice').lower()
         try:
             if choice == 'all':
-                order_detail = OrderDetail.objects.filter(order_box__client=client)
+                order_detail = OrderDetail.objects.filter(order_box__client=client).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'pending':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'rejected':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'in_progress':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'purchased':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice)
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'delivered':
                 date_1yr_ago = datetime.now() - timedelta(days=365)
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice, order_created_datetime__gte=date_1yr_ago)
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice, order_created_datetime__gte=date_1yr_ago).order_by('-order_created_datetime')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             else:

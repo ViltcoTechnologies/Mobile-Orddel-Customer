@@ -93,23 +93,23 @@ class UpdateCategoryApiView(APIView):
                 if category_name == "":
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={"message": "Ooops! 'name' of category can not be empty"})
+                # try:
+                #     saved_data = Category.objects.get(name=category_name)
+                #     return Response(status=status.HTTP_400_BAD_REQUEST,
+                #                     data={"message": f"'{category_name}' already exists"})
+                # except:
                 try:
-                    saved_data = Category.objects.get(name=category_name)
-                    return Response(status=status.HTTP_400_BAD_REQUEST,
-                                    data={"message": f"'{category_name}' already exists"})
+                    updated_category = Category.objects.filter(id=category_id)
+                    updated_category.update(
+                        name=category_name,
+                        description=category_description
+                    )
+                    serializer = CategorySerializer(updated_category, many=True)
+                    return Response(status=status.HTTP_200_OK,
+                                    data={'updated_category': serializer.data})
                 except:
-                    try:
-                        updated_category = Category.objects.filter(id=category_id)
-                        updated_category.update(
-                            name=category_name,
-                            description=category_description
-                        )
-                        serializer = CategorySerializer(updated_category, many=True)
-                        return Response(status=status.HTTP_200_OK,
-                                        data={'updated_category': serializer.data})
-                    except:
-                        return Response(status=status.HTTP_404_NOT_FOUND,
-                                        data={"message": "No Record Found!"})
+                    return Response(status=status.HTTP_404_NOT_FOUND,
+                                    data={"message": "No Record Found!"})
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={"message": "Oops! 'id and name' of category is required"})

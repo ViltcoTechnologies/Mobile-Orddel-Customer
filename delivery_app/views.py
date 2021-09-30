@@ -1295,11 +1295,13 @@ class UpdateDeliveryPersonOrderApiView(APIView):
             elif delivery_person_action == "delivered":
                 order_detail.status = 'delivered'
                 user_id = order_detail.order_box.client.user.id
+                delivery_person = order_detail.delivery_person
                 try:
                     device = FCMDevice.objects.filter(user=user_id)
-                    device.send_message(title="Order Delivered", body="Your order has been delivered.")
+                    device.send_message(title="Order Delivered", body=f"New invoice received from {delivery_person.first_name} {delivery_person.last_name}.")
                 
-                except:
+                except Exception as e:
+                    print(e)
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
 
 

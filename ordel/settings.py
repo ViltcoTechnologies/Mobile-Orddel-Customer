@@ -222,6 +222,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 
+
 # Email configuration
 EMAIL_ACTIVE_FIELD = 'is_active'
 # EMAIL_SERVER = 'smtp.gmail.com'
@@ -242,10 +243,22 @@ EMAIL_PAGE_DOMAIN = 'https://apps.orddel.co.uk'
 
 
 # Reset password SMTP configuration
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# DJANGO_REST_LOOKUP_FIELD = 'custom_email_field'
+DJANGO_REST_PASSWORDRESET_IP_ADDRESS_HEADER = 'HTTP_X_FORWARDED_FOR'
+HTTP_USER_AGENT_HEADER = 'HTTP_USER_AGENT'
+DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
+    "CLASS": "django_rest_passwordreset.tokens.RandomStringTokenGenerator",
+    "OPTIONS": {
+        "min_length": 4,
+        "max_length": 8
+    }
+}
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'mail.viltco.com'
 # EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST = 'smtp.orddel.co.uk'
+EMAIL_HOST = 'mail.orddel.co.uk'
 EMAIL_PORT = 587
 # EMAIL_PORT = 465
 # EMAIL_HOST_USER = 'orddel@viltco.com'
@@ -256,7 +269,6 @@ EMAIL_HOST_PASSWORD = 'Orddel@4321'
 # EMAIL_HOST_PASSWORD = 'orddel@3221'
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
-
 
 STATIC_URL = 'static/'
 STATIC_ROOT = STATIC_URL
