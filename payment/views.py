@@ -114,7 +114,7 @@ class CreateDeliveryNote(APIView):
             delivery_note_number = request.data['delivery_note_number']
             delivery_note = request.data['delivery_note']
             purchased_products = request.data['purchased_products']
-
+            print('purchased_____products', purchased_products)
             try:
                 order_detail = OrderDetail.objects.get(id=order_id)
             except:
@@ -157,7 +157,7 @@ class GenerateInvoiceAPIView(APIView):
                 serializer = OrderDetailSerializer(order_detail)
                 response = serializer.data
                 order_prods = []
-                order_prods.extend(order_detail.order_products.all())
+                order_prods.extend(order_detail.order_products.all().order_by('id'))
                 products_details = []
                 total_purchased_qty = 0
                 total_vat = 0
@@ -223,7 +223,7 @@ class ViewInvoiceApiView(APIView):
             serializer = InvoiceSerializer(invoice)
             response = serializer.data
             order_prods = []
-            order_prods.extend(invoice.order.order_products.all())
+            order_prods.extend(invoice.order.order_products.all().order_by('id'))
             products_details = []
             total_purchased_qty = 0
             total_vat = 0
@@ -295,7 +295,7 @@ def prepare_invoice(invoice_id):
         serializer = InvoiceSerializer(invoice)
         response = serializer.data
         order_prods = []
-        order_prods.extend(invoice.order.order_products.all())
+        order_prods.extend(invoice.order.order_products.all().order_by('id'))
         products_details = []
         total_purchased_qty = 0
         total_vat = 0
@@ -690,7 +690,7 @@ def prepare_delivery_note(order_id):
         serializer = DeliveryNoteSerializer(delivery_note)
         response = serializer.data
         order_prods = []
-        order_prods.extend(delivery_note.order.order_products.all())
+        order_prods.extend(delivery_note.order.order_products.all().order_by('id'))
         products_details = []
         total_purchased_qty = 0
         total_vat = 0
@@ -782,13 +782,25 @@ class SuppliersList(APIView):
                                                       order_products__purchase_details_submission_datetime__date=purchase_date, order_products__supplier_payment_status=supplier_payment_status).values(
                                                       supplier_payment_status=F('order_products__supplier_payment_status'), invoice_number=F('order_products__supplier_invoice_number'), supplier_name=F('order_products__supplier__supplier'))\
                                                       .annotate(supplier=F('order_products__supplier'), amount=Sum((F('order_products__unit_purchase_price') + F('order_products__portrage_price')) * F('order_products__purchased_quantity'), output_field=FloatField()))
+
+
+            # , unit_purchase_price=F('order_products__unit_purchase_price'),  unit_portrage_price=F('order_products__portrage_price'), unit_purchased_qty=F('order_products__purchased_quantity')
+            # , amount=Sum((F('order_products__unit_purchase_price') + F('order_products__portrage_price')) * F('order_products__purchased_quantity'), output_field=FloatField())
             # , datetime=Cast(TruncSecond('order_products__purchase_details_submission_datetime', DateTimeField()), CharField())
             # , portrage_price_total=Sum(F('order_products__portrage_price'), output_field=FloatField())
             # portrage_price_total = Sum(F('order_products__portrage_price'), output_field=FloatField()),
             # , product = F('order_products__product'), quantity = F('order_products__quantity'),
             # purchased_quantity = F('order_products__purchased_quantity'),
             response_list = []
+
             for od in order_detail:
+                amount = 0
+
+                # print('unit purchased price', od['unit_purchase_price'])
+                # print('unit portrage price', od['unit_portrage_price'])
+                # print('unit_purchased_qty', od['unit_purchased_qty'])
+
+                # print(od['amount'])
                 od['datetime'] = datetime.datetime.strptime(purchase_date + " 00:00:00", '%Y-%m-%d %H:%M:%S').strftime('%d-%m-%Y %H:%M:%S')
                 # print(od['datetime'])
                 # print(type(od['datetime']))
@@ -801,11 +813,14 @@ class SuppliersList(APIView):
                 # , datetime=F('purchase_details_submission_datetime')
                 # .values('product__name', 'purchased_quantity', 'unit_purchase_price', 'portrage_price')
                 # order_prod.amount = order_prod.aggregate(amount=Sum(F('unit_sale_price') * F('quantity'), output_field=FloatField()))
-                print(order_prod)
+                # print(order_prod)
                 serializer = SuppliersListSerializer(od)
                 response = serializer.data
                 serializer1 = SuppliersOrderedProductsDetailSerializer(order_prod, many=True)
                 # serializer1.data['quantity_sum'] = order_prod['quantity_sum']
+                for i in serializer1.data:
+                    amount +=  (i['unit_purchase_price_total'] + i['unit_portrage_price_total']) * i['purchased_quantity_total'] 
+                response['amount'] = amount
                 count = sum(1 for i in serializer1.data if i['purchased_quantity_total'] == 0)
                 print('count......', count)
                 if count>0:

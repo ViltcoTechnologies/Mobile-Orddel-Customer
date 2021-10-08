@@ -21,6 +21,7 @@ from django.shortcuts import get_object_or_404
 # Token Obtain pair
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.db.models.functions import Length
 from django.contrib.auth import authenticate
 from django.http import HttpRequest
 # Delivery Person home screen Dashboard
@@ -1013,7 +1014,7 @@ class ListPackagesApiView(APIView):
                                 data={'Error': 'package not found'})
         else:
             try:
-                package = DeliveryPersonPackage.objects.all().order_by('id')
+                package = DeliveryPersonPackage.objects.all().order_by(Length('name').desc())
                 data_to_pass = DeliveryPersonPackageSerializer(package, many=True)
                 return Response(status=status.HTTP_200_OK,
                                 data={"all_package": data_to_pass.data})
