@@ -331,7 +331,9 @@ def prepare_invoice(invoice_id):
 
 
             products_details.append(product)
-        response['order_products'] = sorted(products_details, key = lambda i: i['amount'])
+        # response['order_products'] = sorted(products_details, key = lambda i: i['amount'])
+        response['order_products'] = products_details
+
         order_b_obj = OrderBox.objects.get(id=invoice.order.order_box.id)
         if order_b_obj.client != None:
             response['client'] = order_b_obj.client.first_name + " " + order_b_obj.client.last_name

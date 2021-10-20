@@ -447,7 +447,7 @@ class ListOrderApiView(APIView):
             # order_box_obj = OrderBox.objects.get(id=order_box)
             order_detail = OrderDetail.objects.get(order_box=order_box)
             order_prods = []
-            order_prods.extend(order_detail.order_products.all().order_by('-id'))
+            order_prods.extend(order_detail.order_products.all().order_by('id'))
             products_details = []
             total_amount = 0
             for prod in order_prods:
