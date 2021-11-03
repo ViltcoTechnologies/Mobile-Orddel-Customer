@@ -1608,6 +1608,7 @@ return (
                       marginTop: 10,
                       //justifyContent: "center",
                       width: "100%",
+                     // borderWidth:1
                     }}
                   >
                     <Text
@@ -1615,7 +1616,7 @@ return (
                         color: Colors.themeColor,
                         width: "30%",
                         textAlign: "center",
-
+                        //borderWidth:1,
                         fontSize: 14,
                       }}
                     >
@@ -1626,7 +1627,7 @@ return (
                         color: Colors.textGreyColor,
                         width: "20%",
                         textAlign: "center",
-
+                       // borderWidth:1,
                         fontSize: 14,
                       }}
                     >
@@ -1636,7 +1637,7 @@ return (
                       style={{
                         color: Colors.themeColor,
                         width: "20%",
-
+                       // borderWidth:1,
                         fontSize: 14,
                         textAlign: "center",
                       }}
@@ -1647,7 +1648,7 @@ return (
                       style={{
                         color: Colors.textGreyColor,
                         width: "24%",
-
+                       // borderWidth:1,
                         fontSize: 14,
                         textAlign: "center",
                       }}
@@ -1702,19 +1703,22 @@ return (
                         )}
                       />
                     ) : null}
-                    <View style={{ flexDirection: "row", paddingTop:10,paddingBottom:0 ,borderBottomWidth:.5 , borderBottomColor:'gray' }}>
+                    <View style={{ flexDirection: "row",paddingTop:10,paddingBottom:0 ,borderBottomWidth:.5 , borderBottomColor:'gray' }}>
                   <Text
-                    style={{ color: Colors.themeColor,fontWeight:'bold',width:"45%",marginLeft:"7.5%"}}
+                    style={{ color: Colors.themeColor,fontWeight:'bold',width: Platform.OS == "android" ? "40%" : "36.5%",
+                    paddingLeft: Platform.OS == "android" ? "8%" : "12%"
+                      }}
                   >
                     Total:
                   </Text>
-                  <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"16%",textAlign:"center" }}>
+                  <Text style={{width: Platform.OS == "android" ? "11%" : "13.5%"}}></Text>
+                  <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"16%",textAlign:"center",width: Platform.OS == "android" ? "20%" : "20%" }}>
                     {cartTotalPackages}
                   </Text>
-                  {cartTotalAmount==0?<Text style={{ color: Colors.textGreyColor,width:"21%",textAlign:"right" }}>
+                  {cartTotalAmount==0?<Text style={{ color: Colors.textGreyColor,textAlign:"center" ,width: Platform.OS == "android" ? "25%" : "20%"}}>
                   £ {cartTotalAmount}
 
-                  </Text>:<Text style={{ color: Colors.textGreyColor,width:"27%",textAlign:"right" }}>
+                  </Text>:<Text style={{ color: Colors.textGreyColor,width:"27%",textAlign:"center" ,width: Platform.OS == "android" ? "25%" : "20%" }}>
                   £ {parseFloat(cartTotalAmount).toFixed(2)}
 
                   </Text>}

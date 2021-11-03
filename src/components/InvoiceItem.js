@@ -22,30 +22,30 @@ const InvoiceItem = props => {
 
     <View style={{flexDirection:'row',borderBottomWidth:0.5,borderBottomColor:'grey',marginTop:10,alignItems:'space-around',width:'100%',marginBottom:1,paddingRight:10}}>
 
-        <View style = {{width:'25%'}}>
+        <View style = {{width: Platform.OS == "android" ? "21%" : "20%",}}>
             <Text style={{marginLeft:2,color:Colors.productGrey,fontWeight:'bold',textAlign:'left'}}>{props.name}</Text>
         </View>
         {/* <View style = {{width:'20%',alignItems:'center'}}>
         
         <Text style={{color:Colors.productGrey}}>{props.unit}</Text>
         </View> */}
-        <View style = {{width:'15%',alignItems:"center"}}>
+        <View style = {{width: Platform.OS == "android" ? "24%" : "24%",alignItems:"center"}}>
         
             <Text style={{color:Colors.productGrey}}>{props.quantity}</Text>
         </View>
         
         
-        <View style = {{width:'20%'}}>
+        <View style = {{width: Platform.OS == "android" ? "21%" : "20%",alignItems:"center"}}>
         
             <Text style={{color:Colors.productGrey,textAlign:'right'}}>£ {parseFloat(props.price).toFixed(2)}</Text>
         </View>
-        <View style = {{width:'18%',paddingLeft:"2%"}}>
+        <View style = {{width: Platform.OS == "android" ? "16%" : "16%", alignItems:"center"}}>
         
-            {props.vat==0?<Text style={{color:Colors.productGrey,textAlign:'right',marginRight:5}}>£ {props.vat}</Text>:<Text style={{color:Colors.productGrey,textAlign:'right',marginRight:5}}>£ {parseFloat(props.vat).toFixed(2)}</Text>}
+            {props.vat==0?<Text style={{color:Colors.productGrey,textAlign:'right'}}>£ {props.vat}</Text>:<Text style={{color:Colors.productGrey,textAlign:'right'}}>£ {parseFloat(props.vat).toFixed(2)}</Text>}
         </View>
-        <View style = {{width:'25%'}}>
+        <View style = {{width: Platform.OS == "android" ? "21%" : "21%"}}>
         
-            <Text style={{color:Colors.productGrey,textAlign:'right',marginRight:5}}>£ {parseFloat(props.amount).toFixed(2)}</Text>
+            <Text style={{color:Colors.productGrey,textAlign:'right'}}>£ {parseFloat(props.amount).toFixed(2)}</Text>
         </View>
         
     </View>

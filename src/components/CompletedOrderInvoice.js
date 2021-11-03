@@ -46,13 +46,13 @@ function CompletedOrderInvoice({ navigation, route }) {
   const { OID, orderBoxId } = route.params;
   // const packages=Packages;
   const [invoiceData, setInvoiceData] = useState("");
-  const [buttonLoading,setButtonLoading]=useState(false);
-  const [orderBoxIdd,setOrderBoxIdd]=useState("");
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const [orderBoxIdd, setOrderBoxIdd] = useState("");
   const [invoiceNo, setInvoiceNo] = useState("");
   const [orderList, setOrderList] = useState("");
   const [order, setOrder] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
-  const [RiderImage,setRiderImage]=useState("");
+  const [RiderImage, setRiderImage] = useState("");
   const toggleBottomNavigationView = () => {
     //Toggling the visibility state of the bottom sheet
     setVisible(!visible);
@@ -76,20 +76,18 @@ function CompletedOrderInvoice({ navigation, route }) {
   };
 
   const sendInvoice = () => {
-    fetch(URL+"/payment/create_list_invoice/",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inv_number: invoiceNo,
-          total_amount: invoiceData.total_amount,
-          order: invoiceData.id,
-        }),
-      }
-    )
+    fetch(URL + "/payment/create_list_invoice/", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        inv_number: invoiceNo,
+        total_amount: invoiceData.total_amount,
+        order: invoiceData.id,
+      }),
+    })
       .then(async (response) => {
         let data = await response.json();
         console.log("put", data);
@@ -110,34 +108,32 @@ function CompletedOrderInvoice({ navigation, route }) {
       .catch((error) => console.log("Something went wrong", error));
   };
 
-
-
-  const reorder=()=>{
+  const reorder = () => {
     setButtonLoading(true);
-        if(orderBoxIdd==""){
-          fetch(URL + "/order/create_order_box/", {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              client_id: ClientId,
-            }),
-          })
-            .then(async (response) => {
-              let data = await response.json();
+    if (orderBoxIdd == "") {
+      fetch(URL + "/order/create_order_box/", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          client_id: ClientId,
+        }),
+      })
+        .then(async (response) => {
+          let data = await response.json();
 
-              console.log(response)
-              console.log("Create",data )
-              // console.log("status code",response.status)
-              // console.log("status data",data)
-              // setStatusCode(response.status)
-              if (response.status == 201) {
-                  // setResMessage("")
-                  dispatch(ApiDataAction.SetOrderBoxId(data.cart.id));
-                  console.log("OrderrrrrrrIdddddddddddd: ",d_orderBoxId);
-                  fetch(URL + "/order/list_order/" + d_orderBoxId + "/")
+          console.log(response);
+          console.log("Create", data);
+          // console.log("status code",response.status)
+          // console.log("status data",data)
+          // setStatusCode(response.status)
+          if (response.status == 201) {
+            // setResMessage("")
+            dispatch(ApiDataAction.SetOrderBoxId(data.cart.id));
+            console.log("OrderrrrrrrIdddddddddddd: ", d_orderBoxId);
+            fetch(URL + "/order/list_order/" + d_orderBoxId + "/")
               // fetch(URL+'/client_app/clients_list/33/')
               .then((response) => response.json())
               .then((responseJson) => {
@@ -146,15 +142,15 @@ function CompletedOrderInvoice({ navigation, route }) {
 
                 dispatch(
                   cartActions.reorder(responseJson.order.order_products)
-                )
+                );
                 navigation.navigate("ReOrder", {
                   OID: orderId,
                   orderBoxId: d_orderBoxId,
                   Quantity: invoiceData.total_qty,
-                  id:invoiceData.delivery_person_id,
-                  name:invoiceData.delivery_person_name,
-                  address:invoiceData.delivery_person_address
-                })
+                  id: invoiceData.delivery_person_id,
+                  name: invoiceData.delivery_person_name,
+                  address: invoiceData.delivery_person_address,
+                });
                 setButtonLoading(false);
                 // setIsLoading(false);
                 // setDataStatus(responseJson.order.status);
@@ -162,89 +158,65 @@ function CompletedOrderInvoice({ navigation, route }) {
                 // setIsLoading(false);
               })
               .catch((error) => console.error(error));
-                  // navigation.navigate("ReOrder", {
-                  //   OID: orderId,
-                  //   orderBoxId: d_orderBoxId,
-                  //   Quantity: invoiceData.total_qty,
-                  //   id:invoiceData.delivery_person_id,
-                  //   name:invoiceData.delivery_person_name,
-                  //   address:invoiceData.delivery_person_address
-                  // })
-                  // setButtonLoading(false);
+            // navigation.navigate("ReOrder", {
+            //   OID: orderId,
+            //   orderBoxId: d_orderBoxId,
+            //   Quantity: invoiceData.total_qty,
+            //   id:invoiceData.delivery_person_id,
+            //   name:invoiceData.delivery_person_name,
+            //   address:invoiceData.delivery_person_address
+            // })
+            // setButtonLoading(false);
+          } else {
+            console.log("execption: ", data.message);
+            alert(data.message);
+            setButtonLoading(false);
+            // Toast.show(data.message, Toast.LONG);
+            // setResMessage(data.message)
+          }
 
-              } else {
-                console.log("execption: ",data.message);
-                alert(data.message);
-                setButtonLoading(false);
-                // Toast.show(data.message, Toast.LONG);
-                // setResMessage(data.message)
+          // code that can access both here
+        })
+        .catch((error) => console.log("Something went wrong", error));
+    } else {
+      console.log("OrderrrrrrrIdddddddddddd: ", d_orderBoxId);
+      fetch(URL + "/order/list_order/" + d_orderBoxId + "/")
+        // fetch(URL+'/client_app/clients_list/33/')
+        .then((response) => response.json())
+        .then((responseJson) => {
+          console.log("OrderBoxDetail:", responseJson.order);
+          // setBoxData(responseJson.order);
 
-              }
+          dispatch(cartActions.reorder(responseJson.order.order_products));
+          navigation.navigate("ReOrder", {
+            OID: orderId,
+            orderBoxId: d_orderBoxId,
+            Quantity: invoiceData.total_qty,
+            id: invoiceData.delivery_person_id,
+            name: invoiceData.delivery_person_name,
+            address: invoiceData.delivery_person_address,
+          });
+          setButtonLoading(false);
+          // setIsLoading(false);
+          // setDataStatus(responseJson.order.status);
+          // console.log(boxDetail, "-------");
+          // setIsLoading(false);
+        })
+        .catch((error) => console.error(error));
+    }
+  };
 
-
-              // code that can access both here
-            })
-            .catch((error) => console.log("Something went wrong", error));
-        }
-        else{
-          console.log("OrderrrrrrrIdddddddddddd: ",d_orderBoxId);
-          fetch(URL + "/order/list_order/" + d_orderBoxId + "/")
-              // fetch(URL+'/client_app/clients_list/33/')
-              .then((response) => response.json())
-              .then((responseJson) => {
-                console.log("OrderBoxDetail:", responseJson.order);
-                // setBoxData(responseJson.order);
-
-                dispatch(
-                  cartActions.reorder(responseJson.order.order_products)
-                )
-                navigation.navigate("ReOrder", {
-                  OID: orderId,
-                  orderBoxId: d_orderBoxId,
-                  Quantity: invoiceData.total_qty,
-                  id:invoiceData.delivery_person_id,
-                  name:invoiceData.delivery_person_name,
-                  address:invoiceData.delivery_person_address
-                })
-                setButtonLoading(false);
-                // setIsLoading(false);
-                // setDataStatus(responseJson.order.status);
-                // console.log(boxDetail, "-------");
-                // setIsLoading(false);
-              })
-              .catch((error) => console.error(error));
-
-        }
-
-
-
-
-      }
-
-
-
-
-
-
-
-
-  const getClientImage=(id)=>{
-    fetch(URL + "/delivery_person/get_delivery_person_logo/"+id+"/")
-            // fetch(URL+'/client_app/clients_list/33/')
-            .then((response) => response.json())
-            .then((responseJson) => {
-              console.log(
-                " Getting Image of client:",
-                responseJson
-              );
-              setRiderImage(responseJson.image);
+  const getClientImage = (id) => {
+    fetch(URL + "/delivery_person/get_delivery_person_logo/" + id + "/")
+      // fetch(URL+'/client_app/clients_list/33/')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(" Getting Image of client:", responseJson);
+        setRiderImage(responseJson.image);
         setIsLoading(false);
-
-            })
-            .catch((error) => console.error(error));
-}
-
-
+      })
+      .catch((error) => console.error(error));
+  };
 
   useEffect(() => {
     // getToken();
@@ -273,27 +245,23 @@ function CompletedOrderInvoice({ navigation, route }) {
         .catch((error) => console.error(error));
     }
 
-    if(ClientId!=0){
+    if (ClientId != 0) {
       fetch(URL + "/order/get_order_box/" + ClientId + "/")
-      // fetch(URL+'/client_app/clients_list/33/')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        // console.log(
-        //   "Dashboard:",
-        //   responseJson
-        // );
-        console.log("OrderBoxId:", responseJson);
-        setOrderBoxIdd(responseJson.order_box);
-        if(responseJson.order_box!=""){
-          dispatch(ApiDataAction.SetOrderBoxId(responseJson.order_box));
-
-        }
-
-      })
-      .catch((error) => console.error(error));
+        // fetch(URL+'/client_app/clients_list/33/')
+        .then((response) => response.json())
+        .then((responseJson) => {
+          // console.log(
+          //   "Dashboard:",
+          //   responseJson
+          // );
+          console.log("OrderBoxId:", responseJson);
+          setOrderBoxIdd(responseJson.order_box);
+          if (responseJson.order_box != "") {
+            dispatch(ApiDataAction.SetOrderBoxId(responseJson.order_box));
+          }
+        })
+        .catch((error) => console.error(error));
     }
-
-
   }, [orderId]);
   // console.log("Order Box Id:",OrderBoxId);
   // console.log("Order Box Id:",boxDetail);
@@ -325,82 +293,133 @@ function CompletedOrderInvoice({ navigation, route }) {
                   {invoiceNo}
                 </Text>
               </View>
-              <View style={{flexDirection:'row',alignSelf:'center',padding:15,paddingTop:0,paddingBottom:0}}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignSelf: "center",
+                  padding: 15,
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                }}
+              >
+                <Card
+                  style={{
+                    padding: 10,
+                    width: "50%",
+                    backgroundColor: "#e6e6e6",
+                    elevation: 0,
+                    borderRadius: 7,
+                  }}
+                >
+                  {/* <View style={{flexDirection:'row'}}> */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignSelf: "center",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <View
+                      style={{
+                        marginLeft: Platform.OS == "android" ? 0 : 0,
+                        width: "35%",
+                      }}
+                    >
+                      <Image
+                        source={
+                          RiderImage == null || RiderImage == ""
+                            ? require("../assets/profilelogo.png")
+                            : { uri: RiderImage }
+                        }
+                        style={{
+                          width: Platform.OS == "ios" ? 50 : 50,
+                          height: Platform.OS == "ios" ? 50 : 50,
+                          borderRadius: 60,
+                        }}
+                      />
+                    </View>
 
-<Card style={{padding:10,width:'50%',backgroundColor:'#e6e6e6',elevation:0,borderRadius:7}}>
-       {/* <View style={{flexDirection:'row'}}> */}
-       <View style={{flexDirection:'row',alignSelf:'center',alignItems:'center',justifyContent:'center',width:"100%"}}>
+                    <View
+                      style={{
+                        paddingLeft: Platform.OS == "android" ? 5 : 0,
+                        width: "65%",
+                      }}
+                    >
+                      <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
+                        Delivery Person:
+                      </Text>
 
-<View style={{marginLeft:Platform.OS=="android"?0:0,width:"35%"}}>
+                      <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                        {invoiceData.delivery_person_name}
+                      </Text>
+                      <Text style={{ fontSize: 12, color: "#666666" }}>
+                        {invoiceData.delivery_person_address}
+                      </Text>
+                    </View>
+                  </View>
+                </Card>
 
- <Image source={RiderImage==null||RiderImage==""?require('../assets/profilelogo.png'):{uri:RiderImage}}
- style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,borderRadius:60}}
- />
+                <Card
+                  style={{
+                    padding: 10,
+                    marginLeft: 10,
+                    width: "50%",
+                    backgroundColor: "#e6e6e6",
+                    elevation: 0,
+                    borderRadius: 7,
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignSelf: "center",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <View
+                      style={{
+                        marginLeft: Platform.OS == "android" ? 0 : 0,
+                        width: "35%",
+                      }}
+                    >
+                      <Image
+                        source={
+                          clientImage == null || clientImage == ""
+                            ? require("../assets/profilelogo.png")
+                            : { uri: clientImage }
+                        }
+                        style={{
+                          width: Platform.OS == "ios" ? 50 : 50,
+                          height: Platform.OS == "ios" ? 50 : 50,
+                          borderRadius: 60,
+                        }}
+                      />
+                    </View>
 
-</View>
+                    <View
+                      style={{
+                        paddingLeft: Platform.OS == "android" ? 5 : 0,
+                        width: "65%",
+                      }}
+                    >
+                      <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
+                        Customer:
+                      </Text>
 
-<View style={{paddingLeft:Platform.OS=="android"?5:0,width:"65%"}}>
-
- <Text style={{color:Colors.themeColor,fontSize:12}}>Delivery Person:</Text>
-
-
-
- <Text style={{fontSize:14,fontWeight:'bold'}}>{invoiceData.delivery_person_name}</Text>
- <Text style={{fontSize:12,color:'#666666'}}>{invoiceData.delivery_person_address}</Text>
-
-
-
-
-
-</View>
-</View>
-
-
-
-
-
-
-
-
-
-
-</Card>
-
-<Card style={{padding:10,marginLeft:10,width:'50%',backgroundColor:'#e6e6e6',elevation:0,borderRadius:7}}>
-<View style={{flexDirection:'row',alignSelf:'center',alignItems:'center',justifyContent:'center',width:"100%"}}>
-
-<View style={{marginLeft:Platform.OS=="android"?0:0,width:"35%"}}>
-
-<Image source={clientImage==null||clientImage==""?require('../assets/profilelogo.png'):{uri:clientImage}}
-style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,borderRadius:60}}
-/>
-
-</View>
-
-<View style={{paddingLeft:Platform.OS=="android"?5:0,width:"65%"}}>
-
-<Text style={{color:Colors.themeColor,fontSize:12}}>Customer:</Text>
-
-
-
-<Text style={{fontSize:14,fontWeight:'bold'}}>{invoiceData.client}</Text>
-<Text style={{fontSize:12,color:'#666666'}}>{invoiceData.business_address}</Text>
-
-
-
-
-
-</View>
-</View>
-
-
-
-
-
-
-
-       </Card>
-       </View>
+                      <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                        {invoiceData.client}
+                      </Text>
+                      <Text style={{ fontSize: 12, color: "#666666" }}>
+                        {invoiceData.business_address}
+                      </Text>
+                    </View>
+                  </View>
+                </Card>
+              </View>
 
               <View
                 style={{
@@ -422,16 +441,73 @@ style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,border
               </View>
             </View>
 
-            <View style={{flexDirection:'row',marginTop:30,}}>
-        <Text style={{color:Colors.themeColor,width:"20%",fontSize:17,fontWeight:'bold',textAlign:"left"}}>Product</Text>
-        {/* <Text style={{color:Colors.themeColor,width:35,fontSize:17,fontWeight:'bold',textAlign:'center'}}>Unit</Text> */}
-        <Text style={{color:Colors.themeColor,width:"23%",fontSize:17,fontWeight:'bold',textAlign:'center'}}>Quantity</Text>
-        <Text style={{color:Colors.themeColor,width:"20%",fontSize:17,fontWeight:'bold',textAlign:'center'}}>Unit Price</Text>
+            <View
+              style={{ flexDirection: "row", marginTop: 30}}
+            >
+              <Text
+                style={{
+                  color: Colors.themeColor,
+                  width: "20%",
+                 // borderWidth: 1,
+                  fontSize: 17,
+                  fontWeight: "bold",
+                  textAlign: "left",
+                }}
+              >
+                Product 
+              </Text>
+              {/* <Text style={{color:Colors.themeColor,width:35,fontSize:17,fontWeight:'bold',textAlign:'center'}}>Unit</Text> */}
+              <Text
+                style={{
+                  color: Colors.themeColor,
+                  width: "23%",
+                  fontSize: 17,
+                 // borderWidth: 1,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                Quantity
+              </Text>
+              <Text
+                style={{
+                  color: Colors.themeColor,
+                  width: "20%",
+                  fontSize: 17,
+                 // borderWidth: 1,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                Unit Price
+              </Text>
 
-        <Text style={{color:Colors.themeColor,width:"16%",fontSize:17,fontWeight:'bold',textAlign:'center'}}>VAT</Text>
+              <Text
+                style={{
+                  color: Colors.themeColor,
+                  width: "16%",
+                  fontSize: 17,
+                 // borderWidth: 1,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                VAT
+              </Text>
 
-        <Text style={{color:Colors.themeColor,fontSize:17,fontWeight:'bold',width:"20%",textAlign:"right"}}>Amount</Text>
-    </View>
+              <Text
+                style={{
+                  color: Colors.themeColor,
+                  fontSize: 17,
+                  //borderWidth: 1,
+                  fontWeight: "bold",
+                  width: "21%",
+                  textAlign: "right",
+                }}
+              >
+                Amount
+              </Text>
+            </View>
 
             <View style={{ marginBottom: 10 }}>
               <FlatList
@@ -450,16 +526,75 @@ style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,border
                   />
                 )}
               />
-              <View style={{flexDirection:'row',borderBottomWidth:0.5,borderBottomColor:'grey',marginTop:10}}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  borderBottomWidth: 0.5,
+                  borderBottomColor: "grey",
+                  marginTop: 10,
+                 
+                }}
+              >
+                <Text
+                  style={{
+                    color: Colors.themeColor,
+                    width: Platform.OS == "android" ? "20%" : "20%",
+                    textAlign: "left",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Total
+                </Text>
+                <Text
+                  style={{
+                    color: Colors.themeColor,
+                    width: Platform.OS == "android" ? "24%" : "23.5%",
+                    fontWeight: "bold",
+                    fontSize: 14,
+                    textAlign: "center",
+                  }}
+                >
+                  {invoiceData.total_qty}
+                </Text>
+                <Text style={{width: Platform.OS == "android" ? "20%" : "20%",}}></Text>
+                {invoiceData.total_vat == 0 ? (
+                  <Text
+                    style={{
+                      color: Colors.themeColor,
+                      width: Platform.OS == "android" ? "16.5%" : "15.5%",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      fontSize: 14,
+                    }}
+                  >
+                    £ {invoiceData.total_vat}
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      color: Colors.themeColor,
+                      width: Platform.OS == "android" ? "16.5%" : "15.5%",
+                      fontWeight: "bold",
+                      textAlign: "right",
+                      fontSize: 14,
+                    }}
+                  >
+                    £ {parseFloat(invoiceData.total_vat).toFixed(2)}
+                  </Text>
+                )}
 
-<Text style={{color:Colors.themeColor,width:"22%",textAlign:'left',fontWeight:'bold',}}>Total</Text>
-<Text style={{color:Colors.themeColor,width:Platform.OS=="android"?"20%":"20%",fontWeight:'bold',fontSize:14,textAlign:"center"}}>{invoiceData.total_qty}</Text>
-{invoiceData.total_vat==0?<Text style={{color:Colors.themeColor,width:"33%",fontWeight:'bold',textAlign:"right",fontSize:14,}}>£ {invoiceData.total_vat}</Text>:<Text style={{color:Colors.themeColor,width:"33%",fontWeight:'bold',textAlign:"right",fontSize:14,}}>£ {parseFloat(invoiceData.total_vat).toFixed(2)}</Text>}
-
-<Text style={{color:Colors.themeColor,width:"24%",fontWeight:'bold',textAlign:"right",fontSize:14}}>£ {parseFloat(invoiceData.total_amount).toFixed(2)}</Text>
-
-</View>
-
+                <Text
+                  style={{
+                    color: Colors.themeColor,
+                    width: Platform.OS == "android" ? "19.5%" : "21%",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                    fontSize: 14,
+                  }}
+                >
+                  £ {parseFloat(invoiceData.total_amount).toFixed(2)}
+                </Text>
+              </View>
             </View>
 
             <View style={{ padding: 10 }}></View>
@@ -497,10 +632,7 @@ style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,border
                 justifyContent: "center",
               }}
             >
-
-
-
-            {/* <View
+              {/* <View
                 style={{
                   height: 100,
                   width: 100,
@@ -526,10 +658,9 @@ style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,border
                 </Text>
               </View> */}
 
+              {/* //=================== NEW UPDATION=======================// */}
 
-{/* //=================== NEW UPDATION=======================// */}
-
-{/* <View
+              {/* <View
                 style={{
 
                   height: 110,
@@ -585,9 +716,8 @@ style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,border
                 </Text>
               </View> */}
 
-
-{/*  ------------------------------  ---------------------------- */}
-<View
+              {/*  ------------------------------  ---------------------------- */}
+              <View
                 style={{
                   height: 100,
                   width: 100,
@@ -605,13 +735,10 @@ style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,border
                     marginTop: "12%",
                     fontWeight: "bold",
                     fontSize: 12,
-                    margin:'2%',
-
+                    margin: "2%",
                   }}
                 >
-
-                Delivery
-
+                  Delivery
                 </Text>
                 <Text
                   style={{
@@ -620,12 +747,10 @@ style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,border
                     //marginTop: "20%",
                     fontWeight: "bold",
                     fontSize: 12,
-                    margin:'2%',
-
+                    margin: "2%",
                   }}
                 >
-                Date & Time
-
+                  Date & Time
                 </Text>
                 <Text
                   style={{
@@ -648,13 +773,7 @@ style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,border
                 >
                   {invoiceData?.order_delivery_datetime?.split(" ")[1]}
                 </Text>
-
-
               </View>
-
-
-
-
 
               <View style={{ alignSelf: "center", marginLeft: "5%" }}>
                 <Text style={{ color: Colors.productGrey, fontSize: 14 }}>
@@ -665,14 +784,15 @@ style={{ width:Platform.OS=='ios'? 50:50,height:Platform.OS=='ios'? 50:50,border
                 </Text>
               </View>
             </View>
-            <View style={{alignSelf:'center'}}>
-            <TouchableOpacity onPress={reorder} style={styles.button}>
-            {buttonLoading ? (
-                <Spinner color={"white"} />
-              ) : (
-            <Text style={styles.buttonText}>Reorder</Text>)}
-            </TouchableOpacity>
-        </View>
+            <View style={{ alignSelf: "center" }}>
+              <TouchableOpacity onPress={reorder} style={styles.button}>
+                {buttonLoading ? (
+                  <Spinner color={"white"} />
+                ) : (
+                  <Text style={styles.buttonText}>Reorder</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </Content>
         )}
       </ScrollView>

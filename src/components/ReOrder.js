@@ -1133,7 +1133,7 @@ return (
                   <Text
                     style={{ color: Colors.themeColor,fontWeight:'bold',width:"51%",marginLeft:"2.5%",textAlign:"left"}}
                   >
-                    Total:
+                    Total: 
                   </Text>
                   <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"15%",textAlign:"center" }}>
                     {cartTotalPackages}

@@ -116,7 +116,7 @@ const CartItem = (props,{route}) => {
           style={{
             marginLeft: 2,
             color: Colors.productGrey,
-            textAlign: 'left',
+            textAlign: 'center',
           }}
         >
           {props.name}
@@ -155,7 +155,7 @@ initialValue=""
 />
 </View>
 
-      <View style={{ width: "22%", justifyContent: "center", }}>
+      <View style={{ width: "22%", justifyContent: "center",}}>
         {props.price==0?<Text style={{ color: Colors.textGreyColor, textAlign: "right",marginRight:8 }}>
           £ {props.price}
         </Text>:<Text style={{ color: Colors.textGreyColor, textAlign: "right",marginRight:8 }}>

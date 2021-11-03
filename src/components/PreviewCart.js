@@ -18,23 +18,23 @@ const PreviewCart = (props) => {
  
 
   return (
-    <View style={{flexDirection:'row',borderBottomWidth:0.5,borderBottomColor:'grey',marginTop:10,alignItems:'space-around',width:'95%',marginTop:5,marginBottom:1,paddingRight:10}}>
+    <View style={{flexDirection:'row',borderBottomWidth:0.5,borderBottomColor:'grey',width:'100%',marginTop:5,marginBottom:1}}>
 
-        <View style = {{width:'35%'}}>
+        <View style = {{width: Platform.OS == "android" ? "32%" : "26.5%"}}>
             <Text style={{marginLeft:5,color:Colors.productGrey,fontWeight:'bold'}}>{props.name}</Text>
         </View>
-        <View style = {{width:'18%',alignItems:'center'}}>
-        
+
+        <View style = {{width: Platform.OS == "android" ? "17%" : "26.5%",alignItems:'center',}}>
         <Text style={{color:Colors.productGrey,textAlign:'center'}}>{props.unit}</Text>
         </View>
-        <View style = {{width:'19%',}}>
+        <View style = {{width: Platform.OS == "android" ? "25%" : "11.25%",}}>
         
-            <Text style={{color:Colors.productGrey,textAlign:'right',marginRight:"20%"}}>{props.quantity}</Text>
+            <Text style={{color:Colors.productGrey,textAlign:'center'}}>{props.quantity}</Text>
         </View>
         
-        <View style = {{width:'27%',marginLeft:10}}>
+        <View style = {{width: Platform.OS == "android" ? "29%" : "36.5%",}}>
         
-            {props.price==0?<Text style={{color:Colors.productGrey,textAlign:"right",}}>£ {props.price}</Text>:<Text style={{color:Colors.productGrey,textAlign:"right",}}>£ {parseFloat(props.price).toFixed(2)}</Text>}
+            {props.price==0?<Text style={{color:Colors.productGrey,textAlign:"center",}}>£ {props.price}</Text>:<Text style={{color:Colors.productGrey,textAlign:"center",}}>£ {parseFloat(props.price).toFixed(2)}</Text>}
         </View>
         
     </View>

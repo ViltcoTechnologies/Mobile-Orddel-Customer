@@ -590,27 +590,29 @@ setButtonLoading(true);
                 <Text
                   style={{
                     color: Colors.themeColor,
-                    width: "22.5%",
+                    width: Platform.OS == "android" ? "20%" : "21%",
                     textAlign: "left",
                     marginLeft: "1%",
-                    fontWeight:'bold'
+                    fontWeight:'bold',
+                 
                   }}
                 >
                   Total
                 </Text>
+                <Text style={{width: Platform.OS == "android" ? "25%" : "25%"}}></Text>
                 <Text
                   style={{
                     color: Colors.themeColor,
-                    width: "75%",
+                    width: Platform.OS == "android" ? "29%" : "28.5%",
                     textAlign: "center",
-                    // paddingLeft: "15%",
-                    fontWeight:'bold'
+                    fontWeight:'bold',
+                   // borderWidth:1
                   }}
                 >
                   {totalQuantity}
                 </Text>
 
-
+                <Text style={{width: Platform.OS == "android" ? "25%" : "25%"}}></Text>
               </View>
               {/* <View style={{ flexDirection: "row" }}>
                 <Text style={{ color: Colors.themeColor, marginLeft: "5%" }}>
