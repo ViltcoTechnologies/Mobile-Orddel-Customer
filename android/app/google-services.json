@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "76582749871",
+    "project_id": "orddel-push-notification-60101",
+    "storage_bucket": "orddel-push-notification-60101.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76582749871:android:ddb40d0828e98cc2f4365a",
+        "android_client_info": {
+          "package_name": "com.orddel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "76582749871-d25q07j0ge9bnb7o3ssgnoir892aluch.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsw7k6S_EwZlVYxAgAh20CPyeyVpyijq0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "76582749871-d25q07j0ge9bnb7o3ssgnoir892aluch.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "76582749871-jbltd9dnpidto1i0nj23ah977ekiiard.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rider"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76582749871:android:b9a801ed05ec188ef4365a",
+        "android_client_info": {
+          "package_name": "com.rider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "76582749871-d25q07j0ge9bnb7o3ssgnoir892aluch.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsw7k6S_EwZlVYxAgAh20CPyeyVpyijq0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "76582749871-d25q07j0ge9bnb7o3ssgnoir892aluch.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "76582749871-jbltd9dnpidto1i0nj23ah977ekiiard.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rider"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

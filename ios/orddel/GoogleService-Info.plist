@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>76582749871-kv0tksdh76fc8vlth0nndgh7c8elfa00.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.76582749871-kv0tksdh76fc8vlth0nndgh7c8elfa00</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBf3IdEWJSMA46RJ7-vkdsCv3089hsANFQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>76582749871</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.orddel</string>
+	<key>PROJECT_ID</key>
+	<string>orddel-push-notification-60101</string>
+	<key>STORAGE_BUCKET</key>
+	<string>orddel-push-notification-60101.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:76582749871:ios:67ab6d6b9ff8b4a5f4365a</string>
+</dict>
+</plist>
