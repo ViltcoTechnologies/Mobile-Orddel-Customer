@@ -130,6 +130,9 @@ function CreateNewOrder({ navigation, route }) {
   const [todayDate, setTodayDate] = useState("");
   const [todayTime, setTodayTime] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  // const CurrentTime = new Date().toLocaleTimeString();
+  const CurrentTime = new Date().toLocaleTimeString("en-us", {timeStyle: "medium"})
+  console.log(CurrentTime, '==========> CurrentTime ');
 
   // const [sendButtonCheck, setSendButtonCheck] = useState("");
 
@@ -585,7 +588,7 @@ function CreateNewOrder({ navigation, route }) {
                         </View>
                       ) : (
                         <FlatList
-                          inverted={true}
+
                           // nestedScrollEnabled={true}
                           data={riderData}
                           style={{
@@ -1094,13 +1097,13 @@ function CreateNewOrder({ navigation, route }) {
                           style={{
                             flexDirection: "row",
                             marginTop: 10,
-                     
-                         
+
+
                           }}
                         >
                           <Text
                             style={{
-                           
+
                               color: Colors.themeColor,
                               fontWeight: "bold",
                               marginLeft: "2%",
@@ -1111,7 +1114,7 @@ function CreateNewOrder({ navigation, route }) {
                             Product
                           </Text>
                           <Text
-                            style={{ 
+                            style={{
                               color: Colors.themeColor,
                               fontWeight: "bold",
                               textAlign: "center",
@@ -1122,7 +1125,7 @@ function CreateNewOrder({ navigation, route }) {
                           </Text>
                           <Text
                             style={{
-                           
+
                               color: Colors.themeColor,
                               fontWeight: "bold",
                               textAlign: "center",
@@ -1133,7 +1136,7 @@ function CreateNewOrder({ navigation, route }) {
                           </Text>
                           <Text
                             style={{
-                            
+
                               color: Colors.themeColor,
                               fontWeight: "bold",
                               textAlign: "right",
@@ -1147,8 +1150,7 @@ function CreateNewOrder({ navigation, route }) {
                           <FlatList
                             nestedScrollEnabled
                             data={cardItemsArray}
-                            // sort={true}
-                            // inverted={true}
+                            // sort={true
                             keyExtractor={(item) => item.id}
                             renderItem={(itemData) => (
                               <PreviewCart
@@ -1188,8 +1190,8 @@ function CreateNewOrder({ navigation, route }) {
                               width: Platform.OS == "android" ? "31%" : "24%",
                               marginLeft: "2.5%",
                               textAlign: "left",
-                             
-                           
+
+
                             }}
                           >
                             Total:
@@ -1201,7 +1203,7 @@ function CreateNewOrder({ navigation, route }) {
                               fontWeight: "bold",
                              // width: "16%",
                               textAlign: "center",
-                           
+
                               width: Platform.OS == "android" ? "23%" : "24%"
                             }}
                           >
@@ -1212,7 +1214,7 @@ function CreateNewOrder({ navigation, route }) {
                               style={{
                                 color: Colors.textGreyColor,
                                 width: Platform.OS == "android" ? "26.5%" : "26.5%",
-                              
+
                                 textAlign: "center",
                               }}
                             >
@@ -1224,7 +1226,7 @@ function CreateNewOrder({ navigation, route }) {
                                 color: Colors.textGreyColor,
                                 width: Platform.OS == "android" ? "26.5%" : "26.5%",
                                 textAlign: "center",
-                              
+
                               }}
                             >
                               £ {parseFloat(cartTotalAmount).toFixed(2)}
@@ -1376,7 +1378,10 @@ function CreateNewOrder({ navigation, route }) {
                           </Text>
 
                           <DateTimePickerModal
-                            //minimumDate={new Date()}
+                            minimumDate={new Date().setTime(CurrentTime)}
+                            // minimumTime={new Date(CurrentTime)}
+                            is24Hour={true}
+                            // locale='en_GB'
                             isVisible={isTimePickerVisible}
                             mode="time"
                             onConfirm={handleConfirmTime}
@@ -1741,13 +1746,13 @@ function CreateNewOrder({ navigation, route }) {
                           {checkRow ? (
                             <FlatList
                               nestedScrollEnabled
-                              // inverted
+
                               // style={{flexDirection:"column-reverse"}}
                               keyboardShouldPersistTaps={"handled"}
                               contentContainerStyle={{ paddingBottom: 90 }}
                               data={cardItemsArray}
                               // sort={true}
-                              // inverted={true}
+                            
                               keyExtractor={(item) => item.id}
                               renderItem={(itemData) => (
                                 // <Text style={{fontSize:30,backgroundColor:"green",flex:1}}>{JSON.stringify(itemData)}</Text>

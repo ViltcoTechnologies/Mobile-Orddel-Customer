@@ -620,7 +620,7 @@ console.log(' new order list ...... ', riderData);
                     </View>
                   ) : (
                     <FlatList
-                    inverted={true}
+
                       // nestedScrollEnabled={true}
                       data={riderData}
                       style={{ padding: 10,marginTop:Platform.OS=="android"?0:"12%" }}
@@ -1093,7 +1093,7 @@ marginLeft:5
                           nestedScrollEnabled
                           data={cardItemsArray}
                           // sort={true}
-                          // inverted={true}
+
                           keyExtractor={(item) => item.id}
                           renderItem={(itemData) => (
                             <PreviewCart
@@ -1662,13 +1662,13 @@ marginLeft:5
 
                         <FlatList
                           nestedScrollEnabled
-                          // inverted
+
                           // style={{flexDirection:"column-reverse"}}
                           keyboardShouldPersistTaps={'handled'}
                           contentContainerStyle={{paddingBottom:90}}
                           data={cardItemsArray}
                           // sort={true}
-                          // inverted={true}
+
                           keyExtractor={(item) => item.id}
                           renderItem={(itemData) => (
                             // <Text style={{fontSize:30,backgroundColor:"green",flex:1}}>{JSON.stringify(itemData)}</Text>

@@ -50,15 +50,15 @@ const BuisnessDetail = ({ navigation,route }) => {
     React.useCallback(() => {
       const backAction = () => {
         navigation.navigate("Dashboard")
-        
+
         return true;
       };
-  
+
       const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
         backAction
       );
-  
+
       return () => backHandler.remove();
     }, [route])
   );
@@ -96,7 +96,7 @@ const BuisnessDetail = ({ navigation,route }) => {
       .then((response) => response.json())
       .then((responseJson) => {
         console.log("Buisness Detail:", responseJson);
-        
+
         setData(responseJson.client_businesses);
         if (responseJson.client_businesses == "") {
           setIsLoading(false);
@@ -105,10 +105,10 @@ const BuisnessDetail = ({ navigation,route }) => {
           setLoading(false);
         }
         setIsLoading(false);
-        
+
       })
       .catch((error) => console.error(error));
-    
+
   }, [isFocused]);
 
   return (
@@ -161,7 +161,6 @@ const BuisnessDetail = ({ navigation,route }) => {
             <View style={{ marginTop: 10 }}>
               <FlatList
                 data={data}
-                inverted={true}
                 showsVerticalScrollIndicator={false}
                 style={{ alignSelf: "center", padding: 10 }}
                 // keyExtractor={item => item.index_id.toString()}
@@ -171,7 +170,7 @@ const BuisnessDetail = ({ navigation,route }) => {
                     <TouchableOpacity
                       style={{ width: "100%" }}
                       onPress={() => {
-                        
+
                         navigation.navigate("EditBuisnessDetail", {
                           BName: item.name,
                           BAdress: item.address,
@@ -185,10 +184,10 @@ const BuisnessDetail = ({ navigation,route }) => {
                       {/* {console.log("Business_name",item.business_details[0]['name'])} */}
                       <View
                         style={{
-                          
+
 
                           flexDirection: "column",
-                         
+
                         }}
                       >
                         {/* <View style={{flexDirection: "column"}}> */}
@@ -231,16 +230,16 @@ const BuisnessDetail = ({ navigation,route }) => {
                               </Text>
                             </View>
 
-                            
+
                           </View>
                           <View style={{ alignSelf: "center" }}>
-                            
+
                           </View>
                         </View>
                       </View>
                     </TouchableOpacity>
                   </Card>
-                 
+
                 )}
               />
             </View>

@@ -123,6 +123,26 @@ const CompletedOrderList = ({ navigation, route }) => {
   };
 
 
+  const sequenceByDate = data?.response?.sort(function(a, b){
+
+    // console.log(a.order_delivery_datetime,'========>> a date');
+    // console.log(b.order_delivery_datetime,'========>> b date');
+    // let first = parseInt(a.order_delivery_datetime, 10);
+    let first = a.order_delivery_datetime.split(" ")[0];
+    let second = b.order_delivery_datetime.split(" ")[0];
+
+
+     console.log('date a =====>> ',first);
+     console.log('date b =====>> ',second);
+
+
+    if(a.first < b.second) { return -1; }
+    if(a.first > b.second) { return 1; }
+    return 0;
+})
+
+  //const sequenceByDate = data?.response?.slice().sort((a, b) => b.order_delivery_datetime - a.order_delivery_datetime);
+  console.log("sequence by date:========>>>>> ",sequenceByDate);
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -161,8 +181,9 @@ const CompletedOrderList = ({ navigation, route }) => {
               </View>
             ) : (
               <FlatList
-                data={data.response}
-                //inverted={true}
+                // data={data.response}
+                data={sequenceByDate}
+
                 style={{ alignSelf: "center" }}
                 showsVerticalScrollIndicator={false}
                 // keyExtractor={item => item.index_id.toString()}

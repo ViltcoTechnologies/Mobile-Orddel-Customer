@@ -26,10 +26,12 @@ const ForgotPassword = ({ navigation, route }) => {
   //console.log(email, phone);
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
 
   const send_Verification_Code = () => {
     //console.log("ph o",Phone_No);
-
+    setIsVisible(true);
     setLoading(true);
 
     fetch(URL + "/send_otp/", {
@@ -48,23 +50,28 @@ const ForgotPassword = ({ navigation, route }) => {
         console.log("signup", response.status);
 
         if (response.status == 200) {
+
           setLoading(false);
+
           navigation.navigate("VerificationCode", {
             Phone_No: phone,
-
             EmailVerify: "ChangeForgotPassword",
           });
+
+          setIsVisible(false);
         } else {
           alert(data.message)
-    setLoading(false);
-
+          setLoading(false);
           console.log("Verication Code Not Sent");
+          setIsVisible(false);
+
         }
       })
       .catch((error) => console.log(error));
   };
 
   const send_Email = () => {
+    setIsVisible(true);
     setIsLoading(true);
     fetch(URL + "/api/password_reset/", {
       method: "POST",
@@ -85,16 +92,16 @@ const ForgotPassword = ({ navigation, route }) => {
         console.log("signup", response.status);
         if (response.status == 200) {
           setIsLoading(false);
+
           navigation.navigate("ChangePasswordByEmail");
+          setIsVisible(false);
+
         } else {
           alert(data.message);
-
+          setIsVisible(false);
           //  alert(data.message);
         }
-        //send_Verification_Code()
-        // navigation.navigate("Ver
 
-        //setResponse(json);
       })
       .catch((error) => console.log(error));
   };
@@ -186,6 +193,7 @@ const ForgotPassword = ({ navigation, route }) => {
         ) : (
           <TouchableOpacity
             onPress={send_Verification_Code}
+            disabled={isVisible}
             style={{
               width: "90%",
               height: "25%",
@@ -261,6 +269,7 @@ const ForgotPassword = ({ navigation, route }) => {
         ) : (
           <TouchableOpacity
             onPress={send_Email}
+            disabled={isVisible}
             style={{
               width: "80%",
               height: 80,

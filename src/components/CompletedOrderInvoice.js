@@ -454,7 +454,7 @@ function CompletedOrderInvoice({ navigation, route }) {
                   textAlign: "left",
                 }}
               >
-                Product 
+                Product
               </Text>
               {/* <Text style={{color:Colors.themeColor,width:35,fontSize:17,fontWeight:'bold',textAlign:'center'}}>Unit</Text> */}
               <Text
@@ -512,6 +512,7 @@ function CompletedOrderInvoice({ navigation, route }) {
             <View style={{ marginBottom: 10 }}>
               <FlatList
                 data={orderList}
+                // inverted={true}
                 keyExtractor={(item) => item.product_id}
                 renderItem={(itemData) => (
                   <InvoiceItem
@@ -532,7 +533,7 @@ function CompletedOrderInvoice({ navigation, route }) {
                   borderBottomWidth: 0.5,
                   borderBottomColor: "grey",
                   marginTop: 10,
-                 
+
                 }}
               >
                 <Text

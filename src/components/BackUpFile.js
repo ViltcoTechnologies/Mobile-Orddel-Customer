@@ -68,14 +68,14 @@ import PreviewCart from '../components/PreviewCart';
 function CreateNewOrder({ navigation ,route }) {
   const isFocused = useIsFocused();
   const {id, name ,address} = route.params
-  
+
   const cartTotalAmount = useSelector((state) => state.OrderBox.totalAmount);
   const cartTotalPackages = useSelector((state) => state.OrderBox.totalPackages);
   const count = useSelector((state) => state.OrderBox.count);
   const CheckId = useSelector((state) => state.OrderBox.cardItemsArray);
   const cardItemsArray = useSelector((state) => {return state.OrderBox.cardItemsArray});
- 
-  
+
+
   var Count = 0;
 
   const dispatch = useDispatch();
@@ -129,9 +129,9 @@ function CreateNewOrder({ navigation ,route }) {
   const [todayTime,setTodayTime]=useState("");
   const [modalVisible, setModalVisible] = useState(false);
 
- 
+
   // const [sendButtonCheck, setSendButtonCheck] = useState("");
-  
+
 
   var Datee;
   var Month;
@@ -148,7 +148,7 @@ function CreateNewOrder({ navigation ,route }) {
   var minn;
   var secc;
 
- 
+
   const [date, setDate] = useState(new Date());
   const [wakt, setWakt] = useState(new Date());
   const [mode, setMode] = useState("datetime");
@@ -184,7 +184,7 @@ function CreateNewOrder({ navigation ,route }) {
     setShow(Platform.OS === "ios");
     setDate(currentDate);
     // console.log("Dateeeeeeeee: ",currentDate.getDate());
-   
+
       setFormattedTime(
         currentDate.getHours() + ":" + currentDate.getMinutes() + ":" + currentDate.getSeconds()
       );
@@ -234,7 +234,7 @@ function CreateNewOrder({ navigation ,route }) {
       body: JSON.stringify({
         order_box: OrderId,
         order_products: cardItemsArray,
-        
+
       }),
     })
       .then(async (response) => {
@@ -245,7 +245,7 @@ function CreateNewOrder({ navigation ,route }) {
         if (response.status == 201) {
           // console.log("data",data)
           // dispatch(ApiDataAction.CreateOrder(1));
-          
+
           CreateOrder();
           console.log("(Oreder is added to order box)");
           // dispatch(ApiDataActions.SetLoginData(data));
@@ -254,7 +254,7 @@ function CreateNewOrder({ navigation ,route }) {
         else{
     setSendButtonCheck(false);
           alert(data.message)
-          
+
         }
 
       })
@@ -307,7 +307,7 @@ function CreateNewOrder({ navigation ,route }) {
           setQtty("");
           setFormattedDate("");
           // AsyncStorage.clear();
-          
+
           navigation.navigate("Dashboard");
 
           setSendButtonCheck(false);
@@ -336,7 +336,7 @@ function CreateNewOrder({ navigation ,route }) {
 
 
   const sendOrder = () => {
-   
+
     setFormattedDate(
         date.getDate() +
           "-" +
@@ -353,27 +353,27 @@ function CreateNewOrder({ navigation ,route }) {
     // dispatch(ApiDataAction.SetOrderBoxId(1));
     // console.log("value",selectedValue.id);
     if (cardItemsArray == "") {
-      
+
       alert("Kindly place an order.");
     } else {
-    
+
       if (selectedBusinessId == "") {
-       
+
         alert("Please select delivery address");
 
       }
       else{
         setModalVisible(!modalVisible)
-       
+
       }
-        
-      
+
+
     }
 
     // alert("Thanks,Your Order is Placed,")
   };
 
-  
+
 
 
   const findName = (query) => {
@@ -422,7 +422,7 @@ function CreateNewOrder({ navigation ,route }) {
       // fetch(URL+'/client_app/clients_list/33/')
       .then((response) => response.json())
       .then((responseJson) => {
-        
+
         setBusinessData(responseJson.client_businesses);
         setAddressCheck(false);
 
@@ -435,7 +435,7 @@ function CreateNewOrder({ navigation ,route }) {
       })
       .catch((error) => console.error(error));
 
-   
+
 
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
     LogBox.ignoreLogs(["Possible Unhandled Promise Rejection"]);
@@ -452,15 +452,15 @@ function CreateNewOrder({ navigation ,route }) {
           setRiderData(responseJson.delivery_person);
         }
 
-        
+
       })
       .catch((error) => console.error(error));
 
-      
-      
 
 
-      
+
+
+
     datee = ("0" + new Date().getDate()).slice(-2); //Current Date
     // if(datee<10){
     //   datee="0"+datee;
@@ -484,10 +484,10 @@ function CreateNewOrder({ navigation ,route }) {
 
 
 
-      
 
 
-      
+
+
 
 
 
@@ -508,7 +508,7 @@ function CreateNewOrder({ navigation ,route }) {
   var reg = /^\d+$/;
   return (
     <>
-    
+
     <View style={{ flex: 1, backgroundColor: "white", height: "100%" }}>
       {/* <FlashMessage position="top" /> */}
       {/* <DropdownAlert ref={ref => dropDownAlertRef = ref} updateStatusBar={false} tapToCloseEnabled={true} errorColor={Colors.themeColor} containerStyle={{width:"80%"}} /> */}
@@ -569,7 +569,7 @@ function CreateNewOrder({ navigation ,route }) {
                 onBackButtonPress={toggleBottomNavigationView}
                 onBackdropPress={toggleBottomNavigationView}
               >
-               
+
                 <View style={styles.bottomNavigationView}>
                   {riderLoading ? (
                     <View
@@ -606,7 +606,7 @@ function CreateNewOrder({ navigation ,route }) {
                             width: "95%",
                             marginBottom: 15,
                             alignSelf: "center",
-                            
+
                           }}
                           onPress={() =>{
                             rider(
@@ -616,18 +616,18 @@ function CreateNewOrder({ navigation ,route }) {
                             )
                           }}
                            // onPress = {() => navigation.navigate("PendingDetails" , {Due_Date : item.due_date , Invoice_Total : item.grand_total,Carrier_Name : item.carrier_company ,Load_Type : item.load_type,Origin_City : item.Origin_city,Destination_City : item.Destination_city,Delivery_Option : item.Delivery_Option,Cargo_Amount : item.Cargo_amount,Cargo_Type : item.Cargo_Type,Cargo_Product_Type : item.Cargo_Product_type,Cargo_Product_List : item.Cargo_Product_List,Booking_Status : item.booking_status})}
-                          // onPress={() => 
+                          // onPress={() =>
                            // navigation.navigate("PaymentHistoryDetail")
                           // }
                         >
-                          <Card 
+                          <Card
                              style={{
                               borderRadius: 15,
                               padding: 10,
                             }}
-                          > 
+                          >
                              <View
-                              style={{ 
+                              style={{
                                // borderRadius: 10,
                                 // backgroundColor: "white",
                                 // overflow: "hidden",
@@ -643,7 +643,7 @@ function CreateNewOrder({ navigation ,route }) {
                                 // shadowRadius: 3.84,
                                 // elevation: 5,
                               }}
-                            > 
+                            >
                               <View style={{ flexDirection: "row" }}>
                                 <View
                                   style={{
@@ -653,7 +653,7 @@ function CreateNewOrder({ navigation ,route }) {
                                     // alignItems: "center",
                                     justifyContent: "flex-start",
                                   }}
-                                > 
+                                >
                                    <Text
                                     style={{
                                       fontSize: 20,
@@ -663,7 +663,7 @@ function CreateNewOrder({ navigation ,route }) {
                                     }}
                                   >
                                     {item.first_name} {item.last_name}
-                                  </Text> 
+                                  </Text>
 
                                    <View
                                     style={{
@@ -682,7 +682,7 @@ function CreateNewOrder({ navigation ,route }) {
                                       }}
                                     >
                                       {item.address}
-                                    </Text> 
+                                    </Text>
                                    </View>
                                 </View>
                                 <View style={{ alignSelf: "center" }}>
@@ -694,7 +694,7 @@ function CreateNewOrder({ navigation ,route }) {
                                       marginRight: 10,
                                       fontWeight: "bold",
                                     }}
-                                  ></Text> 
+                                  ></Text>
                                    {/* <Text style={{ fontSize:12,alignSelf:'flex-end', color: "white",backgroundColor:Colors.darkRedColor,borderRadius:10,padding:5,}}>
   {item.status}
   </Text>  */}
@@ -707,7 +707,7 @@ function CreateNewOrder({ navigation ,route }) {
                     />
                   )}
                 </View>
-              </BottomSheet> 
+              </BottomSheet>
 
               <Card
                 style={{
@@ -896,7 +896,7 @@ function CreateNewOrder({ navigation ,route }) {
 
 
 
-              
+
 
 
 
@@ -914,7 +914,7 @@ function CreateNewOrder({ navigation ,route }) {
           </View>
           <Modal
         animationType="slide"
-        
+
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
@@ -945,7 +945,7 @@ function CreateNewOrder({ navigation ,route }) {
           elevation: 0,
           padding:10
           }}>
-            
+
             {/* <Card
                 style={{
                   padding: 10,
@@ -954,7 +954,7 @@ function CreateNewOrder({ navigation ,route }) {
                   elevation: 0,
                 }}
               > */}
-                
+
                   <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
                     Delivery Person:
                   </Text>
@@ -970,7 +970,7 @@ function CreateNewOrder({ navigation ,route }) {
                   <Text style={{ fontSize: 12, color: "#666666" }}>
                     {riderAddress}
                   </Text>}
-                
+
               </View>
               <View style = {{width:"50%",backgroundColor:'#e6e6e6',alignSelf:"center",borderRadius:10,
           shadowColor: "#000",
@@ -981,7 +981,7 @@ function CreateNewOrder({ navigation ,route }) {
           padding:10,
           marginLeft:5
           }}>
-                
+
                   <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
                     Delivery Address:
                   </Text>
@@ -991,7 +991,7 @@ function CreateNewOrder({ navigation ,route }) {
                   <Text style={{ fontSize: 12, color: "#666666" }}>
                     {AddressName}
                   </Text>
-                
+
               </View>
               </View>
 
@@ -1005,7 +1005,7 @@ function CreateNewOrder({ navigation ,route }) {
     paddingTop:0
   }}
 >
-  
+
 
   <View style = {{width:"50%",backgroundColor:'#e6e6e6',alignSelf:"center",borderRadius:10,
 shadowColor: "#000",
@@ -1017,7 +1017,7 @@ padding:10,
 
 }}>
     <View style={{ padding: 5 }}>
-      
+
         <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
           Delivery Date:
         </Text>
@@ -1034,7 +1034,7 @@ padding:10,
             "-" +
             date.getFullYear()}
         </Text>
-      
+
     </View>
   </View>
 
@@ -1048,7 +1048,7 @@ padding:10,
 marginLeft:5
 }}>
     <View style={{ padding: 5 }}>
-      
+
         <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
           Delivery Time:
         </Text>
@@ -1062,16 +1062,16 @@ marginLeft:5
           {("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2)}
           {/* {("0" + wakt.getHours()).slice(-2) + ":" + ("0" + wakt.getMinutes()).slice(-2)} */}
         </Text>
-      
+
     </View>
   </View>
 </View>
- 
- 
 
-              
 
-              
+
+
+
+
               <View style={{flexDirection:'row',marginTop:10}}>
         <Text style={{color:Colors.themeColor,fontWeight:"bold",marginLeft:"2%",width:"31%",textAlign:"left"}}>Product</Text>
         <Text style={{color:Colors.themeColor,fontWeight:"bold",textAlign:"center",width:"15%"}}>Unit</Text>
@@ -1083,7 +1083,7 @@ marginLeft:5
                           nestedScrollEnabled
                           data={cardItemsArray}
                           // sort={true}
-                          // inverted={true}
+
                           keyExtractor={(item) => item.id}
                           renderItem={(itemData) => (
                             <PreviewCart
@@ -1164,9 +1164,9 @@ marginLeft:5
             </View>
             </ScrollView>
            </View>
-        
- 
-            
+
+
+
           </View>
         </View>
       </Modal>
@@ -1202,8 +1202,8 @@ marginLeft:5
               >
                 {currentDate}
               </Text>
-              
-  
+
+
 
 
 { Platform.OS==='ios'? (
@@ -1216,7 +1216,7 @@ marginLeft:5
                 }}
               >
 
-    {/* //-------------------------------------Delivery Date ----------------------------// */}            
+    {/* //-------------------------------------Delivery Date ----------------------------// */}
 <Card
                   style={{
                     padding: 5,
@@ -1230,7 +1230,7 @@ marginLeft:5
                   }}
                 >
                   <View style={{ padding: 7 ,
-                    marginRight:'5%' 
+                    marginRight:'5%'
                     }}>
                     <TouchableOpacity onPress={showDatepicker}>
                       <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
@@ -1244,7 +1244,7 @@ marginLeft:5
                         }}
                       >
 
-                        
+
                         {("0" + date.getDate()).slice(-2) +
                           "-" +
                           ("0" + (date.getMonth() + 1)).slice(-2)+
@@ -1252,16 +1252,16 @@ marginLeft:5
                           date.getFullYear()}
                       </Text>
                     </TouchableOpacity>
-                    
+
                   </View>
                 {/* </Card> */}
 
                 {/* //-------------------------------------Delivery Time ----------------------------// */}
-               
+
 
                   <View style={{ alignSelf:'flex-end', width:'30%'  }}>
                   {show && (
-                      
+
                       <DateTimePicker
                         testID="dateTimePicker"
                         value={date}
@@ -1281,7 +1281,7 @@ marginLeft:5
 
                   {/* <View style={{ alignSelf:'flex-end', width:'30%'  }}>
                   {show && (
-                      
+
                       <DateTimePicker
                         testID="dateTimePicker"
                         value={formattedTime}
@@ -1322,7 +1322,7 @@ marginLeft:5
                         {("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2)}
                       </Text>
                     </TouchableOpacity>
-                    
+
                   </View>
                 </Card>
 
@@ -1369,7 +1369,7 @@ marginLeft:5
                     </TouchableOpacity>
 
                     {show && (
-                      
+
                       <DateTimePicker
                         testID="dateTimePicker"
                         value={date}
@@ -1421,7 +1421,7 @@ marginLeft:5
 
 
 
-              
+
               <Text
                 style={{
                   color: Colors.themeColor,
@@ -1444,7 +1444,7 @@ marginLeft:5
                <View
                   style={{
                     width: Platform.OS == "android" ? "30%" : "30%",
-                    
+
                   }}
                 >
                   <Autocomplete
@@ -1453,7 +1453,7 @@ marginLeft:5
                     autoCorrect={false}
                     flatListProps={{ nestedScrollEnabled: true}}
                     // containerStyle={{}}
-                   
+
                     listContainerStyle={{
                       backgroundColor: "#e6e6e6",
                       width: 250,
@@ -1666,7 +1666,7 @@ marginLeft:5
                   zIndex:-1
                 }}
               >
-                
+
                 <View style = {{height:"60%",backgroundColor:'#F2F2F2',alignSelf:"center",borderRadius:10,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 2 },
@@ -1674,7 +1674,7 @@ marginLeft:5
           shadowRadius: 3.84,
           elevation: 0,
           padding:10,
-          
+
           // marginLeft:5
           }}>
                   <View>
@@ -1740,16 +1740,16 @@ marginLeft:5
                     <View style={{}}>
                       {/* <ScrollView nestedScrollEnabled > */}
                      {checkRow ?  (
-                        
+
                         <FlatList
                           nestedScrollEnabled
-                          // inverted
+
                           // style={{flexDirection:"column-reverse"}}
                           keyboardShouldPersistTaps={'handled'}
                           contentContainerStyle={{paddingBottom:90}}
                           data={cardItemsArray}
                           // sort={true}
-                          // inverted={true}
+
                           keyExtractor={(item) => item.id}
                           renderItem={(itemData) => (
                             // <Text style={{fontSize:30,backgroundColor:"green",flex:1}}>{JSON.stringify(itemData)}</Text>
@@ -1761,7 +1761,7 @@ marginLeft:5
                               name={itemData.item.name}
                               unit={itemData.item.unit}
                               price={itemData.item.price}
-                              
+
                               // addable
                               onAddPress={() => {
                                 dispatch(
@@ -1798,25 +1798,25 @@ marginLeft:5
                     </Text>
                     {cartTotalAmount==0?<Text style={{ color: Colors.textGreyColor,width:"21%",textAlign:"right" }}>
                     £ {cartTotalAmount}
-            
+
                     </Text>:<Text style={{ color: Colors.textGreyColor,width:"27%",textAlign:"right" }}>
                     £ {parseFloat(cartTotalAmount).toFixed(2)}
-            
+
                     </Text>}
-                    
+
                   </View>
                     </View>
 
-                    
+
                   </View>
 
-                  
+
                 </View>
-                
+
               </View>
 
-              
-             
+
+
             </Card>
           </View>
           <View style={{ height: "4%", bottom: 40, }}>
@@ -1862,7 +1862,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontWeight: "bold",
     textAlign: "center",
-    
+
 
     //marginTop: 5,
   },
@@ -2094,7 +2094,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     // marginTop: 60,
-    
+
 
   },
   modalView2: {

@@ -152,7 +152,7 @@ const PendingOrders = ({ navigation, route }) => {
             ) : (
               <FlatList
                 data={data}
-                //inverted = {true}
+
                 style={{ alignSelf: "center" }}
                 showsVerticalScrollIndicator={false}
                 // keyExtractor={item => item.index_id.toString()}

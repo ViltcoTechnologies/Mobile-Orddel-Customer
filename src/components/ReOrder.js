@@ -89,6 +89,7 @@ function Reorder({ navigation ,route }) {
   const CheckId = useSelector((state) => state.OrderBox.cardItemsArray);
   const cartItems = useSelector((state) => {return state.OrderBox.cardItemsArray});
   var Count = 0;
+  console.log(cartItems,'======>> cartItems');
 
   const dispatch = useDispatch();
   const units = useSelector((state) => state.ApiData.ProductList);
@@ -1097,7 +1098,6 @@ return (
                         nestedScrollEnabled
                         data={cartItems}
                         // sort={true}
-                        // inverted={true}
                         keyExtractor={(item) => item.id}
                         renderItem={(itemData) => (
                           <PreviewCart
@@ -1133,7 +1133,7 @@ return (
                   <Text
                     style={{ color: Colors.themeColor,fontWeight:'bold',width:"51%",marginLeft:"2.5%",textAlign:"left"}}
                   >
-                    Total: 
+                    Total:
                   </Text>
                   <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"15%",textAlign:"center" }}>
                     {cartTotalPackages}
@@ -1647,7 +1647,6 @@ return (
                         nestedScrollEnabled
                         data={cartItems}
                         // sort={true}
-                        // inverted={true}
                         keyboardShouldPersistTaps={'handled'}
                         contentContainerStyle={{paddingBottom:90}}
                         keyExtractor={(item) => item.id}

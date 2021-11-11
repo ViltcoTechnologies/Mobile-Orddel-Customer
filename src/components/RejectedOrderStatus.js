@@ -1113,7 +1113,6 @@ return (
                         nestedScrollEnabled
                         data={cartItems}
                         // sort={true}
-                        // inverted={true}
                         keyExtractor={(item) => item.id}
                         renderItem={(itemData) => (
                           <PreviewCart
@@ -1668,7 +1667,7 @@ return (
                         nestedScrollEnabled
                         data={cartItems}
                         // sort={true}
-                        // inverted={true}
+
                         keyboardShouldPersistTaps={'handled'}
                         contentContainerStyle={{paddingBottom:90}}
                         keyExtractor={(item) => item.id}

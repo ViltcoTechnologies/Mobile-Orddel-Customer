@@ -17,7 +17,7 @@ import {
 function ResendOrder() {
   return (
     <View>
-      <Text>ReOrder</Text>
+      {/* <Text></Text> */}
     </View>
   );
 }

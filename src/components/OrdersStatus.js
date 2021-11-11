@@ -566,6 +566,7 @@ setButtonLoading(true);
             >
               <FlatList
                 data={boxDetail}
+                inverted={true}
                 keyExtractor={(item) => item.product_id}
                 renderItem={(itemData) => (
                   <ReorderCartItem
@@ -594,7 +595,7 @@ setButtonLoading(true);
                     textAlign: "left",
                     marginLeft: "1%",
                     fontWeight:'bold',
-                 
+
                   }}
                 >
                   Total
