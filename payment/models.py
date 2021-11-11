@@ -17,7 +17,7 @@ class DeliveryNote(models.Model):
 
 
 class Invoice(models.Model):
-    order = models.ForeignKey(OrderDetail, on_delete=models.SET_NULL, null=True, blank=True)
+    order = models.ForeignKey(OrderDetail, related_name='invoice', on_delete=models.SET_NULL, null=True, blank=True)
     inv_number = models.CharField(max_length=100, null=True, blank=True)
     total_amount = models.FloatField(default=0.0)
     date_created = models.DateTimeField(auto_now=True)

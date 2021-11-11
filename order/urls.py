@@ -36,4 +36,6 @@ urlpatterns = [
     path('list_client_orders/', ListClientOrdersAPIView.as_view()),
     path('insert_purchase_details/', InsertPurchaseDetailsAPIView.as_view()),
 
+    path('update_order_products/', UpdateOrderProducts.as_view())
+
 ]

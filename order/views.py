@@ -574,23 +574,23 @@ class ListOrdersAssignedAPIView(APIView):
         choice = self.request.query_params.get('choice').lower()
         try:
             if choice == 'all':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'pending':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'purchased':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'in_progress':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'delivered':
-                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(delivery_person=delivery_person, status=choice).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             else:
@@ -683,28 +683,28 @@ class ListClientOrdersAPIView(APIView):
         choice = self.request.query_params.get('choice').lower()
         try:
             if choice == 'all':
-                order_detail = OrderDetail.objects.filter(order_box__client=client).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(order_box__client=client).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'pending':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'rejected':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'in_progress':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'purchased':
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             elif choice == 'delivered':
                 date_1yr_ago = datetime.now() - timedelta(days=365)
-                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice, order_created_datetime__gte=date_1yr_ago).order_by('-order_created_datetime')
+                order_detail = OrderDetail.objects.filter(order_box__client=client, status=choice, order_created_datetime__gte=date_1yr_ago).order_by('-id')
                 serializer = OrderDetailSerializer(order_detail, many=True)
 
             else:
@@ -715,6 +715,13 @@ class ListClientOrdersAPIView(APIView):
                 order_detail = OrderDetail.objects.get(id=data['id'])
                 data['no_of_items'] = order_detail.order_products.count()
                 data['total_quantity'] = sum([i.quantity for i in order_detail.order_products.all()])
+                if choice == 'delivered':
+                    try:
+                        invoice = Invoice.objects.filter(order=order_detail).first()
+                        data['invoice_id'] = invoice.id
+                    except Exception as e:
+                        print(e)
+                        data['invoice_id'] = None
                 data['total_purchased_quantity'] = sum([i.purchased_quantity for i in order_detail.order_products.all()])
                 if order_detail.order_box.client is not None:
                     data['client_name'] = order_detail.order_box.client.first_name + " " + order_detail.order_box.client.last_name
@@ -728,7 +735,8 @@ class ListClientOrdersAPIView(APIView):
                 data_list.append(data)
             return Response(status=status.HTTP_200_OK, data={'response': data_list})
 
-        except:
+        except Exception as e:
+            print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'failed to retrieve records'})
 
 
@@ -806,3 +814,52 @@ class InsertPurchaseDetailsAPIView(APIView):
                                                                       'status_code': '400',
                                                                       'message': 'Unsuccessful'
                                                                       })
+
+
+class UpdateOrderProducts(APIView):
+    def get(self, request):
+        order_id = self.request.query_params.get('order_id')
+        product_id = self.request.query_params.get('product_id')
+        print(type(product_id))
+        product_id = int(product_id)
+        order_product = {}
+        try:
+            order_detail = OrderDetail.objects.get(id=order_id)
+            for op in order_detail.order_products.all():
+                if op.product.id == product_id:
+                    order_product['order_product_id'] = op.id
+                    order_product['product_name'] = op.product.name
+                    order_product['purchased_quantity'] = op.purchased_quantity
+                    order_product['unit_purchase_price'] = op.unit_purchase_price
+                    order_product['profit_margin'] = op.profit_margin
+                    order_product['portrage_price'] = op.portrage_price
+                    order_product['profit_margin_choice'] = op.profit_margin_choice
+                    order_product['unit_sale_price'] = op.unit_sale_price
+
+        except Exception as e:
+            print(e)
+
+        return Response(status=status.HTTP_200_OK, data={'response': order_product})
+    def put(self, request):
+        try:
+            order_product_id = request.data['order_product_id']
+            unit_purchase_price = request.data['unit_purchase_price']
+            profit_margin = request.data['profit_margin']
+            portrage_price = request.data['portrage_price']
+            profit_margin_choice = request.data['profit_margin_choice']
+            unit_sale_price = request.data['unit_sale_price']
+
+            update_status = OrderProduct.objects.filter(id=order_product_id).update(
+                unit_purchase_price=unit_purchase_price,
+                profit_margin=profit_margin,
+                portrage_price=portrage_price,
+                profit_margin_choice=profit_margin_choice,
+                unit_sale_price=unit_sale_price
+            )
+
+            return Response(status=status.HTTP_200_OK, data={'response': 'Record updated successfully'})
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={
+                'response': 'There was an error in processing your request',
+                'details': f'{e}'
+            })
