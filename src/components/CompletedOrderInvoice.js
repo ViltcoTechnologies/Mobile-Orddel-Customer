@@ -511,8 +511,8 @@ function CompletedOrderInvoice({ navigation, route }) {
 
             <View style={{ marginBottom: 10 }}>
               <FlatList
-                data={orderList}
-                // inverted={true}
+              data={orderList && orderList.sort(function(a, b){return a.purchased_qty - b.purchased_qty})}
+                // data={orderList && orderList.sort(function(a, b){if(a.purchased_qty < b.purchased_qty) { return -1 }if(a.purchased_qty > b.purchased_qty) { return 1 }return 0})}
                 keyExtractor={(item) => item.product_id}
                 renderItem={(itemData) => (
                   <InvoiceItem

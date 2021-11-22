@@ -1146,10 +1146,10 @@ function CreateNewOrder({ navigation, route }) {
                             Last month Avg.Price
                           </Text>
                         </View>
-                        <View style={{ padding: 2 }}>
+                        <View style={{ padding: 2, }}>
                           <FlatList
                             nestedScrollEnabled
-                            data={cardItemsArray}
+                            data={cardItemsArray && cardItemsArray.sort(function(a, b){return a.quantity - b.quantity})}
                             // sort={true
                             keyExtractor={(item) => item.id}
                             renderItem={(itemData) => (
@@ -1750,10 +1750,10 @@ function CreateNewOrder({ navigation, route }) {
                               // style={{flexDirection:"column-reverse"}}
                               keyboardShouldPersistTaps={"handled"}
                               contentContainerStyle={{ paddingBottom: 90 }}
-                              data={cardItemsArray}
+                              data={cardItemsArray && cardItemsArray.sort(function(a, b){return a.quantity - b.quantity})}
                               // sort={true}
-                            
-                              keyExtractor={(item) => item.id}
+
+                              // keyExtractor={(item) => item.id}
                               renderItem={(itemData) => (
                                 // <Text style={{fontSize:30,backgroundColor:"green",flex:1}}>{JSON.stringify(itemData)}</Text>
                                 // <View style={{flexDirection:"column-reverse"}}>

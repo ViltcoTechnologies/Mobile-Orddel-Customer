@@ -565,8 +565,7 @@ setButtonLoading(true);
               }}
             >
               <FlatList
-                data={boxDetail}
-                inverted={true}
+                data={boxDetail && boxDetail.sort(function(a, b){return a.quantity - b.quantity}) }
                 keyExtractor={(item) => item.product_id}
                 renderItem={(itemData) => (
                   <ReorderCartItem

@@ -1111,7 +1111,7 @@ return (
   <View style={{padding:2}}>
             <FlatList
                         nestedScrollEnabled
-                        data={cartItems}
+                        data={cartItems && cartItems.sort(function(a, b){return a.quantity - b.quantity})}
                         // sort={true}
                         keyExtractor={(item) => item.id}
                         renderItem={(itemData) => (
@@ -1661,11 +1661,11 @@ return (
                     {/* </View> */}
                     {/* </SafeAreaView> */}
                   </View>
-                  <View style={{marginBottom:"10%"}}>
+                  <View style={{marginBottom:"10%", }}>
                     {checkRow ? (
                       <FlatList
                         nestedScrollEnabled
-                        data={cartItems}
+                        data={cartItems && cartItems.sort(function(a, b){return a.quantity - b.quantity}) }
                         // sort={true}
 
                         keyboardShouldPersistTaps={'handled'}

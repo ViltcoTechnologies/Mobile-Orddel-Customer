@@ -1641,11 +1641,11 @@ return (
                     {/* </View> */}
                     {/* </SafeAreaView> */}
                   </View>
-                  <View style={{marginBottom:"10%"}}>
+                  <View style={{marginBottom:"10%",  }}>
                     {checkRow ? (
                       <FlatList
                         nestedScrollEnabled
-                        data={cartItems}
+                        data={cartItems && cartItems.sort(function(a, b){return a.quantity - b.quantity})}
                         // sort={true}
                         keyboardShouldPersistTaps={'handled'}
                         contentContainerStyle={{paddingBottom:90}}
