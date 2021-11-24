@@ -1137,7 +1137,7 @@ return (
                   <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"15%",textAlign:"center" }}>
                     {cartTotalPackages}
                   </Text>
-                  {cartTotalAmount==0?<Text style={{ color: Colors.textGreyColor,width:"26%",textAlign:"right" }}>
+                  {cartTotalAmount ===0?<Text style={{ color: Colors.textGreyColor,width:"26%",textAlign:"right" }}>
                   £ {cartTotalAmount}
                   </Text>:
                   <Text style={{ color: Colors.textGreyColor,width:"26%",textAlign:"right" }}>

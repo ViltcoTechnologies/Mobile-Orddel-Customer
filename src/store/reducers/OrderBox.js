@@ -189,9 +189,8 @@ export default (state = initialState, action) => {
                   unit:item.product_unit
                 }
             );
-          // state.totalAmount =
-          //     parseFloat(state.totalAmount) +
-          //     parseFloat(item.quantity * item.avg_price);
+          state.totalAmount =parseFloat(state.totalAmount) +  parseFloat(item.quantity * item.avg_price);
+          state.totalPackages = parseInt(state.totalPackages) + parseInt(item.quantity);
 
         });
 
@@ -232,6 +231,7 @@ export default (state = initialState, action) => {
 
       let temp = [];
       data.map((item)=>{
+        console.log("item in Redux ====>>>",item)
         temp.push(
             {
               id:item.product_id,
@@ -242,6 +242,8 @@ export default (state = initialState, action) => {
               unit:item.product_unit
             }
         );
+        state.totalAmount = parseFloat(state.totalAmount) + parseFloat(item.purchased_quantity * item.avg_price);
+        state.totalPackages = parseInt(state.totalPackages) + parseInt(item.quantity);
       });
 
       state.cardItemsArray = temp;
