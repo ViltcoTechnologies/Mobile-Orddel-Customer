@@ -170,7 +170,7 @@ setButtonLoading(true);
               // fetch(URL+'/client_app/clients_list/33/')
               .then((response) => response.json())
               .then((responseJson) => {
-                console.log("OrderBoxDetail:", responseJson.order);
+                console.log("OrderBoxDetail ======reorder=====>>>>", responseJson.order);
                 // setBoxData(responseJson.order);
 
                 dispatch(
@@ -565,7 +565,7 @@ setButtonLoading(true);
               }}
             >
               <FlatList
-                data={boxDetail && boxDetail.sort(function(a, b){return a.quantity - b.quantity}) }
+                  data={boxDetail}
                 keyExtractor={(item) => item.product_id}
                 renderItem={(itemData) => (
                   <ReorderCartItem

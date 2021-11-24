@@ -1149,8 +1149,8 @@ function CreateNewOrder({ navigation, route }) {
                         <View style={{ padding: 2, }}>
                           <FlatList
                             nestedScrollEnabled
-                            data={cardItemsArray && cardItemsArray.sort(function(a, b){return a.quantity - b.quantity})}
-                            // sort={true
+                            data={cardItemsArray}
+                            sort={true}
                             keyExtractor={(item) => item.id}
                             renderItem={(itemData) => (
                               <PreviewCart
@@ -1551,7 +1551,7 @@ function CreateNewOrder({ navigation, route }) {
                             ? "numeric"
                             : "numbers-and-punctuation"
                         }
-                        maxLength={2}
+                        maxLength={3}
                         placeholderTextColor="black"
                         value={qtty}
                         required={true}
@@ -1746,13 +1746,10 @@ function CreateNewOrder({ navigation, route }) {
                           {checkRow ? (
                             <FlatList
                               nestedScrollEnabled
-
                               // style={{flexDirection:"column-reverse"}}
                               keyboardShouldPersistTaps={"handled"}
                               contentContainerStyle={{ paddingBottom: 90 }}
-                              data={cardItemsArray && cardItemsArray.sort(function(a, b){return a.quantity - b.quantity})}
-                              // sort={true}
-
+                              data={cardItemsArray}
                               // keyExtractor={(item) => item.id}
                               renderItem={(itemData) => (
                                 // <Text style={{fontSize:30,backgroundColor:"green",flex:1}}>{JSON.stringify(itemData)}</Text>

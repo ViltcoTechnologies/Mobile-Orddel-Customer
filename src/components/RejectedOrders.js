@@ -18,8 +18,6 @@ import {
   Card,
   CardItem,
   Title,
-
-
   Thumbnail,
   Content,
   Text,

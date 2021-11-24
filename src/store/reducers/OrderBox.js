@@ -150,74 +150,103 @@ export default (state = initialState, action) => {
 
     case RESEND:
       const Data = action.response;
-      console.log("dataaaaaaaaaaa", Data);
-      for (var i = 0; i < Data.length; i++) {
-        console.log("gggggggggggggggggg", Data[i]["product_id"]);
-        console.log("gggggggggggggggggg1", Data[i]["quantity"]);
-        //console.log("gggggggggggggggggg2",Data[i]["unit_sales_price"])
-        console.log("average price .........  ", Data[i]["avg_price"]);
+      console.log("dataaaaaaaaaaa ====RESEND======>>>>", Data);
+      // for (let i = 0; i < Data.length; i++) {
+      //
+      //   let updatedOrListCartItem1;
+      //
+      //   //updatedOrListCartItem1 = new ProductItem(Data[i]["quantity"],Data[i]["quantity"]*Data[i]["unit_sales_price"],Data[i]["product_name"],Data[i]["product_unit"],Data[i]["unit_sales_price"] );
+      //   updatedOrListCartItem1 = new ProductItem(
+      //     Data[i]["quantity"],
+      //     Data[i]["quantity"] * Data[i]["avg_price"],
+      //     Data[i]["product_name"],
+      //     Data[i]["product_unit"],
+      //     Data[i]["avg_price"]
+      //   );
+      //   (state.cardItemsArray = [
+      //     { id: Data[i]["product_id"], ...updatedOrListCartItem1 },
+      //     ...state.cardItemsArray,
+      //   ]),
+      //     // state.items={ ...state.items, [Data[i]["product_id"]]: updatedOrListCartItem1 }
+      //     (state.totalPackages =
+      //       parseInt(state.totalPackages) + parseInt(Data[i]["quantity"]));
+      //   state.count = state.count + 1;
+      //   state.totalAmount =
+      //     parseFloat(state.totalAmount) +
+      //     parseFloat(Data[i]["quantity"] * Data[i]["avg_price"]);
+      //   console.log("state.cardItemsArray ======>>>>>>",state.cardItemsArray);
+      // }
 
-        console.log("gggggggggggggggggg3", Data[i]["product_name"]);
-        console.log("gggggggggggggggggg4", Data[i]["product_unit"]);
+        let tempArray = [];
+        Data.map((item)=>{
+          tempArray.push(
+                {
+                  id:item.product_id,
+                  name:item.product_name,
+                  price:parseFloat(item.avg_price),
+                  quantity:item.quantity,
+                  total_amount:parseFloat(item.quantity * item.avg_price),
+                  unit:item.product_unit
+                }
+            );
+          // state.totalAmount =
+          //     parseFloat(state.totalAmount) +
+          //     parseFloat(item.quantity * item.avg_price);
 
-        let updatedOrListCartItem1;
+        });
 
-        //updatedOrListCartItem1 = new ProductItem(Data[i]["quantity"],Data[i]["quantity"]*Data[i]["unit_sales_price"],Data[i]["product_name"],Data[i]["product_unit"],Data[i]["unit_sales_price"] );
-        updatedOrListCartItem1 = new ProductItem(
-          Data[i]["quantity"],
-          Data[i]["quantity"] * Data[i]["avg_price"],
-          Data[i]["product_name"],
-          Data[i]["product_unit"],
-          Data[i]["avg_price"]
-        );
-        (state.cardItemsArray = [
-          { id: Data[i]["product_id"], ...updatedOrListCartItem1 },
-          ...state.cardItemsArray,
-        ]),
-          // state.items={ ...state.items, [Data[i]["product_id"]]: updatedOrListCartItem1 }
-          (state.totalPackages =
-            parseInt(state.totalPackages) + parseInt(Data[i]["quantity"]));
-        state.count = state.count + 1;
-        state.totalAmount =
-          parseFloat(state.totalAmount) +
-          parseFloat(Data[i]["quantity"] * Data[i]["avg_price"]);
-      }
+
+
+        state.cardItemsArray = tempArray;
+
+
       return state;
 
     case REORDER:
       const data = action.response;
-      console.log("dataaaaaaaaaaa", data);
-      for (var i = 0; i < data.length; i++) {
-        console.log("gggggggggggggggggg", data[i]["product_id"]);
-        console.log("gggggggggggggggggg1", data[i]["quantity"]);
-        console.log("gggggggggggggggggg2", data[i]["unit_sales_price"]);
-        //console.log("average price .........  ",Data[i]["avg_price"])
-        console.log("gggggggggggggggggg3", data[i]["product_name"]);
-        console.log("gggggggggggggggggg4", data[i]["product_unit"]);
+      // console.log("dataaaaaaaaaaa", data);
+      // for (var i = 0; i < data.length; i++) {
+      //   let updatedOrListCartItem;
+      //
+      //   updatedOrListCartItem = new ProductItem(
+      //     data[i]["purchased_quantity"],
+      //     data[i]["purchased_quantity"] * data[i]["avg_price"],
+      //     data[i]["product_name"],
+      //     data[i]["product_unit"],
+      //     data[i]["avg_price"]
+      //   );
+      //   (state.cardItemsArray = [
+      //     { id: data[i]["product_id"], ...updatedOrListCartItem },
+      //     ...state.cardItemsArray,
+      //   ]),
+      //     // state.items={ ...state.items, [data[i]["product_id"]]: updatedOrListCartItem }
+      //     (state.totalPackages =
+      //       parseInt(state.totalPackages) +
+      //       parseInt(data[i]["purchased_quantity"]));
+      //   state.count = state.count + 1;
+      //   state.totalAmount =
+      //     parseFloat(state.totalAmount) +
+      //     parseFloat(data[i]["purchased_quantity"] * data[i]["avg_price"]);
+      // }
+      // return state;
 
-        let updatedOrListCartItem;
-
-        // updatedOrListCartItem1 = new ProductItem(Data[i]["quantity"],Data[i]["quantity"]*Data[i]["unit_sales_price"],Data[i]["product_name"],Data[i]["product_unit"],Data[i]["unit_sales_price"] );
-        updatedOrListCartItem = new ProductItem(
-          data[i]["purchased_quantity"],
-          data[i]["purchased_quantity"] * data[i]["avg_price"],
-          data[i]["product_name"],
-          data[i]["product_unit"],
-          data[i]["avg_price"]
+      let temp = [];
+      data.map((item)=>{
+        temp.push(
+            {
+              id:item.product_id,
+              name:item.product_name,
+              price:parseFloat(item.avg_price),
+              quantity:item.quantity,
+              total_amount:parseFloat(item.quantity * item.avg_price),
+              unit:item.product_unit
+            }
         );
-        (state.cardItemsArray = [
-          { id: data[i]["product_id"], ...updatedOrListCartItem },
-          ...state.cardItemsArray,
-        ]),
-          // state.items={ ...state.items, [data[i]["product_id"]]: updatedOrListCartItem }
-          (state.totalPackages =
-            parseInt(state.totalPackages) +
-            parseInt(data[i]["purchased_quantity"]));
-        state.count = state.count + 1;
-        state.totalAmount =
-          parseFloat(state.totalAmount) +
-          parseFloat(data[i]["purchased_quantity"] * data[i]["avg_price"]);
-      }
+      });
+
+      state.cardItemsArray = temp;
+
+
       return state;
 
     case ADD_TO_CART:

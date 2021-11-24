@@ -90,7 +90,6 @@ function Reorder({ navigation ,route }) {
   const cartItems = useSelector((state) => {return state.OrderBox.cardItemsArray});
   var Count = 0;
   console.log(cartItems,'======>> cartItems');
-
   const dispatch = useDispatch();
   const units = useSelector((state) => state.ApiData.ProductList);
   const products = useSelector((state) => state.ApiData.ProductList);
@@ -1456,7 +1455,7 @@ return (
                   //keyboardType="numeric"
                   keyboardType= {Platform.OS=="android"? "numeric" :"numbers-and-punctuation"}
                   //keyboardType="numbers-and-punctuation"
-                  maxLength={2}
+                  maxLength={3}
                   placeholderTextColor="black"
                   value={qtty}
                   required={true}
@@ -1644,8 +1643,9 @@ return (
                   <View style={{marginBottom:"10%",  }}>
                     {checkRow ? (
                       <FlatList
-                        nestedScrollEnabled
-                        data={cartItems && cartItems.sort(function(a, b){return a.quantity - b.quantity})}
+                        // nestedScrollEnabled
+                        data={cartItems}
+                        // data={cartItems && cartItems.sort(function(a, b){return a.quantity - b.quantity})}
                         // sort={true}
                         keyboardShouldPersistTaps={'handled'}
                         contentContainerStyle={{paddingBottom:90}}
@@ -1683,7 +1683,7 @@ return (
                      <View style={{ flexDirection: "row", paddingTop:10,paddingBottom:0 }}>
                   <Text
                     style={{ color: Colors.themeColor,fontWeight:'bold',width:"45%",
-                    marginLeft:"7.5%",}}
+                    marginLeft:"7.5%", }}
                   >
                     Total:
                   </Text>

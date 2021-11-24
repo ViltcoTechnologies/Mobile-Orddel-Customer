@@ -1111,8 +1111,9 @@ return (
   <View style={{padding:2}}>
             <FlatList
                         nestedScrollEnabled
-                        data={cartItems && cartItems.sort(function(a, b){return a.quantity - b.quantity})}
-                        // sort={true}
+
+                        data={cartItems}
+                        sort={true}
                         keyExtractor={(item) => item.id}
                         renderItem={(itemData) => (
                           <PreviewCart
@@ -1665,9 +1666,7 @@ return (
                     {checkRow ? (
                       <FlatList
                         nestedScrollEnabled
-                        data={cartItems && cartItems.sort(function(a, b){return a.quantity - b.quantity}) }
-                        // sort={true}
-
+                        data={cartItems}
                         keyboardShouldPersistTaps={'handled'}
                         contentContainerStyle={{paddingBottom:90}}
                         keyExtractor={(item) => item.id}

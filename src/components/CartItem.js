@@ -27,13 +27,13 @@ const CartItem = (props,{route}) => {
   const MyIcon1 = <FontAwesome name="minus" size={15} color="#EE0202" solid />;
   const MyIcon2 = <FontAwesome name="plus" size={15} color="#EE0202" solid />;
   let reg = /^\d+$/;
-  
+
   const updateTotalAmount=()=>{
-    
+
     alert("Key edit")
 
     if(qtty!=""){
-     
+
         if (qtty == "") {
             // dropDownAlertRef.alertWithType('error', '', "Please Enter Quantity.");
 
@@ -54,9 +54,9 @@ const CartItem = (props,{route}) => {
             dispatch(
               cartActions.updateTotal(props.id, qtty)
             )
-       
+
             }
-        
+
     }
     }
 
@@ -68,7 +68,7 @@ const CartItem = (props,{route}) => {
     console.log(qtty)
 
     if(qtty!=""){
-     
+
         if (qtty == "") {
             // dropDownAlertRef.alertWithType('error', '', "Please Enter Quantity.");
 
@@ -92,12 +92,12 @@ const CartItem = (props,{route}) => {
             // dispatch(
             //   cartActions.updateTotal(props.id, qtty)
             // )
-            
+
             }
-        
+
     }
     }
-  
+
 
   return (
     <View
@@ -107,10 +107,10 @@ const CartItem = (props,{route}) => {
         borderBottomColor: "grey",
         marginTop: 10,
         width: "100%",
-        
+
       }}
     >
-      
+
       <View style={{ width: "30%", justifyContent: "center" }}>
         <Text
           style={{
@@ -135,18 +135,18 @@ style={{alignSelf:"center",color:Colors.productGrey,paddingBottom:0,textAlign:'r
 placeholder={props.quantity.toString()}
 autoCapitalize="none"
 keyboardType="numeric"
-maxLength={2}
+maxLength={3}
 placeholderTextColor={Colors.productGrey}
 value={qtty}
 
 // required={true}
 onChangeText={(value) => {
-    
+
   setQtty(value);
   //updateQuantity();
   updateQuantity(value)
 //   setCheck(true);
-   
+
 }}
 
 selectTextOnFocus={true}
@@ -179,7 +179,7 @@ initialValue=""
       {/* )}  */}
     </View>
 
-    
+
   );
 };
 

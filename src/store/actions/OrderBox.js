@@ -33,6 +33,7 @@ export const reorder = (data) => {
 };
 
 export const resend = (data) => {
+  console.log(" =======resend =======>>>>data =====",data)
   return { type: RESEND, response: data };
 };
 
