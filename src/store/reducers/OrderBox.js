@@ -237,7 +237,7 @@ export default (state = initialState, action) => {
               id:item.product_id,
               name:item.product_name,
               price:parseFloat(item.avg_price),
-              quantity:item.quantity,
+              quantity:item.purchased_quantity,
               total_amount:parseFloat(item.quantity * item.avg_price),
               unit:item.product_unit
             }

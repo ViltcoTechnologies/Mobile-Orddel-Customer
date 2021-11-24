@@ -110,7 +110,7 @@ function CompletedOrderInvoice({ navigation, route }) {
 
   const reorder = () => {
     setButtonLoading(true);
-    if (orderBoxIdd == "") {
+    if (orderBoxIdd === "") {
       fetch(URL + "/order/create_order_box/", {
         method: "POST",
         headers: {
@@ -129,7 +129,7 @@ function CompletedOrderInvoice({ navigation, route }) {
           // console.log("status code",response.status)
           // console.log("status data",data)
           // setStatusCode(response.status)
-          if (response.status == 201) {
+          if (response.status === 201) {
             // setResMessage("")
             dispatch(ApiDataAction.SetOrderBoxId(data.cart.id));
             console.log("OrderrrrrrrIdddddddddddd: ", d_orderBoxId);
@@ -137,7 +137,7 @@ function CompletedOrderInvoice({ navigation, route }) {
               // fetch(URL+'/client_app/clients_list/33/')
               .then((response) => response.json())
               .then((responseJson) => {
-                console.log("OrderBoxDetail:", responseJson.order);
+                console.log("OrderBoxDetail: =====reorder====>>>>", responseJson.order);
                 // setBoxData(responseJson.order);
 
                 dispatch(
@@ -223,17 +223,16 @@ function CompletedOrderInvoice({ navigation, route }) {
 
     // console.log("hi---------------")
     // console.log(PoNumber,"-----");
-    console.log(orderId, "yoyo------");
+
     setIsLoading(true);
-    console.log("From Invoice OrderBoxid", d_orderBoxId);
-    console.log("From Invoice Orderid", orderId);
+
 
     if (orderId != "") {
       fetch(URL + "/payment/view_invoice/" + orderId + "/")
         // fetch(URL+'/client_app/clients_list/33/')
         .then((response) => response.json())
         .then((responseJson) => {
-          console.log("Show Invoic", responseJson.order.order_products);
+          console.log("Show Invoic ====>>>", responseJson.order.order_products);
           setInvoiceNo(responseJson.order.inv_number);
           setOrderList(responseJson.order.order_products);
           setInvoiceData(responseJson.order);
@@ -245,7 +244,7 @@ function CompletedOrderInvoice({ navigation, route }) {
         .catch((error) => console.error(error));
     }
 
-    if (ClientId != 0) {
+    if (ClientId !== 0) {
       fetch(URL + "/order/get_order_box/" + ClientId + "/")
         // fetch(URL+'/client_app/clients_list/33/')
         .then((response) => response.json())
@@ -256,7 +255,7 @@ function CompletedOrderInvoice({ navigation, route }) {
           // );
           console.log("OrderBoxId:", responseJson);
           setOrderBoxIdd(responseJson.order_box);
-          if (responseJson.order_box != "") {
+          if (responseJson.order_box !== "") {
             dispatch(ApiDataAction.SetOrderBoxId(responseJson.order_box));
           }
         })
