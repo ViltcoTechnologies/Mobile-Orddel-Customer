@@ -11,7 +11,7 @@ import {
   Thumbnail,
   Text,
   Spinner,
-  
+
 } from "native-base";
 import {
   StyleSheet,
@@ -111,7 +111,7 @@ const NewBuisnessDetail = ({ navigation }) => {
       else{
         setBusinessNatureMsg1(false);
       }
-      
+
     }
   }
 
@@ -199,7 +199,7 @@ const NewBuisnessDetail = ({ navigation }) => {
       else{
         setBusinessNatureMsg1(false);
       }
-      
+
     }
 
     // if(BusinessName!=""){
@@ -251,7 +251,7 @@ const NewBuisnessDetail = ({ navigation }) => {
           let data = await response.json();
           console.log("signup", data);
           console.log("signup", response.status);
-          if (response.status == 200) {
+          if (response.status === 200) {
             //navigation.navigate("VerificationCode" , {Email : email , Phone_No : phoneNumber})
             setLoading(false);
 
@@ -259,9 +259,10 @@ const NewBuisnessDetail = ({ navigation }) => {
             setBusinessNature("");
             setBusinessType("");
             setAddress("");
-           
+
             // dropDownAlertRef.alertWithType('success', '', 'Bussiness Details are added successfully.');
-            alert("Bussiness details are added successfully")
+            alert("Bussiness details are added successfully");
+            navigation.goBack();
             // Toast.show("Bussiness Details are added successfully", Toast.LONG);
             setButtonCheck(false);
 
@@ -360,8 +361,8 @@ const NewBuisnessDetail = ({ navigation }) => {
         behavior={Platform.OS == "ios" ? "padding" : null} >
     <ScrollView keyboardShouldPersistTaps="always" style={{backgroundColor:'white'}}>
     <View style={styles.container}>
-      
-      
+
+
       {/* <DropdownAlert ref={ref => dropDownAlertRef = ref} updateStatusBar={false} tapToCloseEnabled={true} errorColor={Colors.themeColor} successColor={Colors.themeColor} containerStyle={{width:"80%"}} /> */}
 
       {/* <View style={styles.spinnerv}> */}
@@ -578,7 +579,7 @@ const NewBuisnessDetail = ({ navigation }) => {
                 </View>
               )}
               {/* </SafeAreaView> */}
-           
+
           {/* </KeyboardAvoidingView>
           </ScrollView> */}
           {/* {isLoading ? (
@@ -605,13 +606,13 @@ const NewBuisnessDetail = ({ navigation }) => {
           {/* //)} */}
         </View>
       </View>
-     
+
     </View>
     </ScrollView>
     </KeyboardAvoidingView>
     </>
-    
-   
+
+
   );
 };
 
