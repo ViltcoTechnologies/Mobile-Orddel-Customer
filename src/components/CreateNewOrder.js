@@ -1182,7 +1182,7 @@ function CreateNewOrder({ navigation, route }) {
                             )}
                           />
                         </View>
-                        <View style={{ flexDirection: "row", width:"100%"}}>
+                        <View style={{ flexDirection: "row", width:"100%" ,}}>
                           <Text
                             style={{
                               color: Colors.themeColor,
@@ -1190,7 +1190,7 @@ function CreateNewOrder({ navigation, route }) {
                               width: Platform.OS == "android" ? "31%" : "24%",
                               marginLeft: "2.5%",
                               textAlign: "left",
-
+                              // borderWidth:1
 
                             }}
                           >
@@ -1204,7 +1204,9 @@ function CreateNewOrder({ navigation, route }) {
                              // width: "16%",
                               textAlign: "center",
 
-                              width: Platform.OS == "android" ? "23%" : "24%"
+                              width: Platform.OS == "android" ? "25%" : "24%"
+                              ,
+
                             }}
                           >
                             {cartTotalPackages}
@@ -1214,6 +1216,7 @@ function CreateNewOrder({ navigation, route }) {
                               style={{
                                 color: Colors.textGreyColor,
                                 width: Platform.OS == "android" ? "26.5%" : "26.5%",
+                                // borderWidth:1,
 
                                 textAlign: "center",
                               }}
@@ -1224,8 +1227,10 @@ function CreateNewOrder({ navigation, route }) {
                             <Text
                               style={{
                                 color: Colors.textGreyColor,
-                                width: Platform.OS == "android" ? "26.5%" : "26.5%",
+                                width: Platform.OS == "android" ? "26.5%" : "25%",
                                 textAlign: "center",
+                                paddingLeft:Platform.OS == "android" ? "3%" : "0",
+                                paddingRight:Platform.OS == "android" ? "0" : "3",
 
                               }}
                             >
@@ -1796,6 +1801,7 @@ function CreateNewOrder({ navigation, route }) {
                               paddingBottom: 0,
                               borderBottomWidth: 0.5,
                               borderBottomColor: "gray",
+                              // borderWidth:1
                             }}
                           >
                             <Text
@@ -1812,13 +1818,16 @@ function CreateNewOrder({ navigation, route }) {
                               style={{
                                 width: Platform.OS == "android" ? "20%" : "20%",
                               }}
-                            ></Text>
+                            >
+
+                            </Text>
                             <Text
                               style={{
                                 color: Colors.themeColor,
                                 fontWeight: "bold",
                                 width: "20%",
                                 textAlign: "center",
+                                // borderWidth:1
                               }}
                             >
                               {cartTotalPackages}
@@ -1830,6 +1839,8 @@ function CreateNewOrder({ navigation, route }) {
                                   width:
                                     Platform.OS == "android" ? "30%" : "30%",
                                   textAlign: "center",
+                                  // borderWidth:1,
+                                  paddingLeft:'6%'
                                 }}
                               >
                                 £ {cartTotalAmount}
@@ -1838,7 +1849,7 @@ function CreateNewOrder({ navigation, route }) {
                               <Text
                                 style={{
                                   color: Colors.textGreyColor,
-                                  width: "27%",
+                                  width: "30%",
                                   textAlign: "center",
                                 }}
                               >

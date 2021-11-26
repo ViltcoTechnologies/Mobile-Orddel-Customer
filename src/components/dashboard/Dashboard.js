@@ -496,7 +496,7 @@ console.log(RemainingInvoices,"Remaining ---------------------------- Invoices")
                     flexDirection: "column",
                     width: "32%",
                     alignItems: "center",
-                    //borderWidth:1,
+                    // borderWidth:1,
                   }}
                 >
                   <View style={{ flexDirection: "row", alignSelf: "center" }}>
@@ -513,14 +513,14 @@ console.log(RemainingInvoices,"Remaining ---------------------------- Invoices")
                       {CompletedOrders}
                     </Text>
                   </View>
-                  <View style={{ alignSelf: "center"}} >
+                  <View style={{ alignSelf: "center", }} >
                   <Text
                     style={{
-                      width: 90,
+                      // width: 90,
                       textAlign: "center",
                       fontWeight: "bold",
                       fontSize: Platform.OS == "android" ? 14 : 13,
-
+                        // width: '20%',
                       color: Colors.productGrey,
                     }}
                   >
@@ -555,14 +555,12 @@ console.log(RemainingInvoices,"Remaining ---------------------------- Invoices")
                       {PendingOrders}
                     </Text>
                   </View>
-                  <View style={{ alignSelf: "center"}} >
+                  <View style={{ alignSelf: "center" ,}} >
                   <Text
                     style={{
-                      width: 80,
                       textAlign: "center",
                       fontWeight: "bold",
                       fontSize: Platform.OS == "android" ? 14 : 13,
-                      //borderWidth:1,
                       color: Colors.productGrey,
                     }}
                   >

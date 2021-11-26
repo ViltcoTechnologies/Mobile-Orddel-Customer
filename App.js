@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef, } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   View,
   Text,
   StatusBar,
+    AppState
 } from "react-native";
 // import Firebase from '@react-native-firebase/app'
 import loadData from "./src/components/Login";
@@ -21,6 +22,9 @@ import profile_Data from "./src/store/reducers/profile_Data";
 import ApiData from "./src/store/reducers/ApiData";
 import MyStack from "./src/navigation/MyStack";
 import OrderBox from "./src/store/reducers/OrderBox";
+import PushNotificationIOS from "@react-native-community/push-notification-ios";
+import messaging from '@react-native-firebase/messaging';
+
 import NewScreen from "./NewScreen";
 import DateTime from "./src/components/DateTime";
 // import BusinessData from "./src/store/reducers/BusinessData";
@@ -41,6 +45,47 @@ const rootReducer = combineReducers({
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 const App = () => {
+
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+  useEffect(()=>{
+
+    PushNotificationIOS.addEventListener("notification",(data)=>{
+      console.log("data ==PushNotificationIOS.addEventListener=>>>",data);
+      PushNotificationIOS.getApplicationIconBadgeNumber(number => {
+        console.log("background app message ==number==>>>>",number);
+        PushNotificationIOS.setApplicationIconBadgeNumber(number + 1);
+      });
+
+    })
+
+    messaging().setBackgroundMessageHandler(async (test)=>{
+      console.log("onMessage ===test===>>>>",test);
+      PushNotificationIOS.getApplicationIconBadgeNumber(number => {
+        console.log("background app message ==number==>>>>",number);
+        PushNotificationIOS.setApplicationIconBadgeNumber(number + 1);
+      });
+    });
+    AppState.addEventListener("change", nextAppState => {
+      if (
+          appState.current.match(/inactive|background/) &&
+          nextAppState === "active"
+      ) {
+        console.log("App has come to the foreground!");
+        PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      }
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log("AppState", appState.current);
+    });
+
+
+  },[]);
+
+
+
+
   return (
     <>
       {/* <SafeAreaView style={styles.topSafeArea} />
