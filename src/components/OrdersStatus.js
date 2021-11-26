@@ -538,7 +538,7 @@ setButtonLoading(true);
                       textAlign: "center",
                     }}
                   >
-                    {dataStatus.toUpperCase()}
+                    {dataStatus.toUpperCase() === "PENDING".toUpperCase() ? "NEW" : dataStatus.toUpperCase()}
                   </Text>
                 </View>
                 <Text style={{ color: Colors.productGrey, fontSize: 14 }}>
