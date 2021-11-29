@@ -6,7 +6,8 @@ import {
   View,
   Text,
   StatusBar,
-    AppState
+    AppState,
+    Platform
 } from "react-native";
 // import Firebase from '@react-native-firebase/app'
 import loadData from "./src/components/Login";
@@ -51,20 +52,20 @@ const App = () => {
 
   useEffect(()=>{
 
-    PushNotificationIOS.addEventListener("notification",(data)=>{
+    Platform.OS === 'ios' &&  PushNotificationIOS.addEventListener("notification",(data)=>{
       console.log("data ==PushNotificationIOS.addEventListener=>>>",data);
-      PushNotificationIOS.getApplicationIconBadgeNumber(number => {
+      Platform.OS === 'ios' &&  PushNotificationIOS.getApplicationIconBadgeNumber(number => {
         console.log("background app message ==number==>>>>",number);
-        PushNotificationIOS.setApplicationIconBadgeNumber(number + 1);
+        Platform.OS === 'ios' &&  PushNotificationIOS.setApplicationIconBadgeNumber(number + 1);
       });
 
     })
 
     messaging().setBackgroundMessageHandler(async (test)=>{
       console.log("onMessage ===test===>>>>",test);
-      PushNotificationIOS.getApplicationIconBadgeNumber(number => {
+      Platform.OS === 'ios' &&   PushNotificationIOS.getApplicationIconBadgeNumber(number => {
         console.log("background app message ==number==>>>>",number);
-        PushNotificationIOS.setApplicationIconBadgeNumber(number + 1);
+        Platform.OS === 'ios' &&   PushNotificationIOS.setApplicationIconBadgeNumber(number + 1);
       });
     });
     AppState.addEventListener("change", nextAppState => {
@@ -73,7 +74,7 @@ const App = () => {
           nextAppState === "active"
       ) {
         console.log("App has come to the foreground!");
-        PushNotificationIOS.setApplicationIconBadgeNumber(0);
+        Platform.OS === 'ios' &&    PushNotificationIOS.setApplicationIconBadgeNumber(0);
       }
       appState.current = nextAppState;
       setAppStateVisible(appState.current);

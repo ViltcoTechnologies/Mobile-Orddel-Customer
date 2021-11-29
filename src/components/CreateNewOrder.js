@@ -71,7 +71,7 @@ function CreateNewOrder({ navigation, route }) {
 
   const cartTotalAmount = useSelector((state) => state.OrderBox.totalAmount);
   const cartTotalPackages = useSelector(
-    (state) => state.OrderBox.totalPackages
+      (state) => state.OrderBox.totalPackages
   );
   const count = useSelector((state) => state.OrderBox.count);
   const CheckId = useSelector((state) => state.OrderBox.cardItemsArray);
@@ -130,9 +130,6 @@ function CreateNewOrder({ navigation, route }) {
   const [todayDate, setTodayDate] = useState("");
   const [todayTime, setTodayTime] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  // const CurrentTime = new Date().toLocaleTimeString();
-  const CurrentTime = new Date().toLocaleTimeString("en-us", {timeStyle: "medium"})
-  console.log(CurrentTime, '==========> CurrentTime ');
 
   // const [sendButtonCheck, setSendButtonCheck] = useState("");
 
@@ -198,14 +195,14 @@ function CreateNewOrder({ navigation, route }) {
     setShowDate(currentDate);
     // console.log("Dateeeeeeeee: ",currentDate.getDate());
     setFormattedDate(
-      currentDate.getDate() +
+        currentDate.getDate() +
         "-" +
         (currentDate.getMonth() + 1) +
         "-" +
         currentDate.getFullYear()
     );
     setFormattedTime(
-      currentDate.getHours() +
+        currentDate.getHours() +
         ":" +
         currentDate.getMinutes() +
         ":" +
@@ -223,7 +220,7 @@ function CreateNewOrder({ navigation, route }) {
     // console.log("Dateeeeeeeee: ",currentDate.getDate());
 
     setFormattedTime(
-      currentDate.getHours() +
+        currentDate.getHours() +
         ":" +
         currentDate.getMinutes() +
         ":" +
@@ -276,28 +273,28 @@ function CreateNewOrder({ navigation, route }) {
         order_products: cardItemsArray,
       }),
     })
-      .then(async (response) => {
-        let data = await response.json();
-        // console.log("status code",response.status)
-        // console.log("Order Detail",data.order_box.order_products)
-        console.log("response.status", response.status);
-        if (response.status == 201) {
-          // console.log("data",data)
-          // dispatch(ApiDataAction.CreateOrder(1));
+        .then(async (response) => {
+          let data = await response.json();
+          // console.log("status code",response.status)
+          // console.log("Order Detail",data.order_box.order_products)
+          console.log("response.status", response.status);
+          if (response.status == 201) {
+            // console.log("data",data)
+            // dispatch(ApiDataAction.CreateOrder(1));
 
-          CreateOrder();
-          console.log("(Oreder is added to order box)");
-          // dispatch(ApiDataActions.SetLoginData(data));
-          // navigation.navigate("MyDrawer");
-        } else {
+            CreateOrder();
+            console.log("(Oreder is added to order box)");
+            // dispatch(ApiDataActions.SetLoginData(data));
+            // navigation.navigate("MyDrawer");
+          } else {
+            setSendButtonCheck(false);
+            alert(data.message);
+          }
+        })
+        .catch((error) => {
           setSendButtonCheck(false);
-          alert(data.message);
-        }
-      })
-      .catch((error) => {
-        setSendButtonCheck(false);
-        console.log("Something went wrong from add to order box", error);
-      });
+          console.log("Something went wrong from add to order box", error);
+        });
   };
 
   const CreateOrder = () => {
@@ -314,9 +311,9 @@ function CreateNewOrder({ navigation, route }) {
         order_title: "Grocery",
         delivery_person: riderId == "" ? id : riderId,
         order_delivery_datetime:
-          formattedDate == ""
-            ? todayDate + " " + todayTime
-            : formattedDate + " " + formattedTime,
+            formattedDate == ""
+                ? todayDate + " " + todayTime
+                : formattedDate + " " + formattedTime,
         business_id: selectedBusinessId,
         delivery_notes: note,
         comment: "note",
@@ -325,51 +322,51 @@ function CreateNewOrder({ navigation, route }) {
         payment_type: "cash_on_delivery",
       }),
     })
-      .then(async (response) => {
-        let data = await response.json();
+        .then(async (response) => {
+          let data = await response.json();
 
-        if (response.status == 201) {
+          if (response.status == 201) {
+            setLoading(false);
+            // Alert.showAlert();
+            alert("Thanks, your order has been placed.");
+
+            dispatch(ApiDataAction.Clear(1));
+            setSelectedValue([{}]);
+            setNote("");
+            setUnitCheck(false);
+            setQtty("");
+            setFormattedDate("");
+            // AsyncStorage.clear();
+
+            navigation.navigate("Dashboard");
+
+            setSendButtonCheck(false);
+          } else {
+            alert(data.message);
+
+            setLoading(false);
+            setSendButtonCheck(false);
+          }
+
+          // code that can access both here
+        })
+        .catch((error) => {
+          console.log("Something went wrong at create order Box", error);
           setLoading(false);
-          // Alert.showAlert();
-          alert("Thanks, your order has been placed.");
-
-          dispatch(ApiDataAction.Clear(1));
-          setSelectedValue([{}]);
-          setNote("");
-          setUnitCheck(false);
-          setQtty("");
-          setFormattedDate("");
-          // AsyncStorage.clear();
-
-          navigation.navigate("Dashboard");
-
           setSendButtonCheck(false);
-        } else {
-          alert(data.message);
-
-          setLoading(false);
-          setSendButtonCheck(false);
-        }
-
-        // code that can access both here
-      })
-      .catch((error) => {
-        console.log("Something went wrong at create order Box", error);
-        setLoading(false);
-        setSendButtonCheck(false);
-      });
+        });
   };
 
   const sendOrder = () => {
     setFormattedDate(
-      showDate.getDate() +
+        showDate.getDate() +
         "-" +
         (showDate.getMonth() + 1) +
         "-" +
         showDate.getFullYear()
     );
     setFormattedTime(
-      showTime.getHours() +
+        showTime.getHours() +
         ":" +
         showTime.getMinutes() +
         ":" +
@@ -396,7 +393,7 @@ function CreateNewOrder({ navigation, route }) {
       const regex = new RegExp(`${query.trim()}`, "i");
       //setting the filtered film array according the query from the input
       setFilteredProducts(
-        products.filter((product) => product.name.search(regex) >= 0)
+          products.filter((product) => product.name.search(regex) >= 0)
       );
     } else {
       //if the query is null then return blank
@@ -430,20 +427,20 @@ function CreateNewOrder({ navigation, route }) {
     // setUnits(productData);
 
     fetch(URL + "/client_app/list_business/client/" + ClientId + "/")
-      // fetch(URL+'/client_app/clients_list/33/')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        setBusinessData(responseJson.client_businesses);
-        setAddressCheck(false);
+        // fetch(URL+'/client_app/clients_list/33/')
+        .then((response) => response.json())
+        .then((responseJson) => {
+          setBusinessData(responseJson.client_businesses);
+          setAddressCheck(false);
 
-        if (responseJson.client_businesses == "") {
-          setAddressCheck(true);
-          // setLoading(true);
-        }
-        // console.log("Business Detail", responseJson);
-        // }
-      })
-      .catch((error) => console.error(error));
+          if (responseJson.client_businesses == "") {
+            setAddressCheck(true);
+            // setLoading(true);
+          }
+          // console.log("Business Detail", responseJson);
+          // }
+        })
+        .catch((error) => console.error(error));
 
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
     LogBox.ignoreLogs(["Possible Unhandled Promise Rejection"]);
@@ -451,16 +448,16 @@ function CreateNewOrder({ navigation, route }) {
     LogBox.ignoreLogs(["Failed prop type"]);
 
     fetch(URL + "/delivery_person/delivery_person_list/")
-      // fetch(URL+'/client_app/clients_list/33/')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        if (responseJson.delivery_person == "") {
-          setRiderLoading(true);
-        } else {
-          setRiderData(responseJson.delivery_person);
-        }
-      })
-      .catch((error) => console.error(error));
+        // fetch(URL+'/client_app/clients_list/33/')
+        .then((response) => response.json())
+        .then((responseJson) => {
+          if (responseJson.delivery_person == "") {
+            setRiderLoading(true);
+          } else {
+            setRiderData(responseJson.delivery_person);
+          }
+        })
+        .catch((error) => console.error(error));
 
     console.log(" new order list ...... ", riderData);
 
@@ -492,454 +489,454 @@ function CreateNewOrder({ navigation, route }) {
 
   var reg = /^\d+$/;
   return (
-    <>
-      <View style={{ flex: 1, backgroundColor: "white", height: "100%" }}>
-        {/* <FlashMessage position="top" /> */}
-        {/* <DropdownAlert ref={ref => dropDownAlertRef = ref} updateStatusBar={false} tapToCloseEnabled={true} errorColor={Colors.themeColor} containerStyle={{width:"80%"}} /> */}
-        {/* <MyHeader name="CREATE NEW ORDER" nav={navigation} /> */}
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS == "ios" ? "padding" : null}
-        >
-          <ScrollView
-            style={{ padding: 0 }}
-            nestedScrollEnabled={true}
-            keyboardShouldPersistTaps="always"
-            listViewDisplayed={false}
+      <>
+        <View style={{ flex: 1, backgroundColor: "white", height: "100%" }}>
+          {/* <FlashMessage position="top" /> */}
+          {/* <DropdownAlert ref={ref => dropDownAlertRef = ref} updateStatusBar={false} tapToCloseEnabled={true} errorColor={Colors.themeColor} containerStyle={{width:"80%"}} /> */}
+          {/* <MyHeader name="CREATE NEW ORDER" nav={navigation} /> */}
+          <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS == "ios" ? "padding" : null}
           >
-            <View>
-              <View style={{ height: "14%", padding: 5 }}>
-                <Text
-                  style={{
-                    alignSelf: "center",
-                    flexDirection: "row",
-                    fontSize: 16,
-                    fontWeight: "bold",
-                  }}
-                >
-                  {PoNumber}
-                </Text>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignSelf: "center",
-                    padding: 10,
-                  }}
-                >
-                  <Card
-                    style={{
-                      padding: 10,
-                      width: "50%",
-                      backgroundColor: "#e6e6e6",
-                      elevation: 0,
-                    }}
+            <ScrollView
+                style={{ padding: 0 }}
+                nestedScrollEnabled={true}
+                keyboardShouldPersistTaps="always"
+                listViewDisplayed={false}
+            >
+              <View>
+                <View style={{ height: "14%", padding: 5 }}>
+                  <Text
+                      style={{
+                        alignSelf: "center",
+                        flexDirection: "row",
+                        fontSize: 16,
+                        fontWeight: "bold",
+                      }}
                   >
-                    <TouchableOpacity onPress={toggleBottomNavigationView}>
-                      <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
-                        Delivery Person:
-                      </Text>
-                      {riderId == "" ? (
-                        <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                          {name}
-                        </Text>
-                      ) : (
-                        <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                          {riderName}
-                        </Text>
-                      )}
-                      {riderId == "" ? (
-                        <Text style={{ fontSize: 12, color: "#666666" }}>
-                          {address}
-                        </Text>
-                      ) : (
-                        <Text style={{ fontSize: 12, color: "#666666" }}>
-                          {riderAddress}
-                        </Text>
-                      )}
-                    </TouchableOpacity>
-                  </Card>
-                  <BottomSheet
-                    visible={visible}
-                    onBackButtonPress={toggleBottomNavigationView}
-                    onBackdropPress={toggleBottomNavigationView}
-                  >
-                    <View style={styles.bottomNavigationView}>
-                      {riderLoading ? (
-                        <View
-                          style={{
-                            justifyContent: "center",
-                            alignItems: "center",
-                            // alignSelf:'center',
-                            marginTop: "20%",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: Colors.themeColor,
-                              fontWeight: "bold",
-                              marginTop: 20,
-                              fontSize: 25,
-                              textAlign: "center",
-                            }}
-                          >
-                            Rider is Not Available
-                          </Text>
-                        </View>
-                      ) : (
-                        <FlatList
+                    {PoNumber}
+                  </Text>
 
-                          // nestedScrollEnabled={true}
-                          data={riderData}
-                          style={{
-                            padding: 10,
-                            marginTop: Platform.OS == "android" ? 0 : "12%",
-                          }}
-                          showsVerticalScrollIndicator={false}
-                          // keyExtractor={item => item.index_id.toString()}
-                          keyExtractor={({ id }, index) => id}
-                          renderItem={({ item }) => (
-                            <TouchableOpacity
-                              style={{
-                                width: "95%",
-                                marginBottom: 15,
-                                alignSelf: "center",
-                              }}
-                              onPress={() => {
-                                rider(
-                                  item.first_name + " " + item.last_name,
-                                  item.address,
-                                  item.id
-                                );
-                              }}
-                            >
-                              <Card
+                  <View
+                      style={{
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        padding: 10,
+                      }}
+                  >
+                    <Card
+                        style={{
+                          padding: 10,
+                          width: "50%",
+                          backgroundColor: "#e6e6e6",
+                          elevation: 0,
+                        }}
+                    >
+                      <TouchableOpacity onPress={toggleBottomNavigationView}>
+                        <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
+                          Delivery Person:
+                        </Text>
+                        {riderId == "" ? (
+                            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                              {name}
+                            </Text>
+                        ) : (
+                            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                              {riderName}
+                            </Text>
+                        )}
+                        {riderId == "" ? (
+                            <Text style={{ fontSize: 12, color: "#666666" }}>
+                              {address}
+                            </Text>
+                        ) : (
+                            <Text style={{ fontSize: 12, color: "#666666" }}>
+                              {riderAddress}
+                            </Text>
+                        )}
+                      </TouchableOpacity>
+                    </Card>
+                    <BottomSheet
+                        visible={visible}
+                        onBackButtonPress={toggleBottomNavigationView}
+                        onBackdropPress={toggleBottomNavigationView}
+                    >
+                      <View style={styles.bottomNavigationView}>
+                        {riderLoading ? (
+                            <View
                                 style={{
-                                  borderRadius: 15,
-                                  padding: 10,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  // alignSelf:'center',
+                                  marginTop: "20%",
                                 }}
-                              >
-                                <View
+                            >
+                              <Text
                                   style={{
-                                    flexDirection: "column",
+                                    color: Colors.themeColor,
+                                    fontWeight: "bold",
+                                    marginTop: 20,
+                                    fontSize: 25,
+                                    textAlign: "center",
                                   }}
-                                >
-                                  <View style={{ flexDirection: "row" }}>
-                                    <View
-                                      style={{
-                                        padding: 10,
-                                        width: "100%",
-                                        // alignSelf: "center",
-                                        // alignItems: "center",
-                                        justifyContent: "flex-start",
-                                      }}
+                              >
+                                Rider is Not Available
+                              </Text>
+                            </View>
+                        ) : (
+                            <FlatList
+                                inverted={true}
+                                // nestedScrollEnabled={true}
+                                data={riderData}
+                                style={{
+                                  padding: 10,
+                                  marginTop: Platform.OS == "android" ? 0 : "12%",
+                                }}
+                                showsVerticalScrollIndicator={false}
+                                // keyExtractor={item => item.index_id.toString()}
+                                keyExtractor={({ id }, index) => id}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                        style={{
+                                          width: "95%",
+                                          marginBottom: 15,
+                                          alignSelf: "center",
+                                        }}
+                                        onPress={() => {
+                                          rider(
+                                              item.first_name + " " + item.last_name,
+                                              item.address,
+                                              item.id
+                                          );
+                                        }}
                                     >
-                                      <Text
-                                        style={{
-                                          fontSize: 20,
-                                          fontWeight: "bold",
-                                          color: Colors.darkRedColor,
-                                          // marginTop: "4%",
-                                        }}
-                                      >
-                                        {item.first_name} {item.last_name}
-                                      </Text>
-
-                                      <View
-                                        style={{
-                                          // width: 200,
-                                          flexDirection: "row",
-                                          alignItems: "center",
-
-                                          marginTop: "1.5%",
-                                        }}
-                                      >
-                                        <Text
+                                      <Card
                                           style={{
-                                            fontSize: 14,
-                                            color: "grey",
-                                            width: 240,
+                                            borderRadius: 15,
+                                            padding: 10,
                                           }}
+                                      >
+                                        <View
+                                            style={{
+                                              flexDirection: "column",
+                                            }}
                                         >
-                                          {item.address}
-                                        </Text>
-                                      </View>
-                                    </View>
-                                    <View style={{ alignSelf: "center" }}>
-                                      <Text
-                                        style={{
-                                          marginBottom: 3,
-                                          fontSize: 14,
-                                          alignSelf: "flex-end",
-                                          marginRight: 10,
-                                          fontWeight: "bold",
-                                        }}
-                                      ></Text>
-                                      {/* <Text style={{ fontSize:12,alignSelf:'flex-end', color: "white",backgroundColor:Colors.darkRedColor,borderRadius:10,padding:5,}}>
+                                          <View style={{ flexDirection: "row" }}>
+                                            <View
+                                                style={{
+                                                  padding: 10,
+                                                  width: "100%",
+                                                  // alignSelf: "center",
+                                                  // alignItems: "center",
+                                                  justifyContent: "flex-start",
+                                                }}
+                                            >
+                                              <Text
+                                                  style={{
+                                                    fontSize: 20,
+                                                    fontWeight: "bold",
+                                                    color: Colors.darkRedColor,
+                                                    // marginTop: "4%",
+                                                  }}
+                                              >
+                                                {item.first_name} {item.last_name}
+                                              </Text>
+
+                                              <View
+                                                  style={{
+                                                    // width: 200,
+                                                    flexDirection: "row",
+                                                    alignItems: "center",
+
+                                                    marginTop: "1.5%",
+                                                  }}
+                                              >
+                                                <Text
+                                                    style={{
+                                                      fontSize: 14,
+                                                      color: "grey",
+                                                      width: 240,
+                                                    }}
+                                                >
+                                                  {item.address}
+                                                </Text>
+                                              </View>
+                                            </View>
+                                            <View style={{ alignSelf: "center" }}>
+                                              <Text
+                                                  style={{
+                                                    marginBottom: 3,
+                                                    fontSize: 14,
+                                                    alignSelf: "flex-end",
+                                                    marginRight: 10,
+                                                    fontWeight: "bold",
+                                                  }}
+                                              ></Text>
+                                              {/* <Text style={{ fontSize:12,alignSelf:'flex-end', color: "white",backgroundColor:Colors.darkRedColor,borderRadius:10,padding:5,}}>
   {item.status}
   </Text>  */}
-                                    </View>
-                                  </View>
-                                </View>
-                              </Card>
-                            </TouchableOpacity>
-                          )}
-                        />
-                      )}
-                    </View>
-                  </BottomSheet>
-
-                  <Card
-                    style={{
-                      padding: 10,
-                      marginLeft: 10,
-                      width: "50%",
-                      backgroundColor: "#e6e6e6",
-                      elevation: 0,
-                    }}
-                  >
-                    <TouchableOpacity
-                      // style={{width:"95%",marginBottom:15,alignSelf:'center'}}
-                      // onPress={()=>rider(item.first_name+" "+item.last_name,item.address,item.id)}
-                      onPress={s_toggleBottomNavigationView}
-                    >
-                      <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
-                        Delivery Address:
-                      </Text>
-                      <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                        {businessName}
-                      </Text>
-                      <Text style={{ fontSize: 12, color: "#666666" }}>
-                        {AddressName}
-                      </Text>
-                    </TouchableOpacity>
-                  </Card>
-
-                  <BottomSheet
-                    visible={s_visible}
-                    //setting the visibility state of the bottom shee
-                    onBackButtonPress={s_toggleBottomNavigationView}
-                    //Toggling the visibility state on the click of the back botton
-                    onBackdropPress={s_toggleBottomNavigationView}
-                    //Toggling the visibility state on the clicking out side of the sheet
-                  >
-                    {/*Bottom Sheet inner View*/}
-                    <View style={styles.bottomNavigationView}>
-                      {addressCheck ? (
-                        <View
-                          style={{
-                            justifyContent: "center",
-                            alignItems: "center",
-                            // alignSelf:'center',
-                            marginTop: "60%",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: "black",
-                              fontWeight: "bold",
-                              marginTop: 20,
-                              fontSize: 25,
-                              textAlign: "center",
-                            }}
-                          >
-                            There is no Address Record, Please Add Your Address.
-                          </Text>
-                          <View style={{ marginTop: 40 }}>
-                            <TouchableOpacity
-                              style={styles.uploadButton}
-                              activeOpacity={0.7}
-                              onPress={() => {
-                                s_toggleBottomNavigationView();
-                                navigation.navigate("NewBuisnessDetail");
-                              }}
-                            >
-                              <Text style={styles.uploadButtonText}>
-                                Add New Business
-                              </Text>
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      ) : (
-                        <FlatList
-                          nestedScrollEnabled={true}
-                          data={businessData}
-                          style={{
-                            padding: 10,
-                            marginTop: Platform.OS == "android" ? 0 : "12%",
-                          }}
-                          showsVerticalScrollIndicator={false}
-                          // keyExtractor={item => item.index_id.toString()}
-                          keyExtractor={({ id }, index) => id}
-                          renderItem={({ item }) => (
-                            <View>
-                              <TouchableOpacity
-                                style={{
-                                  width: "95%",
-                                  marginBottom: 15,
-                                  alignSelf: "center",
-                                }}
-                                onPress={() => {
-                                  setSelectedBusinessId(item.id);
-                                  setAddressName(item.address);
-                                  setBusinessName(item.name);
-                                  s_toggleBottomNavigationView();
-                                }}
-                                // onPress = {() => navigation.navigate("PendingDetails" , {Due_Date : item.due_date , Invoice_Total : item.grand_total,Carrier_Name : item.carrier_company ,Load_Type : item.load_type,Origin_City : item.Origin_city,Destination_City : item.Destination_city,Delivery_Option : item.Delivery_Option,Cargo_Amount : item.Cargo_amount,Cargo_Type : item.Cargo_Type,Cargo_Product_Type : item.Cargo_Product_type,Cargo_Product_List : item.Cargo_Product_List,Booking_Status : item.booking_status})}
-                                // onPress={() =>
-                                // navigation.navigate("PaymentHistoryDetail")
-                                // }
-                              >
-                                <Card style={{ borderRadius: 15, padding: 10 }}>
-                                  <View
-                                    style={{
-                                      // borderRadius: 10,
-                                      // backgroundColor: "white",
-                                      // overflow: "hidden",
-
-                                      flexDirection: "column",
-                                    }}
-                                  >
-                                    <View style={{ flexDirection: "row" }}>
-                                      <View
-                                        style={{
-                                          padding: 10,
-                                          width: "100%",
-                                          // alignSelf: "center",
-                                          // alignItems: "center",
-                                          justifyContent: "flex-start",
-                                        }}
-                                      >
-                                        <Text
-                                          style={{
-                                            fontSize: 20,
-                                            fontWeight: "bold",
-                                            color: Colors.darkRedColor,
-                                            // marginTop: "4%",
-                                          }}
-                                        >
-                                          {item.name}
-                                        </Text>
-
-                                        <View
-                                          style={{
-                                            // width: 200,
-                                            flexDirection: "row",
-                                            alignItems: "center",
-
-                                            marginTop: "1.5%",
-                                          }}
-                                        >
-                                          <Text
-                                            style={{
-                                              fontSize: 14,
-                                              color: "grey",
-                                              width: 240,
-                                            }}
-                                          >
-                                            {item.address}
-                                          </Text>
+                                            </View>
+                                          </View>
                                         </View>
-                                      </View>
-                                      <View style={{ alignSelf: "center" }}>
-                                        <Text
+                                      </Card>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        )}
+                      </View>
+                    </BottomSheet>
+
+                    <Card
+                        style={{
+                          padding: 10,
+                          marginLeft: 10,
+                          width: "50%",
+                          backgroundColor: "#e6e6e6",
+                          elevation: 0,
+                        }}
+                    >
+                      <TouchableOpacity
+                          // style={{width:"95%",marginBottom:15,alignSelf:'center'}}
+                          // onPress={()=>rider(item.first_name+" "+item.last_name,item.address,item.id)}
+                          onPress={s_toggleBottomNavigationView}
+                      >
+                        <Text style={{ color: Colors.themeColor, fontSize: 12 }}>
+                          Delivery Address:
+                        </Text>
+                        <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                          {businessName}
+                        </Text>
+                        <Text style={{ fontSize: 12, color: "#666666" }}>
+                          {AddressName}
+                        </Text>
+                      </TouchableOpacity>
+                    </Card>
+
+                    <BottomSheet
+                        visible={s_visible}
+                        //setting the visibility state of the bottom shee
+                        onBackButtonPress={s_toggleBottomNavigationView}
+                        //Toggling the visibility state on the click of the back botton
+                        onBackdropPress={s_toggleBottomNavigationView}
+                        //Toggling the visibility state on the clicking out side of the sheet
+                    >
+                      {/*Bottom Sheet inner View*/}
+                      <View style={styles.bottomNavigationView}>
+                        {addressCheck ? (
+                            <View
+                                style={{
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  // alignSelf:'center',
+                                  marginTop: "60%",
+                                }}
+                            >
+                              <Text
+                                  style={{
+                                    color: "black",
+                                    fontWeight: "bold",
+                                    marginTop: 20,
+                                    fontSize: 25,
+                                    textAlign: "center",
+                                  }}
+                              >
+                                There is no Address Record, Please Add Your Address.
+                              </Text>
+                              <View style={{ marginTop: 40 }}>
+                                <TouchableOpacity
+                                    style={styles.uploadButton}
+                                    activeOpacity={0.7}
+                                    onPress={() => {
+                                      s_toggleBottomNavigationView();
+                                      navigation.navigate("NewBuisnessDetail");
+                                    }}
+                                >
+                                  <Text style={styles.uploadButtonText}>
+                                    Add New Business
+                                  </Text>
+                                </TouchableOpacity>
+                              </View>
+                            </View>
+                        ) : (
+                            <FlatList
+                                nestedScrollEnabled={true}
+                                data={businessData}
+                                style={{
+                                  padding: 10,
+                                  marginTop: Platform.OS == "android" ? 0 : "12%",
+                                }}
+                                showsVerticalScrollIndicator={false}
+                                // keyExtractor={item => item.index_id.toString()}
+                                keyExtractor={({ id }, index) => id}
+                                renderItem={({ item }) => (
+                                    <View>
+                                      <TouchableOpacity
                                           style={{
-                                            marginBottom: 3,
-                                            fontSize: 14,
-                                            alignSelf: "flex-end",
-                                            marginRight: 10,
-                                            fontWeight: "bold",
+                                            width: "95%",
+                                            marginBottom: 15,
+                                            alignSelf: "center",
                                           }}
-                                        ></Text>
-                                        {/* <Text style={{ fontSize:12,alignSelf:'flex-end', color: "white",backgroundColor:Colors.darkRedColor,borderRadius:10,padding:5,}}>
+                                          onPress={() => {
+                                            setSelectedBusinessId(item.id);
+                                            setAddressName(item.address);
+                                            setBusinessName(item.name);
+                                            s_toggleBottomNavigationView();
+                                          }}
+                                          // onPress = {() => navigation.navigate("PendingDetails" , {Due_Date : item.due_date , Invoice_Total : item.grand_total,Carrier_Name : item.carrier_company ,Load_Type : item.load_type,Origin_City : item.Origin_city,Destination_City : item.Destination_city,Delivery_Option : item.Delivery_Option,Cargo_Amount : item.Cargo_amount,Cargo_Type : item.Cargo_Type,Cargo_Product_Type : item.Cargo_Product_type,Cargo_Product_List : item.Cargo_Product_List,Booking_Status : item.booking_status})}
+                                          // onPress={() =>
+                                          // navigation.navigate("PaymentHistoryDetail")
+                                          // }
+                                      >
+                                        <Card style={{ borderRadius: 15, padding: 10 }}>
+                                          <View
+                                              style={{
+                                                // borderRadius: 10,
+                                                // backgroundColor: "white",
+                                                // overflow: "hidden",
+
+                                                flexDirection: "column",
+                                              }}
+                                          >
+                                            <View style={{ flexDirection: "row" }}>
+                                              <View
+                                                  style={{
+                                                    padding: 10,
+                                                    width: "100%",
+                                                    // alignSelf: "center",
+                                                    // alignItems: "center",
+                                                    justifyContent: "flex-start",
+                                                  }}
+                                              >
+                                                <Text
+                                                    style={{
+                                                      fontSize: 20,
+                                                      fontWeight: "bold",
+                                                      color: Colors.darkRedColor,
+                                                      // marginTop: "4%",
+                                                    }}
+                                                >
+                                                  {item.name}
+                                                </Text>
+
+                                                <View
+                                                    style={{
+                                                      // width: 200,
+                                                      flexDirection: "row",
+                                                      alignItems: "center",
+
+                                                      marginTop: "1.5%",
+                                                    }}
+                                                >
+                                                  <Text
+                                                      style={{
+                                                        fontSize: 14,
+                                                        color: "grey",
+                                                        width: 240,
+                                                      }}
+                                                  >
+                                                    {item.address}
+                                                  </Text>
+                                                </View>
+                                              </View>
+                                              <View style={{ alignSelf: "center" }}>
+                                                <Text
+                                                    style={{
+                                                      marginBottom: 3,
+                                                      fontSize: 14,
+                                                      alignSelf: "flex-end",
+                                                      marginRight: 10,
+                                                      fontWeight: "bold",
+                                                    }}
+                                                ></Text>
+                                                {/* <Text style={{ fontSize:12,alignSelf:'flex-end', color: "white",backgroundColor:Colors.darkRedColor,borderRadius:10,padding:5,}}>
   {item.status}
   </Text> */}
-                                      </View>
+                                              </View>
+                                            </View>
+                                          </View>
+                                        </Card>
+                                      </TouchableOpacity>
                                     </View>
-                                  </View>
-                                </Card>
-                              </TouchableOpacity>
-                            </View>
-                          )}
-                        />
-                      )}
-                    </View>
-                  </BottomSheet>
+                                )}
+                            />
+                        )}
+                      </View>
+                    </BottomSheet>
+                  </View>
                 </View>
-              </View>
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                  //   Alert.alert("Modal has been closed.");
-                  setModalVisible(!modalVisible);
-                }}
-              >
-                <View style={styles.centeredView2}>
-                  <View style={styles.modalView2}>
-                    <View
-                      style={{
-                        width: "95%",
-                        height: Platform.OS == "android" ? "95%" : "90%",
-                        backgroundColor: "white",
-                        alignSelf: "center",
-                        borderRadius: 10,
-                        flexDirection: "row",
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 2 },
-                        // shadowOpacity: 0.25,
-                        shadowRadius: 3.84,
-                        elevation: 0,
-                      }}
-                    >
-                      {/* <Card style={{borderRadius:10,width:"90%",height:"90%",alignItems:'center',backgroundColor:"white"}}> */}
-                      <ScrollView
-                        keyboardShouldPersistTaps="always"
-                        showsVerticalScrollIndicator={false}
-                        style={{ padding: 10 }}
-                      >
-                        <View
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                      //   Alert.alert("Modal has been closed.");
+                      setModalVisible(!modalVisible);
+                    }}
+                >
+                  <View style={styles.centeredView2}>
+                    <View style={styles.modalView2}>
+                      <View
                           style={{
+                            width: "95%",
+                            height: Platform.OS == "android" ? "95%" : "90%",
+                            backgroundColor: "white",
                             alignSelf: "center",
-                            padding: "3%",
-                            paddingBottom: "2%",
-                            marginRight: 10,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: Colors.themeColor,
-                              fontSize: 24,
-                              fontWeight: "bold",
-                              textAlign: "center",
-                            }}
-                          >
-                            PREVIEW
-                          </Text>
-                        </View>
-                        <View
-                          style={{
+                            borderRadius: 10,
                             flexDirection: "row",
-                            padding: 5,
-                            alignSelf: "center",
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 2 },
+                            // shadowOpacity: 0.25,
+                            shadowRadius: 3.84,
+                            elevation: 0,
                           }}
+                      >
+                        {/* <Card style={{borderRadius:10,width:"90%",height:"90%",alignItems:'center',backgroundColor:"white"}}> */}
+                        <ScrollView
+                            keyboardShouldPersistTaps="always"
+                            showsVerticalScrollIndicator={false}
+                            style={{ padding: 10 }}
                         >
                           <View
-                            style={{
-                              width: "50%",
-                              backgroundColor: "#e6e6e6",
-                              alignSelf: "center",
-                              borderRadius: 10,
-                              shadowColor: "#000",
-                              shadowOffset: { width: 0, height: 2 },
-                              // shadowOpacity: 0.25,
-                              shadowRadius: 3.84,
-                              elevation: 0,
-                              padding: 10,
-                            }}
+                              style={{
+                                alignSelf: "center",
+                                padding: "3%",
+                                paddingBottom: "2%",
+                                marginRight: 10,
+                              }}
                           >
-                            {/* <Card
+                            <Text
+                                style={{
+                                  color: Colors.themeColor,
+                                  fontSize: 24,
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                }}
+                            >
+                              PREVIEW
+                            </Text>
+                          </View>
+                          <View
+                              style={{
+                                flexDirection: "row",
+                                padding: 5,
+                                alignSelf: "center",
+                              }}
+                          >
+                            <View
+                                style={{
+                                  width: "50%",
+                                  backgroundColor: "#e6e6e6",
+                                  alignSelf: "center",
+                                  borderRadius: 10,
+                                  shadowColor: "#000",
+                                  shadowOffset: { width: 0, height: 2 },
+                                  // shadowOpacity: 0.25,
+                                  shadowRadius: 3.84,
+                                  elevation: 0,
+                                  padding: 10,
+                                }}
+                            >
+                              {/* <Card
                 style={{
                   padding: 10,
                   width: "48%",
@@ -948,955 +945,945 @@ function CreateNewOrder({ navigation, route }) {
                 }}
               > */}
 
-                            <Text
-                              style={{ color: Colors.themeColor, fontSize: 12 }}
-                            >
-                              Delivery Person:
-                            </Text>
-                            {riderId == "" ? (
                               <Text
-                                style={{ fontSize: 16, fontWeight: "bold" }}
+                                  style={{ color: Colors.themeColor, fontSize: 12 }}
                               >
-                                {name}
+                                Delivery Person:
                               </Text>
-                            ) : (
-                              <Text
-                                style={{ fontSize: 16, fontWeight: "bold" }}
-                              >
-                                {riderName}
-                              </Text>
-                            )}
-                            {riderId == "" ? (
-                              <Text style={{ fontSize: 12, color: "#666666" }}>
-                                {address}
-                              </Text>
-                            ) : (
-                              <Text style={{ fontSize: 12, color: "#666666" }}>
-                                {riderAddress}
-                              </Text>
-                            )}
-                          </View>
-                          <View
-                            style={{
-                              width: "50%",
-                              backgroundColor: "#e6e6e6",
-                              alignSelf: "center",
-                              borderRadius: 10,
-                              shadowColor: "#000",
-                              shadowOffset: { width: 0, height: 2 },
-                              // shadowOpacity: 0.25,
-                              shadowRadius: 3.84,
-                              elevation: 0,
-                              padding: 10,
-                              marginLeft: 5,
-                            }}
-                          >
-                            <Text
-                              style={{ color: Colors.themeColor, fontSize: 12 }}
+                              {riderId == "" ? (
+                                  <Text
+                                      style={{ fontSize: 16, fontWeight: "bold" }}
+                                  >
+                                    {name}
+                                  </Text>
+                              ) : (
+                                  <Text
+                                      style={{ fontSize: 16, fontWeight: "bold" }}
+                                  >
+                                    {riderName}
+                                  </Text>
+                              )}
+                              {riderId == "" ? (
+                                  <Text style={{ fontSize: 12, color: "#666666" }}>
+                                    {address}
+                                  </Text>
+                              ) : (
+                                  <Text style={{ fontSize: 12, color: "#666666" }}>
+                                    {riderAddress}
+                                  </Text>
+                              )}
+                            </View>
+                            <View
+                                style={{
+                                  width: "50%",
+                                  backgroundColor: "#e6e6e6",
+                                  alignSelf: "center",
+                                  borderRadius: 10,
+                                  shadowColor: "#000",
+                                  shadowOffset: { width: 0, height: 2 },
+                                  // shadowOpacity: 0.25,
+                                  shadowRadius: 3.84,
+                                  elevation: 0,
+                                  padding: 10,
+                                  marginLeft: 5,
+                                }}
                             >
-                              Delivery Address:
-                            </Text>
-                            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                              {businessName}
-                            </Text>
-                            <Text style={{ fontSize: 12, color: "#666666" }}>
-                              {AddressName}
-                            </Text>
+                              <Text
+                                  style={{ color: Colors.themeColor, fontSize: 12 }}
+                              >
+                                Delivery Address:
+                              </Text>
+                              <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                                {businessName}
+                              </Text>
+                              <Text style={{ fontSize: 12, color: "#666666" }}>
+                                {AddressName}
+                              </Text>
+                            </View>
                           </View>
-                        </View>
 
-                        {/* //-------------- changing in date time UI-----------// */}
-                        {/* {Platform.OS === "ios"? ( */}
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            alignSelf: "center",
-                            padding: 5,
-                            paddingTop: 0,
-                          }}
-                        >
+                          {/* //-------------- changing in date time UI-----------// */}
+                          {/* {Platform.OS === "ios"? ( */}
                           <View
-                            style={{
-                              width: "50%",
-                              backgroundColor: "#e6e6e6",
-                              alignSelf: "center",
-                              borderRadius: 10,
-                              shadowColor: "#000",
-                              shadowOffset: { width: 0, height: 2 },
-                              // shadowOpacity: 0.25,
-                              shadowRadius: 3.84,
-                              elevation: 0,
-                              padding: 10,
-                            }}
+                              style={{
+                                flexDirection: "row",
+                                alignSelf: "center",
+                                padding: 5,
+                                paddingTop: 0,
+                              }}
                           >
-                            <View style={{ padding: 5 }}>
-                              <Text
+                            <View
                                 style={{
-                                  color: Colors.themeColor,
-                                  fontSize: 12,
+                                  width: "50%",
+                                  backgroundColor: "#e6e6e6",
+                                  alignSelf: "center",
+                                  borderRadius: 10,
+                                  shadowColor: "#000",
+                                  shadowOffset: { width: 0, height: 2 },
+                                  // shadowOpacity: 0.25,
+                                  shadowRadius: 3.84,
+                                  elevation: 0,
+                                  padding: 10,
                                 }}
-                              >
-                                Delivery Date:
-                              </Text>
-                              <Text
-                                style={{
-                                  fontSize: 16,
-                                  fontWeight: "bold",
-                                  textAlign: "center",
-                                }}
-                              >
-                                {("0" + showDate.getDate()).slice(-2) +
+                            >
+                              <View style={{ padding: 5 }}>
+                                <Text
+                                    style={{
+                                      color: Colors.themeColor,
+                                      fontSize: 12,
+                                    }}
+                                >
+                                  Delivery Date:
+                                </Text>
+                                <Text
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: "bold",
+                                      textAlign: "center",
+                                    }}
+                                >
+                                  {("0" + showDate.getDate()).slice(-2) +
                                   "-" +
                                   ("0" + (showDate.getMonth() + 1)).slice(-2) +
                                   "-" +
                                   showDate.getFullYear()}
-                              </Text>
+                                </Text>
+                              </View>
+                            </View>
+
+                            <View
+                                style={{
+                                  width: "50%",
+                                  backgroundColor: "#e6e6e6",
+                                  alignSelf: "center",
+                                  borderRadius: 10,
+                                  shadowColor: "#000",
+                                  shadowOffset: { width: 0, height: 2 },
+                                  // shadowOpacity: 0.25,
+                                  shadowRadius: 3.84,
+                                  elevation: 0,
+                                  padding: 10,
+                                  marginLeft: 5,
+                                }}
+                            >
+                              <View style={{ padding: 5 }}>
+                                <Text
+                                    style={{
+                                      color: Colors.themeColor,
+                                      fontSize: 12,
+                                    }}
+                                >
+                                  Delivery Time:
+                                </Text>
+                                <Text
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: "bold",
+                                      textAlign: "center",
+                                    }}
+                                >
+                                  {("0" + showTime.getHours()).slice(-2) +
+                                  ":" +
+                                  ("0" + showTime.getMinutes()).slice(-2)}
+                                </Text>
+                              </View>
                             </View>
                           </View>
 
                           <View
-                            style={{
-                              width: "50%",
-                              backgroundColor: "#e6e6e6",
-                              alignSelf: "center",
-                              borderRadius: 10,
-                              shadowColor: "#000",
-                              shadowOffset: { width: 0, height: 2 },
-                              // shadowOpacity: 0.25,
-                              shadowRadius: 3.84,
-                              elevation: 0,
-                              padding: 10,
-                              marginLeft: 5,
-                            }}
+                              style={{
+                                flexDirection: "row",
+                                marginTop: 10,
+
+
+                              }}
                           >
-                            <View style={{ padding: 5 }}>
-                              <Text
+                            <Text
+                                style={{
+
+                                  color: Colors.themeColor,
+                                  fontWeight: "bold",
+                                  marginLeft: "2%",
+                                  width: "31%",
+                                  textAlign: "left",
+                                }}
+                            >
+                              Product
+                            </Text>
+                            <Text
                                 style={{
                                   color: Colors.themeColor,
-                                  fontSize: 12,
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                  width: "15%",
                                 }}
+                            >
+                              Unit
+                            </Text>
+                            <Text
+                                style={{
+
+                                  color: Colors.themeColor,
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                  width: "24%",
+                                }}
+                            >
+                              Quantity
+                            </Text>
+                            <Text
+                                style={{
+
+                                  color: Colors.themeColor,
+                                  fontWeight: "bold",
+                                  textAlign: "right",
+                                  width: "26%",
+                                }}
+                            >
+                              Last month Avg.Price
+                            </Text>
+                          </View>
+                          <View style={{ padding: 2 }}>
+                            <FlatList
+                                nestedScrollEnabled
+                                data={cardItemsArray}
+                                // sort={true}
+                                // inverted={true}
+                                keyExtractor={(item) => item.id}
+                                renderItem={(itemData) => (
+                                    <PreviewCart
+                                        id={itemData.item.id}
+                                        quantity={itemData.item.quantity}
+                                        total_amount={itemData.item.total_amount}
+                                        name={itemData.item.name}
+                                        unit={itemData.item.unit}
+                                        price={itemData.item.price}
+                                        // addable
+                                        onAddPress={() => {
+                                          dispatch(
+                                              cartActions.addToQtty(itemData.item.id)
+                                          );
+                                        }}
+                                        // deletable
+                                        onRemove={() => {
+                                          dispatch(
+                                              cartActions.removeFromCart(itemData.item.id)
+                                          );
+                                        }}
+                                        // removeable
+                                        onDelete={() => {
+                                          dispatch(
+                                              cartActions.deleteProduct(itemData.item.id)
+                                          );
+                                        }}
+                                    />
+                                )}
+                            />
+                          </View>
+                          <View style={{ flexDirection: "row", width:"100%"}}>
+                            <Text
+                                style={{
+                                  color: Colors.themeColor,
+                                  fontWeight: "bold",
+                                  width: Platform.OS == "android" ? "31%" : "24%",
+                                  marginLeft: "2.5%",
+                                  textAlign: "left",
+
+
+                                }}
+                            >
+                              Total:
+                            </Text>
+                            <Text style={{width: Platform.OS == "android" ? "15%" : "20%",  }}></Text>
+                            <Text
+                                style={{
+                                  color: Colors.themeColor,
+                                  fontWeight: "bold",
+                                  // width: "16%",
+                                  textAlign: "center",
+
+                                  width: Platform.OS == "android" ? "23%" : "24%"
+                                }}
+                            >
+                              {cartTotalPackages}
+                            </Text>
+                            {cartTotalAmount == 0 ? (
+                                <Text
+                                    style={{
+                                      color: Colors.textGreyColor,
+                                      width: Platform.OS == "android" ? "26.5%" : "26.5%",
+
+                                      textAlign: "center",
+                                    }}
+                                >
+                                  £ {cartTotalAmount}
+                                </Text>
+                            ) : (
+                                <Text
+                                    style={{
+                                      color: Colors.textGreyColor,
+                                      width: Platform.OS == "android" ? "26.5%" : "26.5%",
+                                      textAlign: "center",
+
+                                    }}
+                                >
+                                  £ {parseFloat(cartTotalAmount).toFixed(2)}
+                                </Text>
+                            )}
+                          </View>
+
+                          {note == "" ? null : (
+                              <View
+                                  style={{ alignSelf: "center", paddingTop: "20%" }}
                               >
-                                Delivery Time:
+                                <Text>Note: {note}</Text>
+                              </View>
+                          )}
+
+                          <View style={{ marginTop: "10%", alignSelf: "center" }}>
+                            <Pressable
+                                style={styles.signupButton1}
+                                activeOpacity={0.7}
+                                onPress={addOrderBox}
+                            >
+                              {loading ? (
+                                  <Spinner color={"white"} size={20} />
+                              ) : (
+                                  <Text style={styles.signupButtonText1}>
+                                    CONFIRM
+                                  </Text>
+                              )}
+                            </Pressable>
+                            <Pressable
+                                style={{
+                                  ...styles.bu_signupButton1,
+                                  borderWidth: 1,
+                                  marginBottom: "10%",
+                                }}
+                                activeOpacity={0.7}
+                                onPress={() => setModalVisible(!modalVisible)}
+                            >
+                              <Text style={styles.bu_signupButtonText1}>
+                                CANCEL
                               </Text>
-                              <Text
+                            </Pressable>
+                          </View>
+                        </ScrollView>
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
+
+                <View style={{ height: "70%", marginTop: 40 }}>
+                  <Card
+                      style={{
+                        padding: 10,
+                        width: "100%",
+                        backgroundColor: "#e6e6e6",
+                        elevation: 0,
+                        //marginBottom:'15%'
+                      }}
+                  >
+                    <Text
+                        style={{
+                          alignSelf: "center",
+                          flexDirection: "row",
+                          fontSize: 14,
+                          // fontWeight: "bold",
+                        }}
+                    >
+                      Order Date
+                    </Text>
+                    <Text
+                        style={{
+                          alignSelf: "center",
+                          flexDirection: "row",
+                          fontSize: 15,
+                          fontWeight: "bold",
+                          color: Colors.themeColor,
+                        }}
+                    >
+                      {currentDate}
+                    </Text>
+
+                    {/* -------------------------    DATE TIME PICKER        ---------------------- */}
+
+                    <View
+                        style={{
+                          flexDirection: "row",
+                          alignSelf: "center",
+                          padding: 5,
+                        }}
+                    >
+                      {/* //-------------------------------------Delivery Date ----------------------------// */}
+                      <Card
+                          style={{
+                            padding: 5,
+                            // marginLeft: 10,
+                            width: "50%",
+                            backgroundColor: "#F2F2F2",
+                            elevation: 0,
+                          }}
+                      >
+                        <View style={{ padding: 5 }}>
+                          <TouchableOpacity onPress={showDatePicker}>
+                            <Text
+                                style={{ color: Colors.themeColor, fontSize: 12 }}
+                            >
+                              Delivery Date
+                            </Text>
+
+                            <DateTimePickerModal
+                                isVisible={isDatePickerVisible}
+                                minimumDate={new Date()}
+                                mode="date"
+                                onConfirm={handleConfirm}
+                                onCancel={hideDatePicker}
+                            />
+                            <Text
                                 style={{
                                   fontSize: 16,
                                   fontWeight: "bold",
                                   textAlign: "center",
                                 }}
-                              >
-                                {("0" + showTime.getHours()).slice(-2) +
-                                  ":" +
-                                  ("0" + showTime.getMinutes()).slice(-2)}
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            marginTop: 10,
-
-
-                          }}
-                        >
-                          <Text
-                            style={{
-
-                              color: Colors.themeColor,
-                              fontWeight: "bold",
-                              marginLeft: "2%",
-                              width: "31%",
-                              textAlign: "left",
-                            }}
-                          >
-                            Product
-                          </Text>
-                          <Text
-                            style={{
-                              color: Colors.themeColor,
-                              fontWeight: "bold",
-                              textAlign: "center",
-                              width: "15%",
-                            }}
-                          >
-                            Unit
-                          </Text>
-                          <Text
-                            style={{
-
-                              color: Colors.themeColor,
-                              fontWeight: "bold",
-                              textAlign: "center",
-                              width: "24%",
-                            }}
-                          >
-                            Quantity
-                          </Text>
-                          <Text
-                            style={{
-
-                              color: Colors.themeColor,
-                              fontWeight: "bold",
-                              textAlign: "right",
-                              width: "26%",
-                            }}
-                          >
-                            Last month Avg.Price
-                          </Text>
-                        </View>
-                        <View style={{ padding: 2, }}>
-                          <FlatList
-                            nestedScrollEnabled
-                            data={cardItemsArray}
-                            sort={true}
-                            keyExtractor={(item) => item.id}
-                            renderItem={(itemData) => (
-                              <PreviewCart
-                                id={itemData.item.id}
-                                quantity={itemData.item.quantity}
-                                total_amount={itemData.item.total_amount}
-                                name={itemData.item.name}
-                                unit={itemData.item.unit}
-                                price={itemData.item.price}
-                                // addable
-                                onAddPress={() => {
-                                  dispatch(
-                                    cartActions.addToQtty(itemData.item.id)
-                                  );
-                                }}
-                                // deletable
-                                onRemove={() => {
-                                  dispatch(
-                                    cartActions.removeFromCart(itemData.item.id)
-                                  );
-                                }}
-                                // removeable
-                                onDelete={() => {
-                                  dispatch(
-                                    cartActions.deleteProduct(itemData.item.id)
-                                  );
-                                }}
-                              />
-                            )}
-                          />
-                        </View>
-                        <View style={{ flexDirection: "row", width:"100%" ,}}>
-                          <Text
-                            style={{
-                              color: Colors.themeColor,
-                              fontWeight: "bold",
-                              width: Platform.OS == "android" ? "31%" : "24%",
-                              marginLeft: "2.5%",
-                              textAlign: "left",
-                              // borderWidth:1
-
-                            }}
-                          >
-                            Total:
-                          </Text>
-                          <Text style={{width: Platform.OS == "android" ? "15%" : "20%",  }}></Text>
-                          <Text
-                            style={{
-                              color: Colors.themeColor,
-                              fontWeight: "bold",
-                             // width: "16%",
-                              textAlign: "center",
-
-                              width: Platform.OS == "android" ? "25%" : "24%"
-                              ,
-
-                            }}
-                          >
-                            {cartTotalPackages}
-                          </Text>
-                          {cartTotalAmount == 0 ? (
-                            <Text
-                              style={{
-                                color: Colors.textGreyColor,
-                                width: Platform.OS == "android" ? "26.5%" : "26.5%",
-                                // borderWidth:1,
-
-                                textAlign: "center",
-                              }}
                             >
-                              £ {cartTotalAmount}
-                            </Text>
-                          ) : (
-                            <Text
-                              style={{
-                                color: Colors.textGreyColor,
-                                width: Platform.OS == "android" ? "26.5%" : "25%",
-                                textAlign: "center",
-                                paddingLeft:Platform.OS == "android" ? "3%" : "0",
-                                paddingRight:Platform.OS == "android" ? "0" : "3",
-
-                              }}
-                            >
-                              £ {parseFloat(cartTotalAmount).toFixed(2)}
-                            </Text>
-                          )}
-                        </View>
-
-                        {note == "" ? null : (
-                          <View
-                            style={{ alignSelf: "center", paddingTop: "20%" }}
-                          >
-                            <Text>Note: {note}</Text>
-                          </View>
-                        )}
-
-                        <View style={{ marginTop: "10%", alignSelf: "center" }}>
-                          <Pressable
-                            style={styles.signupButton1}
-                            activeOpacity={0.7}
-                            onPress={addOrderBox}
-                          >
-                            {loading ? (
-                              <Spinner color={"white"} size={20} />
-                            ) : (
-                              <Text style={styles.signupButtonText1}>
-                                CONFIRM
-                              </Text>
-                            )}
-                          </Pressable>
-                          <Pressable
-                            style={{
-                              ...styles.bu_signupButton1,
-                              borderWidth: 1,
-                              marginBottom: "10%",
-                            }}
-                            activeOpacity={0.7}
-                            onPress={() => setModalVisible(!modalVisible)}
-                          >
-                            <Text style={styles.bu_signupButtonText1}>
-                              CANCEL
-                            </Text>
-                          </Pressable>
-                        </View>
-                      </ScrollView>
-                    </View>
-                  </View>
-                </View>
-              </Modal>
-
-              <View style={{ height: "70%", marginTop: 40 }}>
-                <Card
-                  style={{
-                    padding: 10,
-                    width: "100%",
-                    backgroundColor: "#e6e6e6",
-                    elevation: 0,
-                    //marginBottom:'15%'
-                  }}
-                >
-                  <Text
-                    style={{
-                      alignSelf: "center",
-                      flexDirection: "row",
-                      fontSize: 14,
-                      // fontWeight: "bold",
-                    }}
-                  >
-                    Order Date
-                  </Text>
-                  <Text
-                    style={{
-                      alignSelf: "center",
-                      flexDirection: "row",
-                      fontSize: 15,
-                      fontWeight: "bold",
-                      color: Colors.themeColor,
-                    }}
-                  >
-                    {currentDate}
-                  </Text>
-
-                  {/* -------------------------    DATE TIME PICKER        ---------------------- */}
-
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignSelf: "center",
-                      padding: 5,
-                    }}
-                  >
-                    {/* //-------------------------------------Delivery Date ----------------------------// */}
-                    <Card
-                      style={{
-                        padding: 5,
-                        // marginLeft: 10,
-                        width: "50%",
-                        backgroundColor: "#F2F2F2",
-                        elevation: 0,
-                      }}
-                    >
-                      <View style={{ padding: 5 }}>
-                        <TouchableOpacity onPress={showDatePicker}>
-                          <Text
-                            style={{ color: Colors.themeColor, fontSize: 12 }}
-                          >
-                            Delivery Date
-                          </Text>
-
-                          <DateTimePickerModal
-                            isVisible={isDatePickerVisible}
-                            minimumDate={new Date()}
-                            mode="date"
-                            onConfirm={handleConfirm}
-                            onCancel={hideDatePicker}
-                          />
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              fontWeight: "bold",
-                              textAlign: "center",
-                            }}
-                          >
-                            {("0" + showDate.getDate()).slice(-2) +
+                              {("0" + showDate.getDate()).slice(-2) +
                               "-" +
                               ("0" + (showDate.getMonth() + 1)).slice(-2) +
                               "-" +
                               showDate.getFullYear()}
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    </Card>
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </Card>
 
-                    {/* //-------------------------------------Delivery Time ----------------------------// */}
-                    <Card
-                      style={{
-                        padding: 5,
-                        marginLeft: 10,
-                        width: "50%",
-                        backgroundColor: "#F2F2F2",
-                        elevation: 0,
-                      }}
-                    >
-                      <View style={{ padding: 5 }}>
-                        <TouchableOpacity onPress={showTimePickers}>
-                          <Text
-                            style={{ color: Colors.themeColor, fontSize: 12 }}
-                          >
-                            Delivery Time
-                          </Text>
+                      {/* //-------------------------------------Delivery Time ----------------------------// */}
+                      <Card
+                          style={{
+                            padding: 5,
+                            marginLeft: 10,
+                            width: "50%",
+                            backgroundColor: "#F2F2F2",
+                            elevation: 0,
+                          }}
+                      >
+                        <View style={{ padding: 5 }}>
+                          <TouchableOpacity onPress={showTimePickers}>
+                            <Text
+                                style={{ color: Colors.themeColor, fontSize: 12 }}
+                            >
+                              Delivery Time
+                            </Text>
 
-                          <DateTimePickerModal
-                            minimumDate={new Date().setTime(CurrentTime)}
-                            // minimumTime={new Date(CurrentTime)}
-                            is24Hour={true}
-                            // locale='en_GB'
-                            isVisible={isTimePickerVisible}
-                            mode="time"
-                            onConfirm={handleConfirmTime}
-                            onCancel={hideDatePickerTime}
-                          />
+                            <DateTimePickerModal
+                                //minimumDate={new Date()}
+                                isVisible={isTimePickerVisible}
+                                mode="time"
+                                onConfirm={handleConfirmTime}
+                                onCancel={hideDatePickerTime}
+                            />
 
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              fontWeight: "bold",
-                              textAlign: "center",
-                            }}
-                          >
-                            {("0" + showTime.getHours()).slice(-2) +
+                            <Text
+                                style={{
+                                  fontSize: 16,
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                }}
+                            >
+                              {("0" + showTime.getHours()).slice(-2) +
                               ":" +
                               ("0" + showTime.getMinutes()).slice(-2)}
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    </Card>
-                  </View>
-
-                  <Text
-                    style={{
-                      color: Colors.themeColor,
-                      fontSize: 14,
-                      fontWeight: "bold",
-                      alignSelf: "center",
-                      marginTop: 10,
-                    }}
-                  >
-                    Add Item and Quantity Here:
-                  </Text>
-
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      marginTop: "5%",
-                      width: "100%",
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: Platform.OS == "android" ? "30%" : "30%",
-                      }}
-                    >
-                      <Autocomplete
-                        // onFocus={() => {scrollView.props.scrollToEnd({animated: true})}}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        flatListProps={{ nestedScrollEnabled: true }}
-                        // containerStyle={{}}
-
-                        listContainerStyle={{
-                          backgroundColor: "#e6e6e6",
-                          width: 250,
-                          left: 0,
-                          position: "absolute",
-                          right: 0,
-                          top: 50,
-                          zIndex: 1,
-                          // height: Platform.OS == "android" ? 150 :150
-                        }}
-                        listStyle={{
-                          borderColor: "#e6e6e6",
-                          height: Platform.OS == "android" ? 150 : 150,
-                        }}
-                        style={{
-                          // backgroundColor: "#e6e6e6",
-                          // paddingBottom: 7,
-                          color: "black",
-                          width: "100%",
-                          //padding:selectedValue != "" ? 0 : 20
-                          //padding:cardItemsArray != "" ? 0 : 20 ,
-                          //padding:filteredProducts != "" ? 0 : 20
-                          paddingRight: 2,
-                          //alignItems:'center'
-                        }}
-                        inputContainerStyle={{
-                          backgroundColor: "#F2F2F2",
-                          height: Platform.OS == "android" ? 45 : 40,
-                          justifyContent: "center",
-                          //paddingRight:10
-                          //alignItems:'flex-end'
-                          //alignContent:'flex-end',
-                          // marginRight:5
-                          //borderColor: "#e6e6e6",
-                          //borderBottomColor: Colors.textGreyColor,
-                        }}
-                        //data to show in suggestion
-                        data={filteredProducts}
-                        //default value if you want to set something in input
-                        defaultValue={
-                          JSON.stringify(selectedValue) === "{}"
-                            ? ""
-                            : selectedValue.name
-                        }
-                        // onchange of the text changing the state of the query
-                        // which will trigger the findFilm method
-                        // to show the suggestions
-                        onChangeText={(text) => findName(text)}
-                        placeholder="      Add Item"
-                        //placeholder="Add Item"
-                        placeholderTextColor="black"
-                        renderItem={({ item }) => (
-                          <ScrollView keyboardShouldPersistTaps="always">
-                            <TouchableOpacity
-                              // style={{paddingHorizontal:10}}
-
-                              onPress={() => {
-                                setSelectedValue(item);
-                                setFilteredProducts([]);
-                                setUnitCheck(true);
-                              }}
-                            >
-                              <Text style={styles.itemText}>
-                                {item.name} ({item.unit})
-                              </Text>
-                            </TouchableOpacity>
-                          </ScrollView>
-                        )}
-                      />
-                    </View>
-
-                    <View style={{ width: "20%", height: 38, paddingTop: 5 }}>
-                      {unitCheck ? (
-                        <Text
-                          style={{
-                            color: Colors.textGreyColor,
-                            marginLeft: 1,
-                            padding: 10,
-                            paddingBottom: 12.5,
-                          }}
-                        >
-                          {selectedValue.unit}
-                        </Text>
-                      ) : (
-                        <Text
-                          style={{
-                            color: Colors.textGreyColor,
-                            marginLeft: 1,
-                            padding: 10,
-                            //borderWidth:1,
-                            paddingBottom: 12.5,
-                          }}
-                        >
-                          Unit
-                        </Text>
-                      )}
-                    </View>
-                    <View
-                      style={{
-                        width: "15%",
-                        paddingTop: 0,
-                        //padding:cardItemsArray != "" ? 0 : 10
-                        paddingLeft: "3%",
-                      }}
-                    >
-                      <TextInput
-                        style={styles.o_inputArea}
-                        placeholder=" Qty"
-                        autoCapitalize="none"
-                        //keyboardType="numeric"
-                        // keyboardType="numbers-and-punctuation"
-                        keyboardType={
-                          Platform.OS == "android"
-                            ? "numeric"
-                            : "numbers-and-punctuation"
-                        }
-                        maxLength={3}
-                        placeholderTextColor="black"
-                        value={qtty}
-                        required={true}
-                        onChangeText={(value) => setQtty(value)}
-                        initialValue=""
-                      />
-                    </View>
-
-                    {unitCheck ? (
-                      <View style={{ width: "28%", paddingTop: 5 }}>
-                        <Text
-                          style={{
-                            color: Colors.textGreyColor,
-                            padding: 10,
-                            marginLeft: 1,
-                            paddingBottom: 12.5,
-                          }}
-                        >
-                          £ {selectedValue.avg_price}
-                        </Text>
-                      </View>
-                    ) : (
-                      <View style={{ width: "40%", paddingTop: 0 }}>
-                        <Text
-                          style={{
-                            color: Colors.textGreyColor,
-                            padding: 10,
-                            paddingTop: 0,
-                            marginLeft: 1,
-                            paddingBottom: 12.5,
-                          }}
-                        >
-                          Last month Avg.Price
-                        </Text>
-                      </View>
-                    )}
-
-                    <View
-                      style={{
-                        height: 30,
-                        width: "6%",
-                        alignSelf: "center",
-                        justifyContent: "center",
-                        marginLeft: 0,
-                      }}
-                    >
-                      {unitCheck ? (
-                        <TouchableOpacity
-                          activeOpacity={0.8}
-                          style={styles.AddButton}
-                          onPress={() => {
-                            const userExists = CheckId.some(
-                              (item) => item.id === selectedValue.id
-                            );
-                            console.log(
-                              "statuuuuuuuuuuuuuuuuuuuuuuus",
-                              userExists
-                            );
-                            if (userExists) {
-                              // dropDownAlertRef.alertWithType('error', '', "Already Inserted");
-                              // console.log('status',status);
-                              alert("Already inserted");
-                            } else {
-                              if (qtty == "") {
-                                // dropDownAlertRef.alertWithType('error', '', "Please Enter Quantity.");
-
-                                alert("Please enter quantity.");
-                              } else if (reg.test(qtty) === false) {
-                                alert("Invalid quantity");
-                                setQtty("");
-                                return false;
-                              } else if (qtty == 0) {
-                                alert("Invalid quantity");
-                                setQtty("");
-                              } else {
-                                dispatch(
-                                  cartActions.addToCart(selectedValue, qtty)
-                                ),
-                                  setCheckRow(true),
-                                  setSelectedValue([{}]),
-                                  setUnitCheck(false),
-                                  setQtty("");
-                              }
-                            }
-                          }}
-                        >
-                          <Text style={styles.AddButtonText}>ADD</Text>
-                          {/* <AntDesign name="pluscircleo" color={Colors.themeColor} size={20} style={{padding:10}} /> */}
-                        </TouchableOpacity>
-                      ) : null}
-                    </View>
-
-                    {/* <View style={styles.container}> */}
-
-                    {/* </View> */}
-                  </View>
-
-                  {/* </Card> */}
-                  {/* </View> */}
-
-                  {/* <View style={{padding:10,height:'60%',marginTop:30}}> */}
-                  {/* <Card style={{elevation:0 ,backgroundColor:'#E6E6E6'}}> */}
-                  {/* <Text style={styles.verticleLine}></Text> */}
-
-                  <View
-                    style={{
-                      borderRadius: 10,
-                      backgroundColor: "#F2F2F2",
-                      padding: 10,
-                      marginTop: 20,
-                      zIndex: -1,
-                    }}
-                  >
-                    <View
-                      style={{
-                        height: "60%",
-                        backgroundColor: "#F2F2F2",
-                        alignSelf: "center",
-                        borderRadius: 10,
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 2 },
-                        // shadowOpacity: 0.25,
-                        shadowRadius: 3.84,
-                        elevation: 0,
-                        padding: 10,
-
-                        // marginLeft:5
-                      }}
-                    >
-                      <View style={{}}>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            marginTop: 10,
-                            //justifyContent: "center",
-                            width: "100%",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: Colors.themeColor,
-                              width: "30%",
-                              textAlign: "center",
-
-                              fontSize: 14,
-                            }}
-                          >
-                            Product
-                          </Text>
-                          <Text
-                            style={{
-                              color: Colors.textGreyColor,
-                              width: "20%",
-                              textAlign: "center",
-
-                              fontSize: 14,
-                            }}
-                          >
-                            Unit
-                          </Text>
-                          <Text
-                            style={{
-                              color: Colors.themeColor,
-                              width: "20%",
-
-                              fontSize: 14,
-                              textAlign: "center",
-                            }}
-                          >
-                            Quantity
-                          </Text>
-                          <Text
-                            style={{
-                              color: Colors.textGreyColor,
-                              width: "30%",
-
-                              fontSize: 14,
-                              textAlign: "center",
-                            }}
-                          >
-                            Last month Avg.Price
-                          </Text>
-
-                          {/* <SafeAreaView> */}
-                          {/* <View style={styles.container}> */}
-
-                          {/* </View> */}
-                          {/* </SafeAreaView> */}
+                            </Text>
+                          </TouchableOpacity>
                         </View>
-                        <View style={{}}>
-                          {/* <ScrollView nestedScrollEnabled > */}
-                          {checkRow ? (
-                            <FlatList
-                              nestedScrollEnabled
-                              // style={{flexDirection:"column-reverse"}}
-                              keyboardShouldPersistTaps={"handled"}
-                              contentContainerStyle={{ paddingBottom: 90 }}
-                              data={cardItemsArray}
-                              // keyExtractor={(item) => item.id}
-                              renderItem={(itemData) => (
-                                // <Text style={{fontSize:30,backgroundColor:"green",flex:1}}>{JSON.stringify(itemData)}</Text>
-                                // <View style={{flexDirection:"column-reverse"}}>
-                                <CartItem
-                                  id={itemData.item.id}
-                                  quantity={itemData.item.quantity}
-                                  total_amount={itemData.item.total_amount}
-                                  name={itemData.item.name}
-                                  unit={itemData.item.unit}
-                                  price={itemData.item.price}
-                                  // addable
-                                  onAddPress={() => {
-                                    dispatch(
-                                      cartActions.addToQtty(itemData.item.id)
-                                    );
-                                  }}
-                                  // deletable
-                                  onRemove={() => {
-                                    dispatch(
-                                      cartActions.removeFromCart(
-                                        itemData.item.id
-                                      )
-                                    );
-                                  }}
-                                  // removeable
-                                  onDelete={() => {
-                                    dispatch(
-                                      cartActions.deleteProduct(
-                                        itemData.item.id
-                                      )
-                                    );
-                                  }}
-                                />
-                                // </View>
-                              )}
-                            />
-                          ) : null}
-                          {/* </ScrollView> */}
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              paddingTop: 10,
-                              paddingBottom: 0,
-                              borderBottomWidth: 0.5,
-                              borderBottomColor: "gray",
-                              // borderWidth:1
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: Colors.themeColor,
-                                fontWeight: "bold",
-                                width: Platform.OS == "android" ? "30%" : "30%",
-                                textAlign: "center",
-                              }}
-                            >
-                              Total:
-                            </Text>
-                            <Text
-                              style={{
-                                width: Platform.OS == "android" ? "20%" : "20%",
-                              }}
-                            >
+                      </Card>
+                    </View>
 
-                            </Text>
+                    <Text
+                        style={{
+                          color: Colors.themeColor,
+                          fontSize: 14,
+                          fontWeight: "bold",
+                          alignSelf: "center",
+                          marginTop: 10,
+                        }}
+                    >
+                      Add Item and Quantity Here:
+                    </Text>
+
+                    <View
+                        style={{
+                          flexDirection: "row",
+                          marginTop: "5%",
+                          width: "100%",
+                        }}
+                    >
+                      <View
+                          style={{
+                            width: Platform.OS == "android" ? "30%" : "30%",
+                          }}
+                      >
+                        <Autocomplete
+                            // onFocus={() => {scrollView.props.scrollToEnd({animated: true})}}
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            flatListProps={{ nestedScrollEnabled: true }}
+                            // containerStyle={{}}
+
+                            listContainerStyle={{
+                              backgroundColor: "#e6e6e6",
+                              width: 250,
+                              left: 0,
+                              position: "absolute",
+                              right: 0,
+                              top: 50,
+                              zIndex: 1,
+                              // height: Platform.OS == "android" ? 150 :150
+                            }}
+                            listStyle={{
+                              borderColor: "#e6e6e6",
+                              height: Platform.OS == "android" ? 150 : 150,
+                            }}
+                            style={{
+                              // backgroundColor: "#e6e6e6",
+                              // paddingBottom: 7,
+                              color: "black",
+                              width: "100%",
+                              //padding:selectedValue != "" ? 0 : 20
+                              //padding:cardItemsArray != "" ? 0 : 20 ,
+                              //padding:filteredProducts != "" ? 0 : 20
+                              paddingRight: 2,
+                              //alignItems:'center'
+                            }}
+                            inputContainerStyle={{
+                              backgroundColor: "#F2F2F2",
+                              height: Platform.OS == "android" ? 45 : 40,
+                              justifyContent: "center",
+                              //paddingRight:10
+                              //alignItems:'flex-end'
+                              //alignContent:'flex-end',
+                              // marginRight:5
+                              //borderColor: "#e6e6e6",
+                              //borderBottomColor: Colors.textGreyColor,
+                            }}
+                            //data to show in suggestion
+                            data={filteredProducts}
+                            //default value if you want to set something in input
+                            defaultValue={
+                              JSON.stringify(selectedValue) === "{}"
+                                  ? ""
+                                  : selectedValue.name
+                            }
+                            // onchange of the text changing the state of the query
+                            // which will trigger the findFilm method
+                            // to show the suggestions
+                            onChangeText={(text) => findName(text)}
+                            placeholder="      Add Item"
+                            //placeholder="Add Item"
+                            placeholderTextColor="black"
+                            renderItem={({ item }) => (
+                                <ScrollView keyboardShouldPersistTaps="always">
+                                  <TouchableOpacity
+                                      // style={{paddingHorizontal:10}}
+
+                                      onPress={() => {
+                                        setSelectedValue(item);
+                                        setFilteredProducts([]);
+                                        setUnitCheck(true);
+                                      }}
+                                  >
+                                    <Text style={styles.itemText}>
+                                      {item.name} ({item.unit})
+                                    </Text>
+                                  </TouchableOpacity>
+                                </ScrollView>
+                            )}
+                        />
+                      </View>
+
+                      <View style={{ width: "20%", height: 38, paddingTop: 5 }}>
+                        {unitCheck ? (
                             <Text
-                              style={{
-                                color: Colors.themeColor,
-                                fontWeight: "bold",
-                                width: "20%",
-                                textAlign: "center",
-                                // borderWidth:1
-                              }}
-                            >
-                              {cartTotalPackages}
-                            </Text>
-                            {cartTotalAmount == 0 ? (
-                              <Text
                                 style={{
                                   color: Colors.textGreyColor,
-                                  width:
-                                    Platform.OS == "android" ? "30%" : "30%",
-                                  textAlign: "center",
-                                  // borderWidth:1,
-                                  paddingLeft:'6%'
+                                  marginLeft: 1,
+                                  padding: 10,
+                                  paddingBottom: 12.5,
                                 }}
-                              >
-                                £ {cartTotalAmount}
-                              </Text>
-                            ) : (
-                              <Text
+                            >
+                              {selectedValue.unit}
+                            </Text>
+                        ) : (
+                            <Text
+                                style={{
+                                  color: Colors.textGreyColor,
+                                  marginLeft: 1,
+                                  padding: 10,
+                                  //borderWidth:1,
+                                  paddingBottom: 12.5,
+                                }}
+                            >
+                              Unit
+                            </Text>
+                        )}
+                      </View>
+                      <View
+                          style={{
+                            width: "15%",
+                            paddingTop: 0,
+                            //padding:cardItemsArray != "" ? 0 : 10
+                            paddingLeft: "3%",
+                          }}
+                      >
+                        <TextInput
+                            style={styles.o_inputArea}
+                            placeholder=" Qty"
+                            autoCapitalize="none"
+                            //keyboardType="numeric"
+                            // keyboardType="numbers-and-punctuation"
+                            keyboardType={
+                              Platform.OS == "android"
+                                  ? "numeric"
+                                  : "numbers-and-punctuation"
+                            }
+                            maxLength={3}
+                            placeholderTextColor="black"
+                            value={qtty}
+                            required={true}
+                            onChangeText={(value) => setQtty(value)}
+                            initialValue=""
+                        />
+                      </View>
+
+                      {unitCheck ? (
+                          <View style={{ width: "28%", paddingTop: 5 }}>
+                            <Text
+                                style={{
+                                  color: Colors.textGreyColor,
+                                  padding: 10,
+                                  marginLeft: 1,
+                                  paddingBottom: 12.5,
+                                }}
+                            >
+                              £ {selectedValue.avg_price}
+                            </Text>
+                          </View>
+                      ) : (
+                          <View style={{ width: "40%", paddingTop: 0 }}>
+                            <Text
+                                style={{
+                                  color: Colors.textGreyColor,
+                                  padding: 10,
+                                  paddingTop: 0,
+                                  marginLeft: 1,
+                                  paddingBottom: 12.5,
+                                }}
+                            >
+                              Last month Avg.Price
+                            </Text>
+                          </View>
+                      )}
+
+                      <View
+                          style={{
+                            height: 30,
+                            width: "6%",
+                            alignSelf: "center",
+                            justifyContent: "center",
+                            marginLeft: 0,
+                          }}
+                      >
+                        {unitCheck ? (
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                style={styles.AddButton}
+                                onPress={() => {
+                                  const userExists = CheckId.some(
+                                      (item) => item.id === selectedValue.id
+                                  );
+                                  console.log(
+                                      "statuuuuuuuuuuuuuuuuuuuuuuus",
+                                      userExists
+                                  );
+                                  if (userExists) {
+                                    // dropDownAlertRef.alertWithType('error', '', "Already Inserted");
+                                    // console.log('status',status);
+                                    alert("Already inserted");
+                                  } else {
+                                    if (qtty == "") {
+                                      // dropDownAlertRef.alertWithType('error', '', "Please Enter Quantity.");
+
+                                      alert("Please enter quantity.");
+                                    } else if (reg.test(qtty) === false) {
+                                      alert("Invalid quantity");
+                                      setQtty("");
+                                      return false;
+                                    } else if (qtty == 0) {
+                                      alert("Invalid quantity");
+                                      setQtty("");
+                                    } else {
+                                      dispatch(
+                                          cartActions.addToCart(selectedValue, qtty)
+                                      ),
+                                          setCheckRow(true),
+                                          setSelectedValue([{}]),
+                                          setUnitCheck(false),
+                                          setQtty("");
+                                    }
+                                  }
+                                }}
+                            >
+                              <Text style={styles.AddButtonText}>ADD</Text>
+                              {/* <AntDesign name="pluscircleo" color={Colors.themeColor} size={20} style={{padding:10}} /> */}
+                            </TouchableOpacity>
+                        ) : null}
+                      </View>
+
+                      {/* <View style={styles.container}> */}
+
+                      {/* </View> */}
+                    </View>
+
+                    {/* </Card> */}
+                    {/* </View> */}
+
+                    {/* <View style={{padding:10,height:'60%',marginTop:30}}> */}
+                    {/* <Card style={{elevation:0 ,backgroundColor:'#E6E6E6'}}> */}
+                    {/* <Text style={styles.verticleLine}></Text> */}
+
+                    <View
+                        style={{
+                          borderRadius: 10,
+                          backgroundColor: "#F2F2F2",
+                          padding: 10,
+                          marginTop: 20,
+                          zIndex: -1,
+                        }}
+                    >
+                      <View
+                          style={{
+                            height: "60%",
+                            backgroundColor: "#F2F2F2",
+                            alignSelf: "center",
+                            borderRadius: 10,
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 2 },
+                            // shadowOpacity: 0.25,
+                            shadowRadius: 3.84,
+                            elevation: 0,
+                            padding: 10,
+
+                            // marginLeft:5
+                          }}
+                      >
+                        <View style={{}}>
+                          <View
+                              style={{
+                                flexDirection: "row",
+                                marginTop: 10,
+                                //justifyContent: "center",
+                                width: "100%",
+                              }}
+                          >
+                            <Text
+                                style={{
+                                  color: Colors.themeColor,
+                                  width: "30%",
+                                  textAlign: "center",
+
+                                  fontSize: 14,
+                                }}
+                            >
+                              Product
+                            </Text>
+                            <Text
+                                style={{
+                                  color: Colors.textGreyColor,
+                                  width: "20%",
+                                  textAlign: "center",
+
+                                  fontSize: 14,
+                                }}
+                            >
+                              Unit
+                            </Text>
+                            <Text
+                                style={{
+                                  color: Colors.themeColor,
+                                  width: "20%",
+
+                                  fontSize: 14,
+                                  textAlign: "center",
+                                }}
+                            >
+                              Quantity
+                            </Text>
+                            <Text
                                 style={{
                                   color: Colors.textGreyColor,
                                   width: "30%",
+
+                                  fontSize: 14,
                                   textAlign: "center",
                                 }}
+                            >
+                              Last month Avg.Price
+                            </Text>
+
+                            {/* <SafeAreaView> */}
+                            {/* <View style={styles.container}> */}
+
+                            {/* </View> */}
+                            {/* </SafeAreaView> */}
+                          </View>
+                          <View style={{}}>
+                            {/* <ScrollView nestedScrollEnabled > */}
+                            {checkRow ? (
+                                <FlatList
+                                    nestedScrollEnabled
+                                    // inverted
+                                    // style={{flexDirection:"column-reverse"}}
+                                    keyboardShouldPersistTaps={"handled"}
+                                    contentContainerStyle={{ paddingBottom: 90 }}
+                                    data={cardItemsArray}
+                                    // sort={true}
+                                    // inverted={true}
+                                    keyExtractor={(item) => item.id}
+                                    renderItem={(itemData) => (
+                                        // <Text style={{fontSize:30,backgroundColor:"green",flex:1}}>{JSON.stringify(itemData)}</Text>
+                                        // <View style={{flexDirection:"column-reverse"}}>
+                                        <CartItem
+                                            id={itemData.item.id}
+                                            quantity={itemData.item.quantity}
+                                            total_amount={itemData.item.total_amount}
+                                            name={itemData.item.name}
+                                            unit={itemData.item.unit}
+                                            price={itemData.item.price}
+                                            // addable
+                                            onAddPress={() => {
+                                              dispatch(
+                                                  cartActions.addToQtty(itemData.item.id)
+                                              );
+                                            }}
+                                            // deletable
+                                            onRemove={() => {
+                                              dispatch(
+                                                  cartActions.removeFromCart(
+                                                      itemData.item.id
+                                                  )
+                                              );
+                                            }}
+                                            // removeable
+                                            onDelete={() => {
+                                              dispatch(
+                                                  cartActions.deleteProduct(
+                                                      itemData.item.id
+                                                  )
+                                              );
+                                            }}
+                                        />
+                                        // </View>
+                                    )}
+                                />
+                            ) : null}
+                            {/* </ScrollView> */}
+                            <View
+                                style={{
+                                  flexDirection: "row",
+                                  paddingTop: 10,
+                                  paddingBottom: 0,
+                                  borderBottomWidth: 0.5,
+                                  borderBottomColor: "gray",
+                                }}
+                            >
+                              <Text
+                                  style={{
+                                    color: Colors.themeColor,
+                                    fontWeight: "bold",
+                                    width: Platform.OS == "android" ? "30%" : "30%",
+                                    textAlign: "center",
+                                  }}
                               >
-                                £ {parseFloat(cartTotalAmount).toFixed(2)}
+                                Total:
                               </Text>
-                            )}
+                              <Text
+                                  style={{
+                                    width: Platform.OS == "android" ? "20%" : "20%",
+                                  }}
+                              ></Text>
+                              <Text
+                                  style={{
+                                    color: Colors.themeColor,
+                                    fontWeight: "bold",
+                                    width: "20%",
+                                    textAlign: "center",
+                                  }}
+                              >
+                                {cartTotalPackages}
+                              </Text>
+                              {cartTotalAmount == 0 ? (
+                                  <Text
+                                      style={{
+                                        color: Colors.textGreyColor,
+                                        width:
+                                            Platform.OS == "android" ? "30%" : "30%",
+                                        textAlign: "center",
+                                      }}
+                                  >
+                                    £ {cartTotalAmount}
+                                  </Text>
+                              ) : (
+                                  <Text
+                                      style={{
+                                        color: Colors.textGreyColor,
+                                        width: "27%",
+                                        textAlign: "center",
+                                      }}
+                                  >
+                                    £ {parseFloat(cartTotalAmount).toFixed(2)}
+                                  </Text>
+                              )}
+                            </View>
                           </View>
                         </View>
                       </View>
                     </View>
-                  </View>
-                </Card>
-              </View>
-              <View style={{ height: "4%", bottom: 40 }}>
-                <View style={{ padding: 0 }}>
-                  <Card style={{ elevation: 0 }}>
-                    <TextInput
-                      style={styles.note_inputArea}
-                      placeholder="Write any Notes"
-                      autoCapitalize="none"
-                      placeholderTextColor="black"
-                      value={note}
-                      required={true}
-                      onChangeText={(value) => setNote(value)}
-                      initialValue=""
-                    />
                   </Card>
                 </View>
+                <View style={{ height: "4%", bottom: 40 }}>
+                  <View style={{ padding: 0 }}>
+                    <Card style={{ elevation: 0 }}>
+                      <TextInput
+                          style={styles.note_inputArea}
+                          placeholder="Write any Notes"
+                          autoCapitalize="none"
+                          placeholderTextColor="black"
+                          value={note}
+                          required={true}
+                          onChangeText={(value) => setNote(value)}
+                          initialValue=""
+                      />
+                    </Card>
+                  </View>
 
-                <TouchableOpacity
-                  style={styles.signupButton}
-                  activeOpacity={0.7}
-                  disabled={sendButtonCheck}
-                  onPress={sendOrder}
-                >
-                  {loading ? (
-                    <Spinner color={"white"} />
-                  ) : (
-                    <Text style={styles.signupButtonText}>SEND ORDER</Text>
-                  )}
-                </TouchableOpacity>
+                  <TouchableOpacity
+                      style={styles.signupButton}
+                      activeOpacity={0.7}
+                      disabled={sendButtonCheck}
+                      onPress={sendOrder}
+                  >
+                    {loading ? (
+                        <Spinner color={"white"} />
+                    ) : (
+                        <Text style={styles.signupButtonText}>SEND ORDER</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </View>
-    </>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </View>
+      </>
   );
 }
 
@@ -2203,7 +2190,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     removeItem: (product) =>
-      dispatch({ type: "REMOVE_FROM_CART", product: product }),
+        dispatch({ type: "REMOVE_FROM_CART", product: product }),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(CreateNewOrder);
