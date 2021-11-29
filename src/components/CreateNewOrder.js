@@ -454,6 +454,7 @@ function CreateNewOrder({ navigation, route }) {
           if (responseJson.delivery_person == "") {
             setRiderLoading(true);
           } else {
+            console.log('responseJson.delivery_person===>   ',responseJson.delivery_person)
             setRiderData(responseJson.delivery_person);
           }
         })
@@ -585,16 +586,14 @@ function CreateNewOrder({ navigation, route }) {
                             </View>
                         ) : (
                             <FlatList
-                                inverted={true}
-                                // nestedScrollEnabled={true}
-                                data={riderData}
                                 style={{
                                   padding: 10,
                                   marginTop: Platform.OS == "android" ? 0 : "12%",
                                 }}
-                                showsVerticalScrollIndicator={false}
-                                // keyExtractor={item => item.index_id.toString()}
-                                keyExtractor={({ id }, index) => id}
+                                // showsVerticalScrollIndicator={false}
+                                // keyExtractor={({ id }, index) => id}
+                                keyExtractor={(riderData) => riderData.id}
+                                data={riderData !=0 && riderData.sort((a, b) => a.first_name !== b.first_name ? a.first_name < b.first_name ? -1 : 1 : 0)}
                                 renderItem={({ item }) => (
                                     <TouchableOpacity
                                         style={{

@@ -106,6 +106,7 @@ const Signup = ({ navigation }) => {
         if (responseJson.delivery_person == "") {
           setRiderLoading(true);
         } else {
+          console.log('responseJson.delivery_person===>   ',responseJson.delivery_person)
           setRiderData(responseJson.delivery_person);
         }
       })
@@ -620,10 +621,10 @@ const Signup = ({ navigation }) => {
                   ) : (
                     <FlatList
                       nestedScrollEnabled={true}
-                      data={riderData}
+                      data={riderData !=0 && riderData.sort((a, b) => a.first_name !== b.first_name ? a.first_name < b.first_name ? -1 : 1 : 0)}
                       style={{ padding: 10 }}
                       showsVerticalScrollIndicator={false}
-                      keyExtractor={({ id }, index) => id}
+                      keyExtractor={(riderData) => riderData.id}
                       renderItem={({ item }) => (
                         <TouchableOpacity
                           style={{

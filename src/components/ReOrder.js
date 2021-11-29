@@ -636,12 +636,10 @@ return (
                   </View>
                 ) : (
                   <FlatList
-                    // nestedScrollEnabled={true}
-                    data={riderData}
+                     nestedScrollEnabled={true}
                     style={{ padding: 10,marginTop:Platform.OS=="android"?0:"12%" }}
-                    showsVerticalScrollIndicator={false}
-                    // keyExtractor={item => item.index_id.toString()}
-                    keyExtractor={({ id }, index) => id}
+                     keyExtractor={(riderData) => riderData.id}
+                     data={riderData !=0 && riderData.sort((a, b) => a.first_name !== b.first_name ? a.first_name < b.first_name ? -1 : 1 : 0)}
                     renderItem={({ item }) => (
                       <TouchableOpacity
                         style={{
