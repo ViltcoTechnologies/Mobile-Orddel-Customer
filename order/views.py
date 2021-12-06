@@ -338,11 +338,28 @@ class CreateOrderApiView(APIView):
                 user_id = delivery_obj.user.id
                 print("dp", user_id)
                 try:
-                    device = FCMDevice.objects.filter(user=user_id, active=True)
-                    print(device)
-                    device.send_message(title="New Order", body=f"You have received an order from {client.first_name} {client.last_name}.")
+                    devices = FCMDevice.objects.filter(user=user_id, active=True)
+                    # print('devices.....', devices)
+                    data = {
+                            "title": 'New Order',
+                            "body": f'You have received an order from {client.first_name} {client.last_name}.',
+                            "sound": "default"
+                        }
+
+                    kwargs = {
+                        "content_available": True,
+                        'extra_kwargs': {"priority": "high", "mutable_content": True, 'notification': data},
+                    }
+
+                    for device in devices:
+                        if device.type == 'ios':
+                            print('device', device)
+                            device.send_message(sound='default', **kwargs)
+                        else:
+                            device.send_message(title=data['title'], body=data['body'])
                 
-                except:
+                except Exception as e:
+                    print('exception', e)
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
 
                 return Response(status=status.HTTP_201_CREATED, data={"order": response})
@@ -438,7 +455,7 @@ class ListOrderApiView(APIView):
             order_detail = OrderDetail.objects.get(order_box=id)
             data_to_pass = OrderDetailSerializer(order_detail)
         else:
-            order_detail = OrderDetail.objects.all().order_by('-order_created_datetime')
+            order_detail = OrderDetail.objects.all().order_by('-id')
             data_to_pass = OrderDetailSerializer(order_detail, many=True)
 
         response = data_to_pass.data
@@ -448,6 +465,7 @@ class ListOrderApiView(APIView):
             order_detail = OrderDetail.objects.get(order_box=order_box)
             order_prods = []
             order_prods.extend(order_detail.order_products.all().order_by('id'))
+            print('Order products reorder', order_prods)
             products_details = []
             total_amount = 0
             for prod in order_prods:
@@ -474,6 +492,7 @@ class ListOrderApiView(APIView):
                 # product['supplier_market'] = order_prod_obj.supplier.supplier
                 products_details.append(product)
             response['order_products'] = products_details
+            print('order_products', response['order_products'])
             response['total_amount'] = float("{:.2f}".format(total_amount))
 
             order_b_obj = OrderBox.objects.get(id=response['order_box'])

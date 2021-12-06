@@ -1271,8 +1271,24 @@ class UpdateDeliveryPersonOrderApiView(APIView):
                 order_detail.status = 'in_progress'
                 user_id = order_detail.order_box.client.user.id
                 try:
-                    device = FCMDevice.objects.filter(user=user_id, active=True)
-                    device.send_message(title="Order Accepted", body="Your order has been accepted.")
+                    devices = FCMDevice.objects.filter(user=user_id, active=True)
+                    data = {
+                            "title": 'Order Accepted',
+                            "body": 'Your order has been accepted.',
+                            "sound": "default"
+                    }
+
+                    kwargs = {
+                        "content_available": True,
+                        'extra_kwargs': {"priority": "high", "mutable_content": True, 'notification': data},
+                    }
+
+                    for device in devices:
+                        if device.type == 'ios':
+                            device.send_message(sound='default', **kwargs)
+                        else:
+                            print('android')
+                            device.send_message(title=data['title'], body=data['body'])
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
 
@@ -1281,8 +1297,24 @@ class UpdateDeliveryPersonOrderApiView(APIView):
                 order_detail.status = 'rejected'
                 user_id = order_detail.order_box.client.user.id
                 try:
-                    device = FCMDevice.objects.filter(user=user_id, active=True)
-                    device.send_message(title="Order Rejected", body="Your order has been rejected.")
+                    devices = FCMDevice.objects.filter(user=user_id, active=True)
+                    data = {
+                            "title": 'Order Rejected',
+                            "body": 'Your order has been rejected.',
+                            "sound": "default"
+
+                    }
+
+                    kwargs = {
+                        "content_available": True,
+                        'extra_kwargs': {"priority": "high", "mutable_content": True, 'notification': data },
+                    }
+
+                    for device in devices:
+                        if device.type == 'ios':
+                            device.send_message(sound='default', **kwargs)
+                        else:
+                            device.send_message(title=data['title'], body=data['body'])
                 
                 except:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'Unable to send notification'})
@@ -1298,8 +1330,24 @@ class UpdateDeliveryPersonOrderApiView(APIView):
                 user_id = order_detail.order_box.client.user.id
                 delivery_person = order_detail.delivery_person
                 try:
-                    device = FCMDevice.objects.filter(user=user_id)
-                    device.send_message(title="Order Delivered", body=f"New invoice received from {delivery_person.first_name} {delivery_person.last_name}.")
+                    devices = FCMDevice.objects.filter(user=user_id, active=True)
+                    data = {
+                            "title": 'Order Delivered',
+                            "body": f"New invoice received from {delivery_person.first_name} {delivery_person.last_name}.",
+                            "sound": "default"
+
+                    }
+
+                    kwargs = {
+                        "content_available": True,
+                        'extra_kwargs': {"priority": "high", "mutable_content": True, 'notification': data },
+                    }
+
+                    for device in devices:
+                        if device.type == 'ios':
+                            device.send_message(sound='default', **kwargs)
+                        else:
+                            device.send_message(title=data['title'], body=data['body'])
                 
                 except Exception as e:
                     print(e)

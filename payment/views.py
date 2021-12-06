@@ -785,7 +785,25 @@ class SuppliersList(APIView):
                                                       supplier_payment_status=F('order_products__supplier_payment_status'), invoice_number=F('order_products__supplier_invoice_number'), supplier_name=F('order_products__supplier__supplier'))\
                                                       .annotate(supplier=F('order_products__supplier'), amount=Sum((F('order_products__unit_purchase_price') + F('order_products__portrage_price')) * F('order_products__purchased_quantity'), output_field=FloatField()))
 
+            order_box = OrderDetail.objects.filter(Q(status='purchased') | Q(status='delivered'), delivery_person=delivery_person,
+                                                      order_products__purchase_details_submission_datetime__date=purchase_date, order_products__supplier_payment_status=supplier_payment_status).values_list('order_box', flat=True).distinct()
 
+            print(order_box)
+            # print(order_detail)
+            # distinct_orders = []
+            # order_boxes = []
+            # distinct_order = {
+            #     'order_boxes': [],
+            #     'supplier_payment_status': '',
+            #     'invoice_number': '',
+            #     'supplier_name': '',
+            #     'supplier': '',
+            #     'amount': ''
+            # }
+            # for od in order_detail:
+            #     distinct_order['order_boxes'].append(od['order_box'])
+            #     if distinct_order['supplier_payment_status'] != od['supplier_payment_status']
+            # order_detail = [{'order_boxes': order_boxes.append(od['order_box']), 'supplier_payment_status': od['supplier_payment_status'], 'invoice_number': od['invoice_number'], 'supplier_name': od['supplier_name'], 'supplier': od['supplier'], 'amount': od['amount']} for od in order_detail]
             # , unit_purchase_price=F('order_products__unit_purchase_price'),  unit_portrage_price=F('order_products__portrage_price'), unit_purchased_qty=F('order_products__purchased_quantity')
             # , amount=Sum((F('order_products__unit_purchase_price') + F('order_products__portrage_price')) * F('order_products__purchased_quantity'), output_field=FloatField())
             # , datetime=Cast(TruncSecond('order_products__purchase_details_submission_datetime', DateTimeField()), CharField())
@@ -793,8 +811,8 @@ class SuppliersList(APIView):
             # portrage_price_total = Sum(F('order_products__portrage_price'), output_field=FloatField()),
             # , product = F('order_products__product'), quantity = F('order_products__quantity'),
             # purchased_quantity = F('order_products__purchased_quantity'),
+            print(order_detail)
             response_list = []
-
             for od in order_detail:
                 amount = 0
 
@@ -808,8 +826,8 @@ class SuppliersList(APIView):
                 # print(type(od['datetime']))
                 # formatted_datetime = datetime.datetime.strptime(od['datetime'], "%Y-%m-%d %H:%M:%S")
                 # print(formatted_datetime)
-                order_prod = OrderProduct.objects.filter(purchase_details_submission_datetime__contains=purchase_date, supplier_payment_status=supplier_payment_status, supplier=od['supplier'])\
-                    .values(product_name=F('product__name'), purchase_price_per_unit=F('unit_purchase_price')).annotate(purchased_quantity_total=Sum('purchased_quantity'), unit_purchase_price_total=Sum('unit_purchase_price'), unit_portrage_price_total=Sum('portrage_price'))
+                order_prod = OrderProduct.objects.filter(order_box__in=order_box,purchase_details_submission_datetime__contains=purchase_date, supplier_payment_status=supplier_payment_status, supplier=od['supplier'])\
+                    .values(product_name=F('product__name'), purchase_price_per_unit=F('unit_purchase_price'), portrage_price_per_unit=F('portrage_price')).annotate(purchased_quantity_total=Sum('purchased_quantity'), unit_purchase_price_total=Sum('unit_purchase_price'), unit_portrage_price_total=Sum('portrage_price'))
                 
                 # , unit_purchase_price_total=Sum('unit_purchase_price')
                 # , datetime=F('purchase_details_submission_datetime')
