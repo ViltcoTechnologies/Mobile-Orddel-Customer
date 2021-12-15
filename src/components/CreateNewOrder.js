@@ -1179,7 +1179,7 @@ function CreateNewOrder({ navigation, route }) {
                                 )}
                             />
                           </View>
-                          <View style={{ flexDirection: "row", width:"100%"}}>
+                          <View style={{ flexDirection: "row", width:"100%" }}>
                             <Text
                                 style={{
                                   color: Colors.themeColor,
@@ -1790,9 +1790,10 @@ function CreateNewOrder({ navigation, route }) {
                                 style={{
                                   flexDirection: "row",
                                   paddingTop: 10,
-                                  paddingBottom: 0,
                                   borderBottomWidth: 0.5,
                                   borderBottomColor: "gray",
+                                  // borderWidth:1,
+                                  width: "100%"
                                 }}
                             >
                               <Text
@@ -1801,6 +1802,7 @@ function CreateNewOrder({ navigation, route }) {
                                     fontWeight: "bold",
                                     width: Platform.OS == "android" ? "30%" : "30%",
                                     textAlign: "center",
+                                    // borderWidth:1
                                   }}
                               >
                                 Total:
@@ -1816,6 +1818,7 @@ function CreateNewOrder({ navigation, route }) {
                                     fontWeight: "bold",
                                     width: "20%",
                                     textAlign: "center",
+                                    // borderWidth:1
                                   }}
                               >
                                 {cartTotalPackages}
@@ -1827,6 +1830,7 @@ function CreateNewOrder({ navigation, route }) {
                                         width:
                                             Platform.OS == "android" ? "30%" : "30%",
                                         textAlign: "center",
+                                        // borderWidth:1
                                       }}
                                   >
                                     £ {cartTotalAmount}
@@ -1835,8 +1839,10 @@ function CreateNewOrder({ navigation, route }) {
                                   <Text
                                       style={{
                                         color: Colors.textGreyColor,
-                                        width: "27%",
+                                        width: "30%",
                                         textAlign: "center",
+                                        // borderWidth:1,
+
                                       }}
                                   >
                                     £ {parseFloat(cartTotalAmount).toFixed(2)}

@@ -19,6 +19,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Colors from "../ColorCodes/Colors";
 import MyHeader from "../components/MyHeader";
 import { useRoute, useFocusEffect } from "@react-navigation/native";
+import Config from "../config"
 
 const Support = ({ navigation,route }) => {
   useFocusEffect(
@@ -35,12 +36,12 @@ const Support = ({ navigation,route }) => {
         // ]);
         return true;
       };
-  
+
       const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
         backAction
       );
-  
+
       return () => backHandler.remove();
     }, [route])
   );
@@ -236,8 +237,72 @@ const Support = ({ navigation,route }) => {
             </Text>
             </TouchableOpacity>
           </View>
+
+
         </View>
+
+
+        <View
+          style={{
+            borderBottomColor: "lightgray",
+            borderBottomWidth: 1,
+          }}
+        ></View>
+
+        <View
+          style={{
+            width: "100%",
+            height: "30%",
+
+            flexDirection: "row",
+          }}
+        >
+          <View
+            style={{
+              width: "30%",
+              height: "100%",
+
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              source={require("../assets/verison.png")}
+              style={{
+                width: 40,
+                height: 40,
+                tintColor:Colors.themeColor
+              }}
+            />
+          </View>
+          <View
+            style={{
+              width: "70%",
+              height: "100%",
+
+              justifyContent: "center",
+            }}
+          >
+             <View>
+
+            <Text style={{ color: Colors.textGreyColor }}>{"Version"}</Text>
+            <Text
+              style={{
+                color: Colors.themeColor,
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {Config.Version}
+            </Text>
+            </View>
+          </View>
+        </View>
+
       </View>
+
+
+
     </View>
   );
 };

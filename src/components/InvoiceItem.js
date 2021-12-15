@@ -15,7 +15,7 @@ import Colors from '../ColorCodes/Colors';
 const InvoiceItem = props => {
 
 
- 
+
 
   return (
 
@@ -26,28 +26,28 @@ const InvoiceItem = props => {
             <Text style={{marginLeft:2,color:Colors.productGrey,fontWeight:'bold',textAlign:'left'}}>{props.name}</Text>
         </View>
         {/* <View style = {{width:'20%',alignItems:'center'}}>
-        
+
         <Text style={{color:Colors.productGrey}}>{props.unit}</Text>
         </View> */}
         <View style = {{width: Platform.OS == "android" ? "24%" : "24%",alignItems:"center"}}>
-        
+
             <Text style={{color:Colors.productGrey}}>{props.quantity}</Text>
         </View>
-        
-        
+
+
         <View style = {{width: Platform.OS == "android" ? "21%" : "20%",alignItems:"center"}}>
-        
+
             <Text style={{color:Colors.productGrey,textAlign:'right'}}>£ {parseFloat(props.price).toFixed(2)}</Text>
         </View>
         <View style = {{width: Platform.OS == "android" ? "16%" : "16%", alignItems:"center"}}>
-        
+
             {props.vat==0?<Text style={{color:Colors.productGrey,textAlign:'right'}}>£ {props.vat}</Text>:<Text style={{color:Colors.productGrey,textAlign:'right'}}>£ {parseFloat(props.vat).toFixed(2)}</Text>}
         </View>
         <View style = {{width: Platform.OS == "android" ? "21%" : "21%"}}>
-        
-            <Text style={{color:Colors.productGrey,textAlign:'right'}}>£ {parseFloat(props.amount).toFixed(2)}</Text>
+
+            <Text style={{color:Colors.productGrey,textAlign:'center'}}>£ {parseFloat(props.amount).toFixed(2)}</Text>
         </View>
-        
+
     </View>
 
 
@@ -57,11 +57,11 @@ const InvoiceItem = props => {
     //   <View style={styles.itemData}>
     //     <Text style={styles.quantity}>{props.quantity} </Text>
     //     <Text style={styles.title}>{props.name}  </Text>
-        
+
     //   </View>
     //   <View style={styles.itemData}>
     //     <Text style={styles.rupees}> Rs.{props.amount.toFixed(2)}</Text>
-        
+
     //     {props.deletable && (
     //       <TouchableOpacity
     //         onPress={props.onRemove}
@@ -84,7 +84,7 @@ const InvoiceItem = props => {
     //         {MyIcon2}
     //       </TouchableOpacity>
     //     )} */}
-        
+
     //   </View>
     // </View>
   );
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   itemData: {
     flexDirection: 'row',
     alignItems: 'center',
-    
+
   },
   quantity:{
     color: "#EE0202",
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginRight: 4,
   },
- 
+
   title: {
     fontFamily: 'open-sans-bold',
     fontSize: 16,
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   deleteButton: {
     marginLeft: 20
   },
-  
+
   button: {
     marginLeft:15,
   },

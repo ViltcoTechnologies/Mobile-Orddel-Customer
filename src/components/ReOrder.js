@@ -1128,17 +1128,17 @@ return (
             </View>
             <View style={{ flexDirection: "row", }}>
                   <Text
-                    style={{ color: Colors.themeColor,fontWeight:'bold',width:"51%",marginLeft:"2.5%",textAlign:"left"}}
+                    style={{ color: Colors.themeColor,fontWeight:'bold', width: Platform.OS == "android" ? "50%" : "48%", marginLeft:"2.5%",textAlign:"left",  }}
                   >
                     Total:
                   </Text>
-                  <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"15%",textAlign:"center" }}>
+                  <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"16%",textAlign:"center", }}>
                     {cartTotalPackages}
                   </Text>
-                  {cartTotalAmount ===0?<Text style={{ color: Colors.textGreyColor,width:"26%",textAlign:"right" }}>
+                  {cartTotalAmount ===0?<Text style={{ color: Colors.textGreyColor,width:"33%",textAlign:"center",  }}>
                   £ {cartTotalAmount}
                   </Text>:
-                  <Text style={{ color: Colors.textGreyColor,width:"26%",textAlign:"right" }}>
+                  <Text style={{ color: Colors.textGreyColor,width:"33%",textAlign:"center",  }}>
                   £ {parseFloat(cartTotalAmount).toFixed(2)}
                   </Text>}
                 </View>
@@ -1476,7 +1476,7 @@ return (
                   </Text>
                 </View>
               ) : (
-                <View style={{ width: "40%", paddingTop: 5 }}>
+                <View style={{ width: "40%", paddingTop: 5,  }}>
                   <Text
                     style={{
                       color: Colors.textGreyColor,
@@ -1585,6 +1585,7 @@ return (
                       marginTop: 10,
                       //justifyContent: "center",
                       width: "100%",
+                      // borderWidth:1
                     }}
                   >
                     <Text
@@ -1594,6 +1595,7 @@ return (
                         textAlign: "center",
 
                         fontSize: 14,
+                        // borderWidth:1
                       }}
                     >
                       Product
@@ -1605,6 +1607,7 @@ return (
                         textAlign: "center",
 
                         fontSize: 14,
+                        // borderWidth:1
                       }}
                     >
                       Unit
@@ -1616,6 +1619,7 @@ return (
 
                         fontSize: 14,
                         textAlign: "center",
+                        // borderWidth:1
                       }}
                     >
                       Quantity
@@ -1623,10 +1627,11 @@ return (
                     <Text
                       style={{
                         color: Colors.textGreyColor,
-                        width: "24%",
+                        width: "30%",
 
                         fontSize: 14,
                         textAlign: "center",
+                        // borderWidth:1
                       }}
                     >
                       Price Per Unit
@@ -1678,20 +1683,20 @@ return (
                         )}
                       />
                     ) : null}
-                     <View style={{ flexDirection: "row", paddingTop:10,paddingBottom:0 }}>
+                     <View style={{ flexDirection: "row", paddingTop:10,paddingBottom:0 , }}>
                   <Text
                     style={{ color: Colors.themeColor,fontWeight:'bold',width:"45%",
-                    marginLeft:"7.5%", }}
+                    marginLeft:"7.5%",  }}
                   >
                     Total:
                   </Text>
-                  <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"16%",textAlign:"center" }}>
+                  <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"16%",textAlign:"center", }}>
                     {cartTotalPackages}
                   </Text>
-                  {cartTotalAmount==0?<Text style={{ color: Colors.textGreyColor,width:"21%",textAlign:"right" }}>
+                  {cartTotalAmount==0?<Text style={{ color: Colors.textGreyColor,width:"31%",textAlign:"center",  }}>
                   £ {cartTotalAmount}
 
-                  </Text>:<Text style={{ color: Colors.textGreyColor,width:"27%",textAlign:"right" }}>
+                  </Text>:<Text style={{ color: Colors.textGreyColor,width:"31%",textAlign:"center", }}>
                   £ {parseFloat(cartTotalAmount).toFixed(2)}
 
                   </Text>}

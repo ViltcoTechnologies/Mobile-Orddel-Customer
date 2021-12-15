@@ -1143,19 +1143,19 @@ return (
                         )}
                       />
             </View>
-            <View style={{ flexDirection: "row", }}>
+            <View style={{ flexDirection: "row",  }}>
                   <Text
-                    style={{ color: Colors.themeColor,fontWeight:'bold',width:"51%",marginLeft:"2.5%",textAlign:"left"}}
+                    style={{ color: Colors.themeColor,fontWeight:'bold',width: Platform.OS == "android" ? "51%" : "49%" ,marginLeft:"2.5%",textAlign:"left",  }}
                   >
                     Total:
                   </Text>
-                  <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"15%",textAlign:"center" }}>
+                  <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"15%",textAlign:"center",  }}>
                     {cartTotalPackages}
                   </Text>
-                  {cartTotalAmount==0?<Text style={{ color: Colors.textGreyColor,width:"26%",textAlign:"right" }}>
+                  {cartTotalAmount==0?<Text style={{ color: Colors.textGreyColor,width:"33%",textAlign:"center" , }}>
                   £ {cartTotalAmount}
                   </Text>:
-                  <Text style={{ color: Colors.textGreyColor,width:"26%",textAlign:"right" }}>
+                  <Text style={{ color: Colors.textGreyColor,width:"33%",textAlign:"center", paddingLeft: Platform.OS == "android" ? 15 :0 }}>
                   £ {parseFloat(cartTotalAmount).toFixed(2)}
                   </Text>}
                 </View>
@@ -1178,7 +1178,7 @@ return (
             <Text style={styles.signupButtonText1}>CONFIRM</Text>)}
           </Pressable>
           <Pressable
-             style={{...styles.bu_signupButton1,borderWidth:1,marginBottom:"10%"}}
+             style={{...styles.bu_signupButton1,marginBottom:"10%"}}
              activeOpacity={0.7}
             onPress={()=>
               setModalVisible(!modalVisible)
@@ -1699,22 +1699,23 @@ return (
                         )}
                       />
                     ) : null}
-                    <View style={{ flexDirection: "row",paddingTop:10,paddingBottom:0 ,borderBottomWidth:.5 , borderBottomColor:'gray' }}>
+                    <View style={{ flexDirection: "row",paddingTop:10,paddingBottom:0 ,borderBottomWidth:.5 , borderBottomColor:'gray', }}>
                   <Text
-                    style={{ color: Colors.themeColor,fontWeight:'bold',width: Platform.OS == "android" ? "40%" : "36.5%",
-                    paddingLeft: Platform.OS == "android" ? "8%" : "12%"
+                    style={{ color: Colors.themeColor,fontWeight:'bold',width: Platform.OS == "android" ? "33%" : "33%",
+                    paddingLeft: Platform.OS == "android" ? "8%" : "12%",
+
                       }}
                   >
                     Total:
                   </Text>
-                  <Text style={{width: Platform.OS == "android" ? "11%" : "13.5%"}}></Text>
-                  <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"16%",textAlign:"center",width: Platform.OS == "android" ? "20%" : "20%" }}>
+                  <Text style={{width: Platform.OS == "android" ? "17%" : "17%", }}></Text>
+                  <Text style={{ color: Colors.themeColor, fontWeight:'bold',width:"2%",textAlign:"center",width: Platform.OS == "android" ? "20%" : "20%", }}>
                     {cartTotalPackages}
                   </Text>
-                  {cartTotalAmount==0?<Text style={{ color: Colors.textGreyColor,textAlign:"center" ,width: Platform.OS == "android" ? "25%" : "20%"}}>
+                  {cartTotalAmount==0?<Text style={{ color: Colors.textGreyColor,textAlign:"center" ,width: Platform.OS == "android" ? "27%" : "27%", }}>
                   £ {cartTotalAmount}
 
-                  </Text>:<Text style={{ color: Colors.textGreyColor,width:"27%",textAlign:"center" ,width: Platform.OS == "android" ? "25%" : "20%" }}>
+                  </Text>:<Text style={{ color: Colors.textGreyColor,textAlign:"center" ,width: Platform.OS == "android" ? "27%" : "27%", }}>
                   £ {parseFloat(cartTotalAmount).toFixed(2)}
 
                   </Text>}

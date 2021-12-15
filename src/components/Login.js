@@ -44,8 +44,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 // import { messaging} from "@react-native-firebase/messaging"
 import messaging from '@react-native-firebase/messaging';
-import DeviceInfo from 'react-native-device-info';
-import { getUniqueId, getManufacturer } from 'react-native-device-info';
+
 
 
 
@@ -70,10 +69,10 @@ const Login = ({ navigation, route }) => {
   const isFocused = useIsFocused();
 
 
-  let buildNumber = DeviceInfo.getBuildNumber();
-  console.log("buildNumber==>  ", buildNumber)
-  let Device = DeviceInfo.getDevice();
-  console.log("Device==>  ", Device)
+  // let buildNumber = DeviceInfo.getBuildNumber();
+  // console.log("buildNumber==>  ", buildNumber)
+  // let Device = DeviceInfo.getDevice();
+  // console.log("Device==>  ", Device)
 
   // const saveData = async () => {
   //   try {

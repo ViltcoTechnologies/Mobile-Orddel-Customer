@@ -106,7 +106,7 @@ const FirstView = ({ navigation }) => {
       }
 
 
-      
+
     } catch (error) {
       console.log("Something went wrong", error);
     }
@@ -160,7 +160,7 @@ const FirstView = ({ navigation }) => {
           source={require("./assets/Splash.jpg")}
           style={styles.image}
         >
-          <View style={{ alignItems: "center" }}>
+          <View style={{ alignItems: "center", borderWidth:1 }}>
             <View style={styles.topContainer}>
               <Image
                 style={styles.tinyLogo}
@@ -170,14 +170,14 @@ const FirstView = ({ navigation }) => {
                 style={{
                   //  borderColor:'white',
                   // borderWidth:1,
-                  width: "100%",
+                  //width: "100%",
                 }}
               >
                 <Text
                   style={{
                     // borderColor:'white',
                     // borderWidth:1,
-                    marginLeft: "7%",
+                    //marginLeft: "7%",
                     width: "100%",
                     // padding:20,
                     color: "white",

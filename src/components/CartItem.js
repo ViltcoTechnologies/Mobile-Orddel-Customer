@@ -107,22 +107,24 @@ const CartItem = (props,{route}) => {
         borderBottomColor: "grey",
         marginTop: 10,
         width: "100%",
+        // borderWidth:1
 
       }}
     >
 
-      <View style={{ width: "30%", justifyContent: "center" }}>
+      <View style={{ width: "30%", justifyContent: "center",  }}>
         <Text
           style={{
             marginLeft: 2,
             color: Colors.productGrey,
             textAlign: 'center',
+            // borderWidth:1
           }}
         >
           {props.name}
         </Text>
       </View>
-      <View style={{ width: "20%", justifyContent: "center" }}>
+      <View style={{ width: "20%", justifyContent: "center", }}>
         <Text style={{ color: Colors.productGrey, textAlign: "center" }}>
           {props.unit}
         </Text>
@@ -130,7 +132,7 @@ const CartItem = (props,{route}) => {
       <View style={{width:'20%',alignSelf:"center"}}>
 
 <TextInput
-style={{alignSelf:"center",color:Colors.productGrey,paddingBottom:0,textAlign:'right',}}
+style={{alignSelf:"center",color:Colors.productGrey,paddingBottom:0,textAlign:'right', }}
 // hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }}
 placeholder={props.quantity.toString()}
 autoCapitalize="none"
@@ -155,10 +157,10 @@ initialValue=""
 />
 </View>
 
-      <View style={{ width: "22%", justifyContent: "center",}}>
-        {props.price==0?<Text style={{ color: Colors.textGreyColor, textAlign: "right",marginRight:8 }}>
+      <View style={{ width: "22%", justifyContent: "center", }}>
+        {props.price==0?<Text style={{ color: Colors.textGreyColor, textAlign: "center", paddingLeft:5 }}>
           £ {props.price}
-        </Text>:<Text style={{ color: Colors.textGreyColor, textAlign: "right",marginRight:8 }}>
+        </Text>:<Text style={{ color: Colors.textGreyColor, textAlign: "center",paddingLeft:12 }}>
           £ {parseFloat(props.price).toFixed(2)}
         </Text>}
       </View>

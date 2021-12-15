@@ -501,7 +501,8 @@ function CompletedOrderInvoice({ navigation, route }) {
                   //borderWidth: 1,
                   fontWeight: "bold",
                   width: "21%",
-                  textAlign: "right",
+                  textAlign: "center",
+                  // borderWidth:1
                 }}
               >
                 Amount
@@ -540,6 +541,7 @@ function CompletedOrderInvoice({ navigation, route }) {
                     width: Platform.OS == "android" ? "20%" : "20%",
                     textAlign: "left",
                     fontWeight: "bold",
+                    // borderWidth:
                   }}
                 >
                   Total
@@ -587,8 +589,9 @@ function CompletedOrderInvoice({ navigation, route }) {
                     color: Colors.themeColor,
                     width: Platform.OS == "android" ? "19.5%" : "21%",
                     fontWeight: "bold",
-                    textAlign: "right",
+                    textAlign: "center",
                     fontSize: 14,
+                    // borderWidth:1
                   }}
                 >
                   £ {parseFloat(invoiceData.total_amount).toFixed(2)}
