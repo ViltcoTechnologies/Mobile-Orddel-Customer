@@ -616,9 +616,12 @@ class PaymentAPIView(APIView):
 
                     )
                 elif user_type == 'delivery_person':
-                    delivery_person_last_log = DeliveryPersonPackageLog.objects.filter(delivery_person=obj).last()
-                    delivery_person_last_log.status = 'inactive'
-                    delivery_person_last_log.save()
+                    try:
+                        delivery_person_last_log = DeliveryPersonPackageLog.objects.filter(delivery_person=obj).last()
+                        delivery_person_last_log.status = 'inactive'
+                        delivery_person_last_log.save()
+                    except Exception as e:
+                        print(e)
                     DeliveryPersonPackageLog.objects.create(
                         delivery_person=obj,
                         package=package_obj,

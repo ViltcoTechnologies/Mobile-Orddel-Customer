@@ -90,7 +90,7 @@ pip-tools==5.4.0
 pkg-resources==0.0.0
 placebo==0.9.0
 prompt-toolkit==3.0.17
-#psycopg2==2.8.6
+psycopg2==2.8.6
 psycopg2-binary==2.8.6
 py3dns==3.2.1
 pycparser==2.20
