@@ -87,7 +87,7 @@ pbr==5.5.1
 pilkit==2.0
 Pillow==8.0.1
 pip-tools==5.4.0
-# pkg-resources==0.0.0
+pkg-resources==0.0.0
 placebo==0.9.0
 prompt-toolkit==3.0.17
 psycopg2==2.8.6
@@ -120,7 +120,7 @@ tenks==1.0.0
 text-unidecode==1.3
 toml==0.10.2
 tqdm==4.55.0
-# troposphere==2.6.3
+troposphere==2.6.3
 twilio==6.51.0
 tzlocal==2.1
 uritemplate==3.0.1
