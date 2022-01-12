@@ -670,7 +670,7 @@ class ShipmentAddressCreateApiView(APIView):
 
 class ListShipmentAddressApiView(APIView):
 
-    def get(self, request):
+    def get(self, request, id = None):
         if id:
             try:
                 shipment_address = ClientShipmentAddress.objects.get(id=id)
@@ -691,7 +691,7 @@ class ListShipmentAddressApiView(APIView):
 
 class ListClientShipmentAddressApiView(APIView):
 
-    def get(self, request):
+    def get(self, request, id = None):
         if id:
             try:
                 shipment = ClientShipmentAddress.objects.filter(client__id=id)
@@ -724,7 +724,7 @@ class UpdateShipmentAddressApiView(APIView):
 
 class DeleteShipmentAddressApiView(APIView):
 
-    def delete(self, request):
+    def delete(self, request, id = None):
         if id:
             try:
                 shipment_rec = ClientShipmentAddress.objects.get(id=id)
@@ -809,7 +809,7 @@ class ListBankDetailsApiView(APIView):
 
 class ListClientBankDetailsApiView(APIView):
 
-    def get(self, request):
+    def get(self, request, id = None):
         if id:
             try:
                 bank_details = ClientBankDetail.objects.filter(client__id=id)

@@ -728,7 +728,7 @@ class BusinessDetailInsertApiView(APIView):
 
 class ListBusinessDetailsApiView(APIView):
 
-    def get(self, request):
+    def get(self, request, id = None):
         if id:
             try:
                 business_detail = DeliveryPersonBusinessDetail.objects.get(id=id)
@@ -1026,7 +1026,7 @@ class ListPackagesApiView(APIView):
 
 class ListDeliveryPersonPackagesApiView(APIView):
 
-    def get(self, request):
+    def get(self, request, id = None):
         if id:
             try:
                 delivery_person_in_package = DeliveryPerson.objects.filter(package__id=id)
