@@ -67,9 +67,11 @@ class VerifyPhoneNumberApiView(APIView):
                 verification = twilio_verification.verify_otp()
                 if verification == "approved":
                     if user_type == "client":
-                        saved_user = Client.objects.filter(phone_number=phone_number)
+                        saved_user = Client.objects.filter(
+                            phone_number=phone_number)
                     if user_type == "delivery_person":
-                        saved_user = DeliveryPerson.objects.filter(phone_number=phone_number)
+                        saved_user = DeliveryPerson.objects.filter(
+                            phone_number=phone_number)
                     saved_user.update(
                         otp_status=True
                     )
@@ -216,7 +218,8 @@ class CheckEmailAPIView(APIView):
                                                                             f'a client'})
             except:
                 try:
-                    delivery_person = DeliveryPerson.objects.get(username=email)
+                    delivery_person = DeliveryPerson.objects.get(
+                        username=email)
                     return Response(status=status.HTTP_200_OK, data={'message': f'This email '
                                                                                 f'already exists as a '
                                                                                 f'delivery person'})
@@ -245,7 +248,8 @@ class CheckPhoneAPIView(APIView):
                                                                             f'a client'})
             except:
                 try:
-                    delivery_person = DeliveryPerson.objects.get(phone_number=phone)
+                    delivery_person = DeliveryPerson.objects.get(
+                        phone_number=phone)
                     return Response(status=status.HTTP_200_OK, data={'message': f'This phone number '
                                                                                 f'already exists as a '
                                                                                 f'delivery person'})
@@ -275,8 +279,10 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     print(reset_password_token.user.email)
     # render email text
-    email_html_message = render_to_string('email/user_reset_password.html', context)
-    email_plaintext_message = render_to_string('email/user_reset_password.txt', context)
+    email_html_message = render_to_string(
+        'email/user_reset_password.html', context)
+    email_plaintext_message = render_to_string(
+        'email/user_reset_password.txt', context)
 
     msg = EmailMultiAlternatives(
         # title:
@@ -295,10 +301,9 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     except BadHeaderError:              # If mail's Subject is not properly formatted.
         print('Invalid header found.')
     except SMTPException as e:          # It will catch other errors related to SMTP.
-        print('There was an error sending an email.'+ e)
+        print('There was an error sending an email.' + e)
     except:                             # It will catch All other possible errors.
         print("Mail Sending Failed!")
-
 
     try:
         send_mail(
@@ -309,16 +314,15 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
             # from:
             settings.EMAIL_HOST_USER,
             # to:
-            [reset_password_token.user.email], 
-            fail_silently = False
+            [reset_password_token.user.email],
+            fail_silently=False
         )
     except BadHeaderError:              # If mail's Subject is not properly formatted.
         print('Invalid header found.')
     except SMTPException as e:          # It will catch other errors related to SMTP.
-        print('There was an error sending an email.'+ e)
+        print('There was an error sending an email.' + e)
     except:                             # It will catch All other possible errors.
-        print("Mail Sending Failed!") 
-
+        print("Mail Sending Failed!")
 
     print('email sent')
 
@@ -377,8 +381,10 @@ class GetEmailAndPhoneApiView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'user not found'})
         elif user_type == 'delivery_person':
             try:
-                delivery_person = DeliveryPerson.objects.get(username__iexact=username)
-                data = {'email': delivery_person.email, 'phone': delivery_person.phone_number}
+                delivery_person = DeliveryPerson.objects.get(
+                    username__iexact=username)
+                data = {'email': delivery_person.email,
+                        'phone': delivery_person.phone_number}
                 return Response(status=status.HTTP_200_OK, data={'data': data})
             except Exception as e:
                 print(e)
@@ -393,7 +399,7 @@ class ChangePasswordViaPhoneNumber(APIView):
             user = User.objects.get(username__iexact=username)
             user.set_password(new_password)
             user.save()
-            return Response(status=status.HTTP_200_OK, data = {'message': 'Password Updated successfully'})
+            return Response(status=status.HTTP_200_OK, data={'message': 'Password Updated successfully'})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'User not found'})
 
